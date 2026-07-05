@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Faculty Profile</title>
+
+    <link rel="stylesheet"
+        href="../css/faculty-edit.css">
+
+    <link rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+
+    <script src="../js/faculty-local-data.js"></script>
+    <script src="../js/supabase.js"></script>
+
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <header class="topbar">
+
+        <div class="nav-left">
+
+            <div class="logo-box">
+                🎓
+            </div>
+
+            <h1 class="logo-text">
+                Uni<span>Projects</span>
+            </h1>
+
+        </div>
+
+        <button
+            onclick="window.location.href='faculty-profile.html'"
+            class="back-btn">
+
+            Back to Profile
+
+        </button>
+
+    </header>
+
+    <!-- MAIN -->
+
+    <main class="edit-wrapper">
+
+        <div class="edit-card">
+
+            <h1>
+                Edit Faculty Profile
+            </h1>
+
+            <!-- FORM -->
+
+            <form id="facultyEditForm">
+
+                <!-- Sync Profile Section -->
+                <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-5 mb-4">
+                    <h3 class="text-indigo-900 font-bold text-sm mb-1 flex items-center gap-1.5">
+                        <span>⚡</span> Sync from IIIT Delhi Website
+                    </h3>
+                    <p class="text-indigo-600 text-xs mb-3">Enter your IIIT Delhi profile page URL to fetch and fill your details automatically.</p>
+                    <div class="flex gap-2">
+                        <input type="url" id="syncUrl" placeholder="https://www.iiitd.ac.in/username" 
+                            class="flex-1 text-xs px-3.5 py-2.5 rounded-xl border border-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                        <button type="button" id="syncBtn" 
+                            class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm">
+                            Sync Profile
+                        </button>
+                    </div>
+                    <p id="syncStatus" class="text-[11px] mt-2 hidden font-semibold"></p>
+                </div>
+
+                <div class="input-group">
+
+                    <label>
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="fullName"
+                        placeholder="Enter full name">
+
+                </div>
+
+                <div class="input-group">
+
+                    <label>
+                        Email (read-only)
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        readonly>
+
+                </div>
+
+                <div class="grid-2">
+
+                    <div class="input-group">
+
+                        <label>
+                            Department
+                        </label>
+
+                        <input
+                            type="text"
+                            id="department"
+                            placeholder="Computer Science">
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label>
+                            Designation
+                        </label>
+
+                        <input
+                            type="text"
+                            id="designation"
+                            placeholder="Associate Professor">
+
+                    </div>
+
+                </div>
+
+                <div class="grid-2">
+
+                    <div class="input-group">
+
+                        <label>
+                            Experience
+                        </label>
+
+                        <input
+                            type="text"
+                            id="experience"
+                            placeholder="8 Years">
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label>
+                            Research Domain
+                        </label>
+
+                        <input
+                            type="text"
+                            id="researchDomain"
+                            placeholder="Artificial Intelligence">
+
+                    </div>
+
+                </div>
+
+                <div class="input-group">
+
+                    <label>
+                        Research Expertise
+                    </label>
+
+                    <input
+                        type="text"
+                        id="skills"
+                        placeholder="Machine Learning, AI, Cloud Computing">
+
+                </div>
+
+                <div class="input-group">
+
+                    <label>
+                        Bio
+                    </label>
+
+                    <textarea
+                        id="bio"
+                        rows="5"
+                        placeholder="Write something about yourself..."></textarea>
+
+                </div>
+
+                <div class="grid-2">
+
+                    <div class="input-group">
+
+                        <label>
+                            LinkedIn URL
+                        </label>
+
+                        <input
+                            type="text"
+                            id="linkedin"
+                            placeholder="https://linkedin.com/in/...">
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label>
+                            Portfolio URL
+                        </label>
+
+                        <input
+                            type="text"
+                            id="portfolio"
+                            placeholder="https://yourwebsite.com">
+
+                    </div>
+
+                </div>
+
+                <div class="input-group">
+
+                    <label>
+                        Profile Image
+                    </label>
+
+                    <input
+                        type="file"
+                        id="profileImage">
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="save-btn">
+
+                    Save Changes
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </main>
+
+    <script src="../js/faculty-edit.js?v=2"></script>
+
+</body>
+
+</html>

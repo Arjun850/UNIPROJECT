@@ -1,0 +1,186 @@
+:root {
+    --bg: #eef2ff;
+    --surface: #ffffff;
+    --text: #0f172a;
+    --muted: #475569;
+    --primary: #4338ca;
+    --primary-soft: #c7d2fe;
+    --accent: #14b8a6;
+    --border: rgba(67,56,202,0.12);
+    --shadow: 0 20px 60px rgba(15,23,42,0.08);
+    --radius: 24px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: radial-gradient(circle at top left, rgba(67,56,202,0.14), transparent 28%),
+        linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+    color: var(--text);
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+.container {
+    width: min(1120px, 92vw);
+    margin: 0 auto;
+    padding: 40px 0 60px;
+}
+
+.hero {
+    display: grid;
+    grid-template-columns: 80px minmax(0, 1fr);
+    gap: 24px;
+    align-items: center;
+    padding: 28px 0 10px;
+}
+
+.logo {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary), #7c3aed);
+    color: white;
+    font-size: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 24px;
+}
+
+.hero-copy h1 {
+    font-size: clamp(2.5rem, 4vw, 3.75rem);
+    line-height: 1.02;
+    color: #312e81;
+}
+
+.subtitle {
+    color: var(--muted);
+    max-width: 640px;
+    margin-top: 14px;
+    line-height: 1.7;
+}
+
+.role-panel {
+    padding-top: 36px;
+}
+
+.role-title {
+    margin-bottom: 10px;
+    font-size: 1.65rem;
+    letter-spacing: -0.03em;
+}
+
+.role-description {
+    color: var(--muted);
+    max-width: 720px;
+    margin-bottom: 32px;
+}
+
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+}
+
+.card {
+    background: var(--surface);
+    padding: 28px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 26px 80px rgba(15,23,42,0.12);
+}
+
+.icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    display: grid;
+    place-items: center;
+    font-size: 26px;
+    margin-bottom: 18px;
+    color: white;
+}
+
+.blue {
+    background: #2563eb;
+}
+
+.purple {
+    background: #9333ea;
+}
+
+.green {
+    background: #16a34a;
+}
+
+.card h3 {
+    margin-bottom: 10px;
+    font-size: 1.25rem;
+}
+
+.card p {
+    color: var(--muted);
+    font-size: 0.96rem;
+    line-height: 1.8;
+    margin-bottom: 22px;
+}
+
+button {
+    width: 100%;
+    padding: 14px 18px;
+    border: none;
+    border-radius: 14px;
+    background: var(--primary);
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.25s ease, transform 0.25s ease;
+}
+
+button:hover:not(.disabled) {
+    background: #3730a3;
+    transform: translateY(-1px);
+}
+
+button.disabled {
+    background: #c7d2fe;
+    cursor: not-allowed;
+    color: #475569;
+}
+
+.footer {
+    margin-top: 46px;
+    font-size: 0.95rem;
+    color: var(--muted);
+    text-align: center;
+}
+
+@media (max-width: 740px) {
+    .hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .hero-copy h1 {
+        font-size: 2.5rem;
+    }
+
+    .card {
+        padding: 22px;
+    }
+}

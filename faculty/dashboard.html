@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faculty Dashboard</title>
+
+<link rel="stylesheet" href="../css/faculty-dashboard.css">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="logo" onclick="goHome()">🎓 UniProjects</div>
+
+    <div class="nav-right">
+        <button class="active">Dashboard</button>
+        <button>Requests</button>
+        <span class="bell">🔔</span>
+
+        <div class="profile-section" onclick="toggleMenu()">
+            <img id="navPic" class="nav-pic">
+            <span>sadf</span>
+
+            <div id="menu" class="menu">
+                <div onclick="logout()">Logout</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- HERO -->
+<div class="hero faculty">
+    <h1>Faculty Dashboard</h1>
+    <p>Manage your projects and review student applications</p>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+    <div class="card"><p>Total Projects</p><h2 id="totalProjects">0</h2></div>
+    <div class="card"><p>Open Vacancies</p><h2>0</h2></div>
+    <div class="card"><p>Total Requests</p><h2>0</h2></div>
+    <div class="card"><p>Pending Reviews</p><h2>0</h2></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <!-- LEFT -->
+    <div class="box">
+        <div class="box-header blue">
+            <h3>My Projects</h3>
+            <button class="btn-light" onclick="addProject()">+ Add Project</button>
+        </div>
+
+        <div id="projectList" class="content">
+            <p class="empty">No projects yet</p>
+        </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="box">
+        <div class="box-header blue">
+            <h3>Student Requests</h3>
+            <button class="btn-light">View All</button>
+        </div>
+
+        <div class="content">
+            <p class="empty">No requests</p>
+        </div>
+    </div>
+
+</div>
+
+<script src="../js/faculty-dashboard.js"></script>
+</body>
+</html>

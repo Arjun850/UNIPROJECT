@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniProjects - Faculty Dashboard</title>
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS for high fidelity design -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+    <script src="../js/faculty-local-data.js"></script>
+    <script src="../js/supabase.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            500: '#8b5cf6',
+                            600: '#6366f1', /* Premium Indigo */
+                            700: '#4f46e5',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc; /* Theme 2 ka smooth slate backgound */
+        }
+        /* Custom scrollbar to keep layout clean */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col antialiased">
+
+    <!-- TOP NAVIGATION BAR (Theme 2 styling with premium elements) -->
+    <header class="bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3">
+                <div class="h-9 w-9 bg-brand-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-brand-100">
+                    <!-- Graduation Cap Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 14.5L5.25 14 3 15.25 12 21l9-5.75L18.75 14 12 17.5z"/>
+                    </svg>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-slate-900">Uni<span class="text-brand-600">Projects</span></span>
+            </div>
+
+            <!-- Right-side User Actions -->
+            <div class="flex items-center space-x-4">
+                <span class="hidden md:inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-brand-50 text-brand-700 border border-brand-100">
+                    Faculty Portal
+                </span>
+                
+                <!-- Notification Bell -->
+                <button class="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-50 relative transition-colors">
+                    <span class="absolute top-1.5 right-1.5 h-2 w-2 bg-red-500 rounded-full ring-2 ring-white"></span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                </button>
+
+                <!-- Profile Badge (Screenshot 2 Style) -->
+                <div class="flex items-center space-x-2 border-l border-slate-100 pl-4">
+                    
+                    <div 
+                    onclick="window.location.href='faculty-profile.html'"
+                    class="flex items-center space-x-2.5 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-100 hover:bg-slate-100/75 transition-colors cursor-pointer">
+                        <img id="facultyProfilePic" class="h-7 w-7 rounded-full object-cover border border-brand-200" src="https://ui-avatars.com/api/?name=Faculty&background=random" alt="Demo User">
+                        <span class="text-sm font-semibold text-slate-700 hidden sm:inline" id="facultyNameDisplay">Faculty</span>
+                    </div>
+                    <button onclick="logout()" class="text-xs font-medium text-slate-400 hover:text-slate-600 transition-colors py-1 px-2.5 rounded-lg hover:bg-slate-50">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN BODY CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        
+        <!-- HERO TITLE BLOCK (Theme 2 Layout with Stats Badges next to it) -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-2">
+            <div>
+                <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Faculty Dashboard</h1>
+                <p class="text-slate-500 mt-1 text-sm sm:text-base">Manage your research projects and review student applications in real time.</p>
+            </div>
+            
+            <!-- Dynamic Stats Summary Pills on Right (Screenshot 2 details adapted for Dashboard) -->
+            <div class="flex items-center space-x-3">
+                <div class="bg-white border border-slate-100 px-4 py-2 rounded-2xl shadow-sm flex items-center space-x-2">
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Your Projects</span>
+                    <span id="pill-total-projects" class="text-lg font-bold text-brand-600">0</span>
+                </div>
+                <div class="bg-white border border-slate-100 px-4 py-2 rounded-2xl shadow-sm flex items-center space-x-2">
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Applications</span>
+                    <span id="pill-total-apps" class="text-lg font-bold text-teal-600">5</span>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- STATS GRID - 4 CARDS (Screenshot 1 Features styled elegantly like Screenshot 2) -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <!-- 1. Total Projects -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-between group">
+                <div class="space-y-1">
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Projects</span>
+                    <h3 id="stat-total-projects" class="text-3xl font-extrabold text-slate-900 tracking-tight">0</h3>
+                </div>
+                <div class="h-12 w-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- 2. Open Vacancies -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-between group">
+                <div class="space-y-1">
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Open Vacancies</span>
+                    <h3 id="stat-open-vacancies" class="text-3xl font-extrabold text-slate-900 tracking-tight">0</h3>
+                </div>
+                <div class="h-12 w-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- 3. Total Requests -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-between group">
+                <div class="space-y-1">
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Requests</span>
+                    <h3 id="stat-total-requests" class="text-3xl font-extrabold text-slate-900 tracking-tight">5</h3>
+                </div>
+                <div class="h-12 w-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- 4. Pending Reviews -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-between group">
+                <div class="space-y-1">
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pending Reviews</span>
+                    <h3 id="stat-pending-reviews" class="text-3xl font-extrabold text-slate-900 tracking-tight">1</h3>
+                </div>
+                <div class="h-12 w-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- MAIN LAYOUT: Split Grid for My Projects & Student Requests -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- LEFT COLUMN: MY PROJECTS (Empty State & Table Switch) -->
+            <div class="lg:col-span-7 space-y-4">
+                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                    <!-- Section Header -->
+                    <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-white">
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-900">My Projects</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Manage your ongoing and upcoming projects</p>
+                        </div>
+                        <button onclick="window.location.href='create-project.html'" class="inline-flex items-center space-x-1.5 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold rounded-xl shadow-md shadow-brand-100 transition-all transform hover:-translate-y-0.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            <span>Add Project</span>
+                        </button>
+                    </div>
+
+                    <!-- Filter & Control Bar (Appears when projects exist) -->
+                    <div id="project-filter-bar" class="p-4 bg-slate-50/50 border-b border-slate-100 flex flex-col sm:flex-row gap-3 hidden">
+                        <div class="relative flex-grow">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </span>
+                            <input oninput="handleProjectSearch(this.value)" type="text" placeholder="Search projects..." class="w-full text-xs pl-9 pr-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white">
+                        </div>
+                        <select onchange="handleProjectStatusFilter(this.value)" class="text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white text-slate-600">
+                            <option value="all">All Projects</option>
+                            <option value="active">Active</option>
+                            <option value="draft">Draft</option>
+                        </select>
+                        <button onclick="clearProjects()" class="text-xs text-red-500 hover:text-red-700 hover:underline px-2 transition-all">Clear All</button>
+                    </div>
+
+                    <!-- DYNAMIC PROJECTS AREA -->
+                    <div id="projects-container" class="min-h-[340px] flex flex-col justify-center items-center p-8">
+                        <!-- Default: Empty State (Screenshot 1 Layout in Premium theme) -->
+                        <div id="projects-empty-state" class="text-center py-6 max-w-sm space-y-4">
+                            <div class="mx-auto h-20 w-20 bg-slate-50 text-slate-300 rounded-2xl flex items-center justify-center border border-dashed border-slate-200">
+                                <!-- Portfolio Briefcase SVG -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                            </div>
+                            <div class="space-y-1">
+                                <h3 class="text-base font-bold text-slate-800">No projects yet</h3>
+                                <p class="text-xs text-slate-400 px-6">Create a project to open student applications and scale your research opportunities.</p>
+                            </div>
+                            <div class="pt-2">
+                                <button onclick="window.location.href='create-project.html'" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl shadow transition-all hover:-translate-y-0.5">
+                                    Create Your First Project
+                                </button>
+                                <!-- Developer Shortcut Link -->
+                                <p class="text-[11px] text-slate-400 mt-4 hidden">
+                                    Quick Test: <button onclick="loadSampleProjects()" class="text-brand-600 underline font-medium hover:text-brand-800">Load 3 Sample Projects</button>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Active State: Dynamic Project Cards -->
+                        <div id="projects-table-view" class="w-full hidden pb-6 mt-4">
+                            <div id="project-rows" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Dynamic cards from JavaScript will go here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: STUDENT REQUESTS (Screenshot 1 Student Cards with rich interactions) -->
+            <div class="lg:col-span-5 space-y-4">
+                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                    <!-- Header -->
+                    <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-900">Student Requests</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Review and manage student applications</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <!-- Dropdown or filter button for Student Apps -->
+                            <button onclick="toggleAllStudentFilters()" id="student-filter-btn" class="px-3 py-1.5 border border-slate-100 hover:bg-slate-50 text-slate-600 text-xs font-semibold rounded-xl transition-colors">
+                                Filter View
+                            </button>
+                            <span class="text-xs text-slate-400">|</span>
+                            <button onclick="resetStudentRequests()" class="text-xs text-brand-600 hover:text-brand-800 font-semibold">Reset List</button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Filter Tags -->
+                    <div id="student-filters-row" class="px-6 py-3 bg-slate-50/50 border-b border-slate-100 flex flex-wrap gap-2 transition-all">
+                        <button onclick="filterStudents('all')" class="student-filter-tag px-3 py-1 text-[11px] font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">All</button>
+                        <button onclick="filterStudents('pending')" class="student-filter-tag active px-3 py-1 text-[11px] font-semibold rounded-full bg-brand-600 text-white shadow-sm transition-all">Pending</button>
+                        <button onclick="filterStudents('approved')" class="student-filter-tag px-3 py-1 text-[11px] font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">Approved</button>
+                        <button onclick="filterStudents('rejected')" class="student-filter-tag px-3 py-1 text-[11px] font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">Rejected</button>
+                    </div>
+
+                    <!-- STUDENT LIST AREA -->
+                    <div id="student-list" class="divide-y divide-slate-100 p-4 space-y-4 max-h-[640px] overflow-y-auto">
+                        <!-- Student Cards will be dynamically injected here -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-100 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center sm:flex sm:justify-between sm:items-center text-xs text-slate-400">
+            <p>&copy; 2026 UniProjects. Designed with love and premium university guidelines.</p>
+            <div class="mt-2 sm:mt-0 flex justify-center space-x-4">
+                <a href="#" class="hover:text-slate-600">Privacy Policy</a>
+                <a href="#" class="hover:text-slate-600">Terms of Use</a>
+                <a href="#" class="hover:text-slate-600">Faculty Guide</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ADD PROJECT MODAL (Interactive Pop-up) -->
+    <div id="add-project-modal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background Backdrop -->
+            <div class="fixed inset-0 bg-slate-900 bg-opacity-40 backdrop-blur-sm transition-opacity" aria-hidden="true" onclick="closeCreateProjectModal()"></div>
+
+            <!-- Modal Panel Center Marker -->
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <!-- Modal Content Card -->
+            <div class="relative inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-100">
+                
+                <!-- Modal Header -->
+                <div class="p-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-extrabold text-slate-900">Add New Research Project</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Define your project details to invite student applicants.</p>
+                    </div>
+                    <button onclick="closeCreateProjectModal()" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-all">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Modal Form Body -->
+                <form id="project-form" onsubmit="handleProjectSubmit(event)" class="p-6 space-y-4">
+                    <!-- Project Title -->
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Project Title</label>
+                        <input type="text" id="m-title" required placeholder="e.g. Adaptive AI for Neural Network Simulation" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/50">
+                    </div>
+
+                    <!-- Department & Duration Grid -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Department</label>
+                            <input type="text" id="m-dept" required placeholder="e.g. Computer Science" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/50">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Duration</label>
+                            <input type="text" id="m-duration" required placeholder="e.g. 6 Months" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/50">
+                        </div>
+                    </div>
+
+                    <!-- Positions & Status Grid -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Vacant Positions</label>
+                            <input type="number" id="m-positions" required min="1" max="10" placeholder="e.g. 2" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/50">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Initial Status</label>
+                            <select id="m-status" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/50 text-slate-600">
+                                <option value="Active">Active (Accepting Apps)</option>
+                                <option value="Draft">Draft Mode</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-end space-x-3">
+                        <button type="button" onclick="closeCreateProjectModal()" class="px-4 py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-5 py-2.5 text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-lg shadow-brand-100 transition-all">
+                            Save Project
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION TOAST POP-UP (Clean Feedback Loop) -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 max-w-sm w-full bg-slate-900 text-white rounded-2xl shadow-xl border border-slate-800 p-4 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center space-x-3">
+        <div id="toast-icon-bg" class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-900 bg-emerald-400">
+            <!-- Dynamic Success/Alert Icon -->
+            <svg id="toast-icon" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+        </div>
+        <div class="flex-grow">
+            <h4 class="text-xs font-bold" id="toast-title">System Alert</h4>
+            <p class="text-[11px] text-slate-300 mt-0.5" id="toast-message">Operation successful!</p>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT LOGIC (Hinglish/Latin-Hindi Comments Inside) -->
+    <!-- ========================================== -->
+    <script>
+        // --- 1. STATE INITIALIZATION (Humara data store) ---
+        let state = {
+            projects: [], // Starting as empty state matching Screenshot 1
+            applications: [],
+            filters: {
+                studentStatus: 'pending',
+                projectSearch: '',
+                projectStatus: 'all'
+            }
+        };
+
+        // --- 2. BOOTSTRAP ENVIRONMENT & AUTO IMPORT ---
+        async function autoInitializeProfile(user) {
+            const statusText = document.getElementById('auto-init-status');
+            const email = user.email;
+            const username = email.split('@')[0];
+            const url = `https://www.iiitd.ac.in/${username}`;
+            const facultyProfile = typeof resolveFacultyMasterProfile === 'function'
+                ? await resolveFacultyMasterProfile(email)
+                : null;
+
+            let parsedData = {
+                fullName: facultyProfile?.name || user.user_metadata?.full_name || "Faculty Member",
+                designation: facultyProfile?.designation || "Faculty",
+                department: facultyProfile?.department || "Computer Science and Engineering",
+                bio: facultyProfile?.biography || "Faculty member at IIIT Delhi.",
+                researchDomain: facultyProfile?.research_interests?.[0] || "",
+                skills: Array.isArray(facultyProfile?.research_interests)
+                    ? facultyProfile.research_interests.join(", ")
+                    : "",
+                experience: facultyProfile?.education || "",
+                portfolio: facultyProfile?.website || "",
+                imageUrl: facultyProfile?.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(facultyProfile?.name || user.user_metadata?.full_name || "Faculty")}&background=6366f1&color=fff`
+            };
+
+            try {
+                if (statusText) statusText.textContent = `Fetching profile from iiitd.ac.in/${username}...`;
+                
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+                const response = await fetch(proxyUrl);
+                if (!response.ok) {
+                    throw new Error("Failed to connect to IIITD website");
+                }
+
+                const htmlText = await response.text();
+                if (statusText) statusText.textContent = "Parsing profile details...";
+
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlText, "text/html");
+
+                // Extract Name
+                const nameEl = doc.querySelector(".profile-info h3 .field-content") || 
+                               doc.querySelector(".profile-info h3") || 
+                               doc.querySelector(".pane-node-title .pane-content");
+                if (nameEl) {
+                    const parsedName = nameEl.textContent.trim();
+                    if (parsedName) parsedData.fullName = parsedName;
+                }
+
+                // Extract Designation & Department
+                const desgEl = doc.querySelector(".profile-info span .field-content") || 
+                               doc.querySelector(".profile-info span");
+                if (desgEl) {
+                    const text = desgEl.textContent.trim();
+                    const match = text.match(/^([^(]+)(?:\(([^)]+)\))?/);
+                    if (match) {
+                        parsedData.designation = match[1].trim();
+                        if (match[2]) {
+                            const deptCode = match[2].trim().toUpperCase();
+                            const deptMap = {
+                                'CSE': 'Computer Science and Engineering',
+                                'CSAI': 'Computer Science and Artificial Intelligence',
+                                'ECE': 'Electronics and Communication Engineering',
+                                'CB': 'Computational Biology',
+                                'SSH': 'Social Sciences and Humanities',
+                                'HCD': 'Human-Centered Design',
+                                'MTH': 'Mathematics',
+                                'CSSS': 'Computer Science and Social Sciences',
+                                'CSAM': 'Computer Science and Applied Mathematics',
+                                'CSD': 'Computer Science and Design',
+                                'CSB': 'Computer Science and Biosciences'
+                            };
+                            parsedData.department = deptMap[deptCode] || deptCode;
+                        }
+                    }
+                }
+
+                // Extract Bio
+                const bioEl = doc.querySelector(".about .field-content") || doc.querySelector(".about");
+                if (bioEl) {
+                    const paras = Array.from(bioEl.querySelectorAll("p")).map(p => p.textContent.trim()).filter(t => t.length > 0);
+                    if (paras.length > 0) {
+                        parsedData.bio = paras.join("\n\n");
+                    } else {
+                        parsedData.bio = bioEl.textContent.trim();
+                    }
+                }
+
+                // Extract Skills / Research Interests
+                const headers = Array.from(doc.querySelectorAll("h2.rit-titl"));
+                const researchHeader = headers.find(h => h.textContent.includes("Research Interests"));
+                if (researchHeader) {
+                    let nextEl = researchHeader.nextElementSibling;
+                    while (nextEl && !nextEl.classList.contains("work-exp")) {
+                        nextEl = nextEl.nextElementSibling;
+                    }
+                    if (nextEl) {
+                        const paras = Array.from(nextEl.querySelectorAll("p")).map(p => p.textContent.trim()).filter(t => t.length > 0);
+                        if (paras.length > 0) {
+                            parsedData.skills = paras.join(", ");
+                            parsedData.researchDomain = paras[0] || "";
+                        } else {
+                            parsedData.skills = nextEl.textContent.trim().replace(/\n+/g, ", ");
+                            parsedData.researchDomain = parsedData.skills.split(",")[0]?.trim() || "";
+                        }
+                    }
+                }
+
+                // Experience
+                if (parsedData.bio) {
+                    const joinMatch = parsedData.bio.match(/joined IIIT[- ]?Delhi in (\d{4})/i) || 
+                                      parsedData.bio.match(/joined the institute in (\d{4})/i) ||
+                                      parsedData.bio.match(/joined IIITD in (\d{4})/i);
+                    if (joinMatch) {
+                        const joinYear = parseInt(joinMatch[1]);
+                        const currentYear = new Date().getFullYear();
+                        const years = currentYear - joinYear;
+                        if (years > 0) {
+                            parsedData.experience = `${years} Years`;
+                        }
+                    }
+                }
+
+                // Portfolio
+                const globeIcon = doc.querySelector(".fa-globe");
+                if (globeIcon) {
+                    const contactBox = globeIcon.closest(".contact-box-p");
+                    if (contactBox) {
+                        const linkEl = contactBox.querySelector("a");
+                        if (linkEl) {
+                            parsedData.portfolio = linkEl.getAttribute("href") || "";
+                        }
+                    }
+                }
+
+                // Image URL
+                const imgEl = doc.querySelector(".profile-info img") || 
+                              doc.querySelector(".left-side img") || 
+                              doc.querySelector("img[src*='sites/default/files']");
+                if (imgEl) {
+                    let src = imgEl.getAttribute("src");
+                    if (src) {
+                        if (src.startsWith("/")) {
+                            parsedData.imageUrl = "https://www.iiitd.ac.in" + src;
+                        } else {
+                            parsedData.imageUrl = src;
+                        }
+                    }
+                }
+
+            } catch (err) {
+                console.error("Auto import failed, using fallback:", err);
+            }
+
+            if (statusText) statusText.textContent = "Saving to Database...";
+
+            // Save profile metadata
+            const { error: metadataError } = await supabaseClient.auth.updateUser({
+                data: {
+                    full_name: parsedData.fullName,
+                    bio: parsedData.bio,
+                    department: parsedData.department,
+                    designation: parsedData.designation,
+                    experience: parsedData.experience,
+                    research_domain: parsedData.researchDomain,
+                    skills: parsedData.skills,
+                    portfolio: parsedData.portfolio,
+                    avatar: parsedData.imageUrl
+                }
+            });
+
+            if (metadataError) console.error("Error saving metadata:", metadataError);
+
+            // Save profile to database
+            const { error: tableError } = await supabaseClient.from("faculty").insert([{
+                user_id: user.id,
+                full_name: parsedData.fullName,
+                email: email,
+                dept: parsedData.department,
+                expertise: parsedData.researchDomain || parsedData.skills
+            }]);
+
+            if (tableError) console.error("Error saving to faculty table:", tableError);
+        }
+
+        window.onload = async function() {
+            // Initial blank render
+            renderDashboard();
+            
+            if (typeof supabaseClient !== 'undefined') {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session && session.user) {
+                    const user = session.user;
+                    
+                    // Domain check: Only allow @iiitd.ac.in or @iiitd.edu.in emails (except test emails)
+                    const email = user.email || "";
+                    const allowedTestingEmails = [
+                        "vinitgautam1610@gmail.com",
+                        "faculty.test@gmail.com",
+                        "testfaculty@gmail.com",
+                        "vinit23598@gmail.com"
+                    ];
+                    const isTestingEmail = allowedTestingEmails.includes(email.toLowerCase());
+                    if (!isTestingEmail && !email.toLowerCase().endsWith("@iiitd.ac.in") && !email.toLowerCase().endsWith("@iiitd.edu.in")) {
+                        alert("Access Denied: Only faculty members with an official @iiitd.ac.in email account can access this portal.");
+                        await supabaseClient.auth.signOut();
+                        window.location.href = '../auth/faculty-auth.html';
+                        return;
+                    }
+
+                    // Check if faculty database record exists
+                    const { data: profile, error } = await supabaseClient
+                        .from('faculty')
+                        .select('*')
+                        .eq('user_id', user.id)
+                        .maybeSingle();
+
+                    if (!profile) {
+                        // Skipping auto-scraper since we are fetching from faculty_master
+                        console.log("No profile in faculty table, but bypassing scraper as requested.");
+                    }
+
+                    const facultyProfile = typeof resolveFacultyMasterProfile === 'function'
+                        ? await resolveFacultyMasterProfile(user.email)
+                        : null;
+
+                    const fullName = facultyProfile?.name || user.user_metadata?.full_name || "Faculty";
+
+                    // Load user profile picture
+                    const avatar = facultyProfile?.photo_url || user.user_metadata?.avatar || user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=6366f1&color=fff`;
+
+                    document.getElementById('facultyNameDisplay').textContent = fullName;
+                    const profilePicEl = document.getElementById('facultyProfilePic');
+                    if (profilePicEl) {
+                        profilePicEl.src = avatar;
+                    }
+                    // Fetch real projects
+                    await fetchProjects(user.id);
+                    // Fetch real applications (from real Supabase table)
+                    await fetchApplications(user.id);
+                    
+                    showToast('Welcome back, ' + fullName + '!', 'Projects and applications loaded successfully.', 'success');
+                } else {
+                    window.location.href = '../auth/faculty-auth.html';
+                }
+            }
+        };
+
+        async function fetchProjects(facultyId) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('projects_v2')
+                    .select('*')
+                    .eq('faculty_id', facultyId)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                
+                // Map to state.projects
+                state.projects = data.map(p => ({
+                    id: p.id,
+                    title: p.title,
+                    dept: p.faculty_dept || 'Department',
+                    duration: p.duration,
+                    positions: p.students_needed,
+                    status: (p.status || '').includes('Open') ? 'Active' : (p.status || 'Draft')
+                }));
+                
+                renderDashboard();
+            } catch (err) {
+                console.error("Error fetching projects:", err);
+                showToast("Error", "Could not load projects", "danger");
+            }
+        }
+
+        async function fetchApplications(facultyId) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('applications_v2')
+                    .select('*')
+                    .eq('faculty_id', facultyId)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                // Merge real applications into state
+                const mappedApps = data.map(app => {
+                    const initials = (app.student_name || 'Student').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                    return {
+                        id: app.id,
+                        studentId: app.student_id,
+                        studentName: app.student_name || 'Student',
+                        year: app.student_year || '3rd Year',
+                        degree: app.student_degree || 'B.tech',
+                        status: app.status || 'pending',
+                        projectTitle: app.project_title,
+                        pitch: app.pitch || '',
+                        initials: initials,
+                        cvName: app.cv_name || null,
+                        cvUrl: app.cv_url || null
+                    };
+                });
+
+                state.applications = mappedApps;
+
+                renderDashboard();
+            } catch (err) {
+                console.error("Error fetching applications: ", err);
+            }
+        }
+
+        // --- 3. RENDERING FUNCTIONS (UI badalne ka kaam) ---
+        function renderDashboard() {
+            renderStats();
+            renderProjects();
+            renderApplications();
+        }
+
+        // Stats calculation and rendering (Dynamic counts)
+        function renderStats() {
+            const totalProjects = state.projects.length;
+            
+            // Total Vacant Positions calculation
+            let openVacancies = 0;
+            state.projects.forEach(p => {
+                if (p.status === 'Active') {
+                    openVacancies += parseInt(p.positions) || 0;
+                }
+            });
+
+            const totalRequests = state.applications.length;
+            const pendingReviews = state.applications.filter(app => app.status === 'pending').length;
+
+            // Updating Badge Stats
+            document.getElementById('stat-total-projects').textContent = totalProjects;
+            document.getElementById('pill-total-projects').textContent = totalProjects;
+            document.getElementById('stat-open-vacancies').textContent = openVacancies;
+            document.getElementById('stat-total-requests').textContent = totalRequests;
+            document.getElementById('pill-total-apps').textContent = totalRequests;
+            document.getElementById('stat-pending-reviews').textContent = pendingReviews;
+        }
+
+        // Render Projects Section (Switch between Empty State & Beautiful Table Grid)
+        function renderProjects() {
+            const emptyState = document.getElementById('projects-empty-state');
+            const tableView = document.getElementById('projects-table-view');
+            const filterBar = document.getElementById('project-filter-bar');
+            const rowsContainer = document.getElementById('project-rows');
+
+            // Filtering logic
+            let filteredProjects = state.projects.filter(p => {
+                const matchesSearch = p.title.toLowerCase().includes(state.filters.projectSearch.toLowerCase()) || 
+                                      p.dept.toLowerCase().includes(state.filters.projectSearch.toLowerCase());
+                const matchesStatus = state.filters.projectStatus === 'all' || p.status.toLowerCase() === state.filters.projectStatus.toLowerCase();
+                return matchesSearch && matchesStatus;
+            });
+
+            if (state.projects.length === 0) {
+                // Show Empty State (Screenshot 1 setup)
+                emptyState.classList.remove('hidden');
+                tableView.classList.add('hidden');
+                filterBar.classList.add('hidden');
+            } else {
+                // Show Dynamic Interactive Table (Inspired by Screenshot 2 style)
+                emptyState.classList.add('hidden');
+                tableView.classList.remove('hidden');
+                filterBar.classList.remove('hidden');
+
+                rowsContainer.innerHTML = '';
+                
+                if (filteredProjects.length === 0) {
+                    rowsContainer.innerHTML = `
+                        <div class="col-span-full text-center py-8 text-slate-400 bg-white border border-slate-100 rounded-2xl">
+                            No matching projects found. Check filter or search criteria.
+                        </div>
+                    `;
+                    return;
+                }
+
+                filteredProjects.forEach(proj => {
+                    const statusClass = proj.status === 'Active' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-slate-100 text-slate-600 border-slate-200';
+                    const appCount = state.applications.filter(a => a.projectTitle === proj.title).length;
+                    
+                    rowsContainer.innerHTML += `
+                        <div class="bg-white border border-slate-100 rounded-2xl p-5 hover:shadow-md hover:border-slate-200 transition-all flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-3">
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border ${statusClass}">
+                                        ${proj.status}
+                                    </span>
+                                </div>
+                                <h3 class="font-bold text-slate-900 text-base mb-1 leading-snug">${proj.title}</h3>
+                                <p class="text-xs text-slate-500 mb-4">${proj.dept}</p>
+                            </div>
+                            
+                            <div class="flex items-center justify-between border-t border-slate-100 pt-3">
+                                <div class="text-[10px] text-slate-500 font-semibold">
+                                    <span class="block text-slate-400 font-normal uppercase tracking-wide">Duration</span>
+                                    ${proj.duration}
+                                </div>
+                                <div class="text-[10px] text-slate-500 font-semibold text-right">
+                                    <span class="block text-slate-400 font-normal uppercase tracking-wide">Positions</span>
+                                    ${proj.positions}
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 pt-3.5 border-t border-slate-100/60">
+                                <a href="got_to_project.html?id=${proj.id}&as=faculty" class="w-full text-xs font-bold py-2.5 px-4 rounded-xl bg-slate-950 hover:bg-slate-800 text-white shadow-md shadow-slate-900/10 transition-all text-center inline-flex items-center justify-center space-x-1.5 transform hover:-translate-y-0.5">
+                                    <span>Go to Project</span>
+                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        // Render Student Application Cards (With status controls and responsive flow)
+        function renderApplications() {
+            const listContainer = document.getElementById('student-list');
+            listContainer.innerHTML = '';
+
+            let filteredApps = state.applications.filter(app => {
+                if (state.filters.studentStatus === 'all') return true;
+                return app.status === state.filters.studentStatus;
+            });
+
+            if (filteredApps.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-center py-12 text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-slate-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <span class="text-xs font-medium">No student requests under this status</span>
+                    </div>
+                `;
+                return;
+            }
+
+            filteredApps.forEach(app => {
+                // Badge config matching Screenshot 1 designs
+                let badgeClass = 'bg-slate-100 text-slate-600 border-slate-200';
+                let statusLabel = app.status;
+
+                if (app.status === 'pending') {
+                    badgeClass = 'bg-slate-100 text-slate-600 border-slate-200';
+                    statusLabel = 'pending';
+                } else if (app.status === 'approved') {
+                    badgeClass = 'bg-slate-900 text-white border-transparent';
+                    statusLabel = 'approved';
+                } else if (app.status === 'meet-in-person') {
+                    badgeClass = 'bg-slate-50 text-slate-600 border-slate-200';
+                    statusLabel = 'meet-in-person';
+                } else if (app.status === 'rejected') {
+                    badgeClass = 'bg-rose-50 text-rose-700 border-rose-200';
+                    statusLabel = 'rejected';
+                }
+
+                // Interaction Controls rendering dynamically based on current status
+                let actionControls = '';
+                if (app.status === 'pending') {
+                    actionControls = `
+                        <div class="flex items-center space-x-2.5 pt-4 border-t border-slate-100/60 mt-4">
+                            <button onclick="updateAppStatus('${app.id}', 'approved')" class="flex-1 py-2 px-4 text-xs font-semibold rounded-xl bg-slate-950 hover:bg-slate-800 text-white shadow-md shadow-slate-900/10 transition-all text-center">
+                                Approve
+                            </button>
+                            <button onclick="updateAppStatus('${app.id}', 'rejected')" class="flex-1 py-2 px-4 text-xs font-semibold rounded-xl border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-all text-center">
+                                Reject
+                            </button>
+                            <button onclick="updateAppStatus('${app.id}', 'meet-in-person')" class="p-2 text-brand-600 hover:text-brand-800 rounded-xl hover:bg-brand-50 border border-transparent hover:border-brand-100 transition-all" title="Schedule Interview">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+                } else if (app.status === 'meet-in-person') {
+                    actionControls = `
+                        <div class="flex items-center space-x-2 pt-4 border-t border-slate-100/60 mt-4">
+                            <span class="text-[11px] text-amber-600 font-semibold flex items-center space-x-1 flex-grow">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                </svg>
+                                <span>Meeting proposed with ${app.studentName}.</span>
+                            </span>
+                            <button onclick="updateAppStatus('${app.id}', 'approved')" class="text-xs px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-sm transition-all">Confirm Admission</button>
+                            <button onclick="updateAppStatus('${app.id}', 'pending')" class="text-xs text-slate-400 hover:text-slate-600 underline px-1">Reset</button>
+                        </div>
+                    `;
+                } else if (app.status === 'approved') {
+                    actionControls = `
+                        <div class="flex items-center justify-between pt-4 border-t border-slate-100/60 mt-4">
+                            <span class="text-[11px] text-emerald-600 font-semibold flex items-center space-x-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span>Assigned to Project team</span>
+                            </span>
+                            <button onclick="updateAppStatus('${app.id}', 'pending')" class="text-[11px] text-slate-400 hover:text-slate-600 underline">Undo Approval</button>
+                        </div>
+                    `;
+                } else if (app.status === 'rejected') {
+                    actionControls = `
+                        <div class="flex items-center justify-between pt-4 border-t border-slate-100/60 mt-4">
+                            <span class="text-[11px] text-rose-500 font-semibold flex items-center space-x-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                <span>Application Rejected</span>
+                            </span>
+                            <button onclick="updateAppStatus('${app.id}', 'pending')" class="text-[11px] text-brand-600 hover:underline font-semibold">Review Again</button>
+                        </div>
+                    `;
+                }
+
+                // Inner Avatar background logic based on initials
+                const initialsHash = app.studentName.charCodeAt(0) + app.studentName.charCodeAt(1);
+                const colors = ['bg-indigo-100 text-indigo-700', 'bg-emerald-100 text-emerald-700', 'bg-purple-100 text-purple-700', 'bg-sky-100 text-sky-700', 'bg-pink-100 text-pink-700'];
+                const avatarColor = colors[initialsHash % colors.length];
+
+                let cvLinkHtml = '';
+                if (app.cvUrl) {
+                    cvLinkHtml = `
+                        <div class="mt-2.5">
+                            <a href="${app.cvUrl}" target="_blank" class="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-brand-50 hover:bg-brand-100/80 text-brand-600 text-[10px] font-bold rounded-lg border border-brand-100 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-brand-500 mr-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <span>Attached CV: ${app.cvName || 'View Document'}</span>
+                            </a>
+                        </div>
+                    `;
+                }
+
+                // Render Individual Card
+                listContainer.innerHTML += `
+                    <div class="p-5 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-md hover:border-slate-200/60 transition-all duration-300">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center space-x-3.5">
+                                <!-- Profile Initials Rounded Box -->
+                                <div class="h-11 w-11 rounded-xl flex items-center justify-center font-bold text-sm ${avatarColor} tracking-tight">
+                                    ${app.initials}
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900 text-sm tracking-tight">${app.studentName}</h4>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">${app.year} &bull; ${app.degree}</p>
+                                </div>
+                            </div>
+                            <!-- Screenshot 1 Status Badge -->
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${badgeClass}">
+                                ${statusLabel}
+                            </span>
+                        </div>
+ 
+                        <!-- Pitch Paragraph -->
+                        <p class="text-xs text-slate-500 mt-3.5 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100/50 font-medium">${app.pitch}</p>
+                        ${cvLinkHtml}
+                        
+                        <!-- Applied For Project Reference -->
+                        <div class="mt-3 flex items-center space-x-1.5 text-[11px] text-slate-400 font-medium">
+                            <span>For:</span>
+                            <span class="text-brand-600 hover:underline cursor-pointer font-semibold truncate max-w-[320px]">${app.projectTitle}</span>
+                        </div>
+ 
+                        <!-- User Actions Panel -->
+                        ${actionControls}
+                    </div>
+                `;
+            });
+        }
+
+        // --- 4. PROJECT CREATION & INTERACTION (Modals aur validation logic) ---
+        function openCreateProjectModal() {
+            document.getElementById('add-project-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Stop page scrolling
+        }
+
+        function closeCreateProjectModal() {
+            document.getElementById('add-project-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto'; // Restore page scrolling
+            document.getElementById('project-form').reset();
+        }
+
+        function handleProjectSubmit(event) {
+            event.preventDefault(); // Default post back prevent karna
+            
+            const title = document.getElementById('m-title').value;
+            const dept = document.getElementById('m-dept').value;
+            const duration = document.getElementById('m-duration').value;
+            const positions = document.getElementById('m-positions').value;
+            const status = document.getElementById('m-status').value;
+
+            const newProject = {
+                id: 'p-' + Date.now(),
+                title: title,
+                dept: dept,
+                duration: duration,
+                positions: parseInt(positions) || 1,
+                status: status
+            };
+
+            // Adding new project to state array
+            state.projects.push(newProject);
+            
+            // Re-render layout
+            renderDashboard();
+            closeCreateProjectModal();
+
+            // Notify User
+            showToast('Project Published!', `"${title}" was added successfully as ${status}.`, 'success');
+        }
+
+        // Action: Load Mock Projects instantly for testing
+        function loadSampleProjects() {
+            state.projects = JSON.parse(JSON.stringify(sampleProjects));
+            renderDashboard();
+            showToast('Sample Data Loaded', 'We have populated 3 mock research projects.', 'info');
+        }
+
+        // Action: Clean/Reset projects
+        function clearProjects() {
+            state.projects = [];
+            renderDashboard();
+            showToast('Workspace Cleared', 'All projects have been removed from the session.', 'info');
+        }
+
+        // Action: Delete custom project
+        async function deleteProject(id) {
+            const index = state.projects.findIndex(p => p.id.toString() === id.toString());
+            if (index > -1) {
+                const title = state.projects[index].title;
+                
+                if (typeof supabaseClient !== 'undefined' && !id.toString().startsWith('proj-') && !id.toString().startsWith('dummy-')) {
+                    try {
+                        const { error } = await supabaseClient
+                            .from('projects_v2')
+                            .delete()
+                            .eq('id', id);
+
+                        if (error) throw error;
+                        
+                        showToast('Project Deleted', `"${title}" has been deleted from Supabase.`, 'success');
+                    } catch (err) {
+                        console.error("Could not delete project from Supabase:", err);
+                        showToast('Error', 'Could not delete project from Supabase.', 'danger');
+                        return;
+                    }
+                } else {
+                    showToast('Project Removed', `"${title}" has been removed from local state.`, 'danger');
+                }
+
+                state.projects.splice(index, 1);
+                renderDashboard();
+            }
+        }
+
+        function updateAppStatus(appId, newStatus) {
+            const index = state.applications.findIndex(a => a.id.toString() === appId.toString());
+            if (index > -1) {
+                const app = state.applications[index];
+
+                // Capacity Cap limits check
+                if (newStatus === 'approved') {
+                    const project = state.projects.find(p => p.title.toLowerCase().trim() === app.projectTitle.toLowerCase().trim());
+                    if (project) {
+                        const maxStudents = parseInt(project.positions) || 1;
+                        const currentApprovedCount = state.applications.filter(a => 
+                            a.projectTitle.toLowerCase().trim() === app.projectTitle.toLowerCase().trim() && 
+                            a.status === 'approved' && 
+                            a.id.toString() !== appId.toString()
+                        ).length;
+
+                        if (currentApprovedCount >= maxStudents) {
+                            showToast('Project Full', `Cannot approve student. This project has already reached its maximum capacity of ${maxStudents} student(s).`, 'warning');
+                            return; // Stop execution
+                        }
+                    }
+                }
+
+                const oldStatus = app.status;
+                state.applications[index].status = newStatus;
+                
+                renderDashboard();
+
+                // Persist update back to Supabase applications_v2 table
+                if (typeof supabaseClient !== 'undefined' && !appId.toString().startsWith('app-')) {
+                    supabaseClient
+                        .from('applications_v2')
+                        .update({ status: newStatus })
+                        .eq('id', appId)
+                        .then(({ error }) => {
+                            if (error) console.error("Could not persist status in Supabase:", error);
+                        });
+
+                    // Send notification to the student!
+                    const studentUuid = state.applications[index].studentId;
+                    if (studentUuid) {
+                        let notifTitle = 'Application Status Updated';
+                        let notifMsg = `Your application for "${state.applications[index].projectTitle}" was changed to ${newStatus}.`;
+                        let notifType = 'info';
+
+                        if (newStatus === 'approved') {
+                            notifTitle = 'Application Approved! 🎉';
+                            notifMsg = `Congratulations! Your application for "${state.applications[index].projectTitle}" has been approved.`;
+                            notifType = 'success';
+                        } else if (newStatus === 'rejected') {
+                            notifTitle = 'Application Decision';
+                            notifMsg = `We regret to inform you that your application for "${state.applications[index].projectTitle}" was not accepted.`;
+                            notifType = 'danger';
+                        } else if (newStatus === 'meet-in-person') {
+                            notifTitle = 'Interview Invited! 📅';
+                            notifMsg = `You have been requested for an interview for project "${state.applications[index].projectTitle}".`;
+                            notifType = 'warning';
+                        }
+
+                        supabaseClient
+                            .from('notifications_v2')
+                            .insert([{
+                                user_id: studentUuid,
+                                title: notifTitle,
+                                message: notifMsg,
+                                type: notifType,
+                                is_read: false
+                            }])
+                            .then(({ error }) => {
+                                if (error) console.error("Could not send notification to student:", error);
+                            });
+                    }
+                }
+
+                // Custom feedback messages
+                if (newStatus === 'approved') {
+                    showToast('Candidate Approved!', `Congratulations! ${state.applications[index].studentName} has been enrolled.`, 'success');
+                } else if (newStatus === 'rejected') {
+                    showToast('Application Rejected', `${state.applications[index].studentName}'s application has been declined.`, 'danger');
+                } else if (newStatus === 'meet-in-person') {
+                    showToast('Interview Scheduled', `Proposed meeting request sent to ${state.applications[index].studentName}.`, 'warning');
+                } else {
+                    showToast('Status Reset', `Application moved back to evaluation state.`, 'info');
+                }
+            }
+        }
+
+        // --- 5. SEARCH & FILTERING CONTROLS (Live inputs) ---
+        function handleProjectSearch(query) {
+            state.filters.projectSearch = query;
+            renderProjects();
+        }
+
+        function handleProjectStatusFilter(status) {
+            state.filters.projectStatus = status;
+            renderProjects();
+        }
+
+        // Student Filters Switcher UI
+        let filtersExpanded = true;
+        function toggleAllStudentFilters() {
+            const filterRow = document.getElementById('student-filters-row');
+            filtersExpanded = !filtersExpanded;
+            if (filtersExpanded) {
+                filterRow.classList.remove('hidden');
+            } else {
+                filterRow.classList.add('hidden');
+            }
+        }
+
+        function filterStudents(status) {
+            state.filters.studentStatus = status;
+            
+            // Toggle highlight state on tags
+            const tags = document.querySelectorAll('.student-filter-tag');
+            tags.forEach(tag => {
+                tag.classList.remove('bg-brand-600', 'text-white', 'shadow-sm');
+                tag.classList.add('bg-slate-100', 'text-slate-600');
+            });
+
+            event.target.classList.remove('bg-slate-100', 'text-slate-600');
+            event.target.classList.add('bg-brand-600', 'text-white', 'shadow-sm');
+
+            renderApplications();
+        }
+
+        function resetStudentRequests() {
+            state.applications = [
+                {
+                    id: 'app-1',
+                    studentName: 'Alex Kumar',
+                    year: '3rd Year',
+                    degree: 'B.tech',
+                    status: 'pending',
+                    projectTitle: 'Machine Learning for Medical Diagnosis',
+                    pitch: 'I have completed coursework in ML and have experience with TensorFlow. Very interested in healthcare applications.',
+                    initials: 'AK'
+                },
+                {
+                    id: 'app-2',
+                    studentName: 'Maria Santos',
+                    year: '4th Year',
+                    degree: 'B.tech',
+                    status: 'approved',
+                    projectTitle: 'Cloud-Native Microservices Architecture',
+                    pitch: 'I have hands-on experience with Docker and Kubernetes from my internship. Would love to contribute to this project.',
+                    initials: 'MS'
+                },
+                {
+                    id: 'app-3',
+                    studentName: 'James Wilson',
+                    year: '2nd Year',
+                    degree: 'B.tech',
+                    status: 'meet-in-person',
+                    projectTitle: 'Responsive Web Framework',
+                    pitch: 'Hi Professor, I have built web apps using React and Node.js. Looking forward to deep dive on responsive grid design and modern frameworks.',
+                    initials: 'JW'
+                }
+            ];
+            renderDashboard();
+            showToast('Applications Restored', 'The core student candidates have been reset to factory defaults.', 'info');
+        }
+
+        // --- 6. UTILITY TOAST ENGINE (Real feedback overlay) ---
+        let toastTimeout;
+        function showToast(title, message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastTitle = document.getElementById('toast-title');
+            const toastMessage = document.getElementById('toast-message');
+            const iconBg = document.getElementById('toast-icon-bg');
+            const icon = document.getElementById('toast-icon');
+
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+
+            // Type based color coding
+            if (type === 'success') {
+                iconBg.className = "h-8 w-8 rounded-lg flex items-center justify-center text-slate-900 bg-emerald-400";
+                icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />`;
+            } else if (type === 'danger') {
+                iconBg.className = "h-8 w-8 rounded-lg flex items-center justify-center text-white bg-rose-500";
+                icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />`;
+            } else if (type === 'warning') {
+                iconBg.className = "h-8 w-8 rounded-lg flex items-center justify-center text-slate-900 bg-amber-400";
+                icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />`;
+            } else { // info
+                iconBg.className = "h-8 w-8 rounded-lg flex items-center justify-center text-white bg-indigo-500";
+                icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />`;
+            }
+
+            // Animate In
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                // Animate Out
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+
+        // Simple placeholder action
+        async function logout() {
+            if (typeof supabaseClient !== 'undefined') {
+                await supabaseClient.auth.signOut();
+            }
+            sessionStorage.removeItem('current_user_profile');
+            sessionStorage.removeItem('current_faculty_master_email');
+            sessionStorage.removeItem('current_faculty_auth_email');
+            window.location.href = '../index.html';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Plus Jakarta Sans',sans-serif;
+    background:#f1f5f9;
+    color:#0f172a;
+}
+
+/* NAVBAR */
+
+.topbar{
+    height:82px;
+
+    background:white;
+
+    border-bottom:1px solid #e2e8f0;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 40px;
+}
+
+.nav-left{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.logo-box{
+    width:50px;
+    height:50px;
+
+    border-radius:16px;
+
+    background:#4f46e5;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    color:white;
+
+    font-size:22px;
+}
+
+.logo-text{
+    font-size:34px;
+    font-weight:800;
+}
+
+.logo-text span{
+    color:#4f46e5;
+}
+
+.back-btn{
+    border:none;
+
+    background:#4f46e5;
+    color:white;
+
+    padding:12px 22px;
+
+    border-radius:14px;
+
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+/* MAIN */
+
+.edit-wrapper{
+    padding:50px 20px;
+
+    display:flex;
+    justify-content:center;
+}
+
+.edit-card{
+    width:100%;
+    max-width:950px;
+
+    background:white;
+
+    border-radius:30px;
+
+    padding:40px;
+
+    border:1px solid #e2e8f0;
+
+    box-shadow:0 10px 30px rgba(15,23,42,0.06);
+}
+
+.edit-card h1{
+    font-size:42px;
+    font-weight:800;
+
+    margin-bottom:32px;
+}
+
+/* FORM */
+
+#facultyEditForm{
+    display:flex;
+    flex-direction:column;
+    gap:24px;
+}
+
+.grid-2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.input-group{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.input-group label{
+    font-weight:700;
+    font-size:15px;
+}
+
+.input-group input,
+.input-group textarea{
+    width:100%;
+
+    border:1px solid #dbe2ea;
+
+    border-radius:18px;
+
+    padding:16px 18px;
+
+    font-size:15px;
+
+    outline:none;
+
+    transition:0.3s;
+
+    background:#fff;
+}
+
+.input-group textarea{
+    resize:none;
+}
+
+.input-group input:focus,
+.input-group textarea:focus{
+    border-color:#4f46e5;
+
+    box-shadow:0 0 0 4px rgba(99,102,241,0.1);
+}
+
+.save-btn{
+    margin-top:10px;
+
+    border:none;
+
+    background:#4f46e5;
+    color:white;
+
+    padding:18px;
+
+    border-radius:18px;
+
+    font-size:16px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:0.3s;
+}
+
+.save-btn:hover{
+    background:#4338ca;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:768px){
+
+    .grid-2{
+        grid-template-columns:1fr;
+    }
+
+    .topbar{
+        padding:0 20px;
+    }
+
+    .edit-card{
+        padding:24px;
+    }
+
+    .edit-card h1{
+        font-size:32px;
+    }
+}

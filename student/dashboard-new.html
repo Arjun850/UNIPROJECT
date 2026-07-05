@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniProjects - Browse Projects</title>
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS for high fidelity design -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+    <script src="../js/supabase.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            500: '#8b5cf6',
+                            600: '#4f46e5', /* Premium Royal Indigo */
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            950: '#1e1b4b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc; /* Theme 2 smooth minimalist background */
+        }
+        /* Hide scrollbars but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col antialiased">
+
+    <!-- TOP NAVIGATION BAR (Theme 2 styling with premium elements) -->
+    <header class="bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3">
+                <div class="h-9 w-9 bg-brand-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-brand-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 14.5L5.25 14 3 15.25 12 21l9-5.75L18.75 14 12 17.5z"/>
+                    </svg>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-slate-900">Uni<span class="text-brand-600">Projects</span></span>
+            </div>
+
+            <!-- Right-side Navigation Actions -->
+            <div class="flex items-center space-x-4">
+                <button onclick="toggleApplicationsDrawer()" class="relative inline-flex items-center space-x-1.5 px-3.5 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-semibold rounded-xl text-slate-700 transition-all">
+                    <span>My Applications</span>
+                    <span id="nav-app-count-badge" class="h-5 w-5 bg-brand-600 text-white rounded-full flex items-center justify-center text-[10px] font-bold">0</span>
+                </button>
+
+                <!-- Premium Real-time Notification Bell -->
+                <div class="relative">
+                    <button onclick="toggleNotificationDropdown()" class="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-600 relative transition-all" id="notif-bell-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 18px; height: 18px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <span id="notif-count-badge" class="absolute -top-1 -right-1 h-4 w-4 bg-rose-500 text-white rounded-full flex items-center justify-center text-[9px] font-bold hidden">0</span>
+                    </button>
+                    <!-- Dropdown Panel -->
+                    <div id="notif-dropdown" class="absolute right-0 mt-2 w-80 bg-white border border-slate-100 rounded-2xl shadow-xl py-3 px-4 hidden z-50 animate-fade-in">
+                        <div class="flex justify-between items-center pb-2 border-b border-slate-100 mb-2">
+                            <h4 class="text-xs font-bold text-slate-800">Notifications</h4>
+                            <button onclick="markAllNotificationsRead()" class="text-[10px] text-brand-600 hover:underline font-semibold">Mark all read</button>
+                        </div>
+                        <div id="notif-list" class="max-h-60 overflow-y-auto space-y-2 py-1 flex flex-col">
+                            <p class="text-[10px] text-slate-400 text-center py-4">No notifications yet</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Profile Badge (Screenshot 4 Style) -->
+                <div class="flex items-center space-x-2 border-l border-slate-100 pl-4">
+                    <div class="flex items-center space-x-2.5 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-100 hover:bg-slate-100/75 transition-colors cursor-pointer" onclick="window.location.href='applications.html'">
+                        <div class="h-7 w-7 rounded-full bg-gradient-to-tr from-brand-500 to-indigo-600 text-white font-bold text-xs flex items-center justify-center border border-brand-200" id="navProfileInitial">
+                            VN
+                        </div>
+                        <img class="h-7 w-7 rounded-full object-cover border border-brand-200 hidden" id="navProfilePic" src="" alt="Profile">
+                        <span class="text-sm font-semibold text-slate-700 hidden sm:inline" id="studentNameDisplay">Vinit Kumar</span>
+                    </div>
+                    <button onclick="logout()" class="text-xs font-medium text-slate-400 hover:text-slate-600 transition-colors py-1 px-2.5 rounded-lg hover:bg-slate-50">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN BODY CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        
+        <!-- HERO TITLE BLOCK (Theme 2 Layout with elegant subtitle) -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-2">
+            <div>
+                <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Browse Projects</h1>
+                <p class="text-slate-500 mt-1 text-sm sm:text-base">Discover and apply for exciting research opportunities across diverse departments.</p>
+            </div>
+            <div class="flex items-center space-x-2 bg-emerald-50 text-emerald-700 px-3.5 py-1.5 rounded-full text-xs font-semibold border border-emerald-100">
+                <span class="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-pulse mr-1"></span>
+                Active Recruitment Cycle
+            </div>
+        </div>
+
+        <!-- STATS GRID - 4 CARDS (Screenshot 3 features styled minimalistically like Screenshot 4) -->
+        <section class="grid grid-cols-2 lg:grid-cols-4 gap-5">
+            <!-- 1. Total Applications -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-between group">
+                <div class="space-y-1">
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Applications</span>
+                    <h3 id="stat-total-apps" class="text-3xl font-extrabold text-slate-900 tracking-tight">5</h3>
+                </div>
+                <div class="h-12 w-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- 2. Pending -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-between group">
+                <div class="space-y-1">
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pending</span>
+                    <h3 id="stat-pending-apps" class="text-3xl font-extrabold text-slate-900 tracking-tight">2</h3>
+                </div>
+                <div class="h-12 w-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- 3. Approved -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-between group">
+                <div class="space-y-1">
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Approved</span>
+                    <h3 id="stat-approved-apps" class="text-3xl font-extrabold text-slate-900 tracking-tight">1</h3>
+                </div>
+                <div class="h-12 w-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- 4. Available Projects -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-between group">
+                <div class="space-y-1">
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Available Projects</span>
+                    <h3 id="stat-avail-projects" class="text-3xl font-extrabold text-slate-900 tracking-tight">5</h3>
+                </div>
+                <div class="h-12 w-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- FILTERS AND CONTROLS BLOCK -->
+        <section class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row gap-4 items-center">
+            <!-- Search bar input -->
+            <div class="relative w-full md:flex-grow">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </span>
+                <input id="search-input" oninput="applyFilters()" type="text" placeholder="Search projects, faculty, or required skills..." class="w-full text-xs pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/50">
+            </div>
+
+            <!-- Status Dropdown -->
+            <div class="w-full md:w-48">
+                <select id="status-filter" onchange="applyFilters()" class="w-full text-xs px-3.5 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white text-slate-600 font-medium">
+                    <option value="all">All Status</option>
+                    <option value="open">Open</option>
+                    <option value="filled">Filled</option>
+                </select>
+            </div>
+
+            <!-- Categories / Department Dropdown -->
+            <div class="w-full md:w-56">
+                <select id="dept-filter" onchange="applyFilters()" class="w-full text-xs px-3.5 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white text-slate-600 font-medium">
+                    <option value="all">All Departments</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Software Engineering">Software Engineering</option>
+                    <option value="Robotics">Robotics & AI</option>
+                    <option value="Cybersecurity">Cybersecurity</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- DYNAMIC PROJECT CARDS CONTAINER -->
+        <section class="space-y-6">
+            <div class="flex items-center justify-between pb-2">
+                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider">Available Opportunities (<span id="showing-count">5</span>)</h3>
+                <span class="text-xs text-slate-400">Sort: <strong class="text-slate-600">Relevance</strong></span>
+            </div>
+
+            <!-- List Grid -->
+            <div id="projects-grid" class="space-y-5">
+                <!-- Dynamic cards will render here -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-100 py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 text-center sm:flex sm:justify-between sm:items-center text-xs text-slate-400">
+            <p>&copy; 2026 UniProjects. Designed for modern institutional workflows.</p>
+            <div class="mt-2 sm:mt-0 flex justify-center space-x-4">
+                <a href="#" class="hover:text-slate-600">Privacy Policy</a>
+                <a href="#" class="hover:text-slate-600">Terms of Use</a>
+                <a href="#" class="hover:text-slate-600">Student Guidelines</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE "APPLY NOW" MODAL (Pop-up Form) -->
+    <div id="apply-modal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background Backdrop -->
+            <div class="fixed inset-0 bg-slate-900 bg-opacity-40 backdrop-blur-sm transition-opacity" aria-hidden="true" onclick="closeApplyModal()"></div>
+
+            <!-- Modal Panel Center Marker -->
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <!-- Modal Content Card -->
+            <div class="relative inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-100">
+                
+                <!-- Modal Header -->
+                <div class="p-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-extrabold text-slate-900" id="apply-project-title">Apply for Project</h3>
+                        <p class="text-xs text-slate-400 mt-0.5" id="apply-project-faculty">Under Supervision of Dr. Sarah Johnson</p>
+                    </div>
+                    <button onclick="closeApplyModal()" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-all">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Modal Form Body -->
+                <form id="apply-form" onsubmit="handleApplySubmit(event)" class="p-6 space-y-4">
+                    <input type="hidden" id="apply-project-id">
+                    
+                    <!-- Blocking Incomplete Profile State -->
+                    <div id="profile-incomplete-block" class="hidden text-center py-6 space-y-4">
+                        <div class="h-14 w-14 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto shadow-sm border border-amber-100 animate-bounce">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div class="space-y-1">
+                            <h4 class="text-sm font-bold text-slate-800">Profile Completion Required</h4>
+                            <p class="text-xs text-slate-400 max-w-xs mx-auto text-center">Please set your Academic Year, Program/Degree, and Department in your profile before applying to research projects.</p>
+                        </div>
+                        <button type="button" onclick="window.location.href='applications.html'" class="px-6 py-2.5 text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-md transition-all">
+                            Complete Profile Setup
+                        </button>
+                    </div>
+
+                    <!-- Complete Profile Form Fields -->
+                    <div id="profile-complete-fields" class="space-y-4">
+                        <!-- Readonly academic profile display -->
+                        <div class="p-3.5 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between text-xs">
+                            <div class="space-y-0.5">
+                                <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Academic Identity</span>
+                                <span class="font-bold text-slate-700" id="apply-s-identity">Loading...</span>
+                            </div>
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">Profile Verified</span>
+                        </div>
+
+                        <!-- Statement of Purpose / Pitch -->
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Why are you interested in this project?</label>
+                            <textarea id="s-pitch" rows="4" required placeholder="Describe your experience, course work, or why you want to join this research..." class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/50 resize-none"></textarea>
+                        </div>
+
+                        <!-- CV / Resume File Upload -->
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Upload Resume / CV</label>
+                            <div class="relative border-2 border-dashed border-slate-200 rounded-xl p-4 hover:bg-slate-50/50 hover:border-brand-500 transition-colors flex flex-col items-center justify-center cursor-pointer group" id="cv-upload-zone" onclick="document.getElementById('s-cv').click()">
+                                <input type="file" id="s-cv" accept=".pdf,.doc,.docx" class="hidden" onchange="handleCVSelect(event)">
+                                <div class="h-9 w-9 bg-slate-50 text-slate-400 group-hover:bg-brand-50 group-hover:text-brand-600 rounded-lg flex items-center justify-center transition-colors mb-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                    </svg>
+                                </div>
+                                <span class="text-xs font-semibold text-slate-700" id="cv-upload-label">Drag & drop or click to upload CV</span>
+                                <span class="text-[10px] text-slate-400 mt-0.5">Supports PDF, DOC, DOCX up to 5MB</span>
+                            </div>
+                        </div>
+
+                        <!-- Attachment Warning/Detail -->
+                        <div class="p-3 bg-brand-50/50 border border-brand-100 rounded-xl flex items-start space-x-2.5">
+                            <svg class="h-4 w-4 text-brand-600 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-[11px] text-brand-700 leading-relaxed">Your profile details will automatically be attached to this application.</span>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="pt-4 border-t border-slate-100 flex items-center justify-end space-x-3">
+                            <button type="button" onclick="closeApplyModal()" class="px-4 py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all">
+                                Cancel
+                            </button>
+                            <button type="submit" class="px-5 py-2.5 text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-lg shadow-brand-100 transition-all">
+                                Submit Application
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MY APPLICATIONS DRAWER (Slide over side panel) -->
+    <div id="apps-drawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white shadow-2xl border-l border-slate-100 flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out">
+        <!-- Drawer Header -->
+        <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+            <div>
+                <h3 class="font-extrabold text-slate-950 text-base">Your Applications</h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">Track real-time responses from faculties</p>
+            </div>
+            <button onclick="toggleApplicationsDrawer()" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-all">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Drawer Content (Scrollable list) -->
+        <div id="drawer-list" class="flex-grow overflow-y-auto p-6 space-y-4 no-scrollbar">
+            <!-- Dynamic applied card list will load here -->
+        </div>
+
+        <!-- Drawer Footer -->
+        <div class="p-6 border-t border-slate-100 bg-slate-50/50 text-center">
+            <p class="text-[11px] text-slate-400">Need help with an application? Reach out to <a href="#" class="text-brand-600 hover:underline">Support Portal</a>.</p>
+        </div>
+    </div>
+
+    <!-- Backdrop for Drawer -->
+    <div id="drawer-backdrop" class="fixed inset-0 z-40 bg-slate-900 bg-opacity-30 backdrop-blur-sm hidden" onclick="toggleApplicationsDrawer()"></div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 max-w-sm w-full bg-slate-900 text-white rounded-2xl shadow-xl border border-slate-800 p-4 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center space-x-3">
+        <div id="toast-icon-bg" class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-900 bg-emerald-400">
+            <svg id="toast-icon" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+        </div>
+        <div class="flex-grow">
+            <h4 class="text-xs font-bold" id="toast-title">Success</h4>
+            <p class="text-[11px] text-slate-300 mt-0.5" id="toast-message">Applied successfully!</p>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT STATE & INTERACTIVE CONTROLS -->
+    <!-- ========================================== -->
+    <script>
+        // --- 1. STATE MANAGEMENT ---
+        let state = {
+            projects: [],
+            applications: []
+        };
+        let cvFileObj = null;
+        let studentProfile = null;
+        let studentEmail = "";
+
+        // --- 2. BOOTSTRAP ENVIRONMENT ---
+        window.onload = async function() {
+            // Connect to real Supabase auth
+            if (typeof supabaseClient !== 'undefined') {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session && session.user) {
+                    const fullName = session.user.user_metadata?.full_name || "Student";
+                    studentEmail = session.user.email;
+                    document.getElementById('studentNameDisplay').textContent = fullName;
+                    const initials = fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                    document.getElementById('navProfileInitial').textContent = initials;
+                    
+                    await syncApplications();
+                    await fetchStudentProfile(session.user.id, session.user.email);
+                    await fetchStudentNotifications();
+                    await fetchProjects();
+                    renderDashboard();
+                    
+                    showToast('Welcome back, ' + fullName + '!', 'Discover active opportunities and apply.', 'success');
+                } else {
+                    window.location.href = '../auth/student.html';
+                }
+            }
+        };
+
+        async function fetchStudentProfile(uid, email) {
+            try {
+                // 1. Try student_profiles
+                const { data, error } = await supabaseClient
+                    .from('student_profiles')
+                    .select('*')
+                    .eq('user_id', uid)
+                    .single();
+
+                if (!error && data) {
+                    studentProfile = data;
+                    return;
+                }
+
+                // 2. Try students table fallback
+                const { data: sData, error: sError } = await supabaseClient
+                    .from('students')
+                    .select('*')
+                    .eq('user_id', uid)
+                    .single();
+
+                if (!sError && sData) {
+                    studentProfile = sData;
+                    return;
+                }
+            } catch (err) {
+                console.warn("Supabase profile fetch failed, using fallback: ", err);
+            }
+
+            // 3. Fallback to localStorage logins
+            const localUser = JSON.parse(localStorage.getItem(email) || "null");
+            if (localUser) {
+                studentProfile = {
+                    full_name: localUser.name,
+                    email: localUser.email,
+                    dept: localUser.dept || "",
+                    program: localUser.program || "",
+                    year: localUser.year || ""
+                };
+            } else {
+                // Mock complete profile so they can browse dashboard smoothly
+                studentProfile = {
+                    full_name: "Student",
+                    email: email,
+                    dept: "Computer Science",
+                    program: "B.Tech (CSE)",
+                    year: "3rd Year"
+                };
+            }
+        }
+
+        async function syncApplications() {
+            if (typeof supabaseClient === 'undefined') {
+                syncApplicationsFromLocalStorage();
+                return;
+            }
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (!session || !session.user) {
+                    syncApplicationsFromLocalStorage();
+                    return;
+                }
+
+                const { data, error } = await supabaseClient
+                    .from('applications_v2')
+                    .select('*')
+                    .eq('student_id', session.user.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    console.log("Found applications in Supabase:", data);
+                    state.applications = data.map(app => ({
+                        id: app.id,
+                        projectId: app.project_id || '',
+                        project: app.project_title,
+                        projectTitle: app.project_title,
+                        facultyName: 'Faculty Supervisor',
+                        status: app.status ? app.status.toLowerCase() : 'pending',
+                        appliedDate: new Date(app.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                        pitch: app.pitch || 'Interested in this research project.',
+                        cvName: app.cv_name || null,
+                        cvUrl: app.cv_url || null
+                    }));
+                } else {
+                    console.log("No applications found in Supabase for user, checking localStorage fallback");
+                    syncApplicationsFromLocalStorage();
+                }
+            } catch (err) {
+                console.warn("Could not load applications from Supabase, using localStorage fallback:", err);
+                syncApplicationsFromLocalStorage();
+            }
+        }
+
+        function syncApplicationsFromLocalStorage() {
+            const raw = localStorage.getItem("applications") || "[]";
+            const localApps = JSON.parse(raw);
+            const studentApps = localApps.filter(app => app.student === studentEmail);
+            
+            state.applications = studentApps.map(app => {
+                return {
+                    id: app.project,
+                    projectId: app.projectId || '',
+                    projectTitle: app.project,
+                    facultyName: app.facultyName || 'Faculty Supervisor',
+                    status: (app.status || 'Pending').toLowerCase(),
+                    appliedDate: app.appliedDate || 'Today (May 25, 2026)',
+                    pitch: app.pitch || 'Interested in this research project.',
+                    cvName: app.cvName || null,
+                    cvUrl: app.cvUrl || null
+                };
+            });
+        }
+
+        const bgColors = ['bg-rose-100 text-rose-700 border-rose-200', 'bg-indigo-100 text-indigo-700 border-indigo-200', 'bg-emerald-100 text-emerald-700 border-emerald-200', 'bg-purple-100 text-purple-700 border-purple-200', 'bg-amber-100 text-amber-700 border-amber-200'];
+
+        async function fetchProjects() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('projects_v2')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                
+                // Fetch all approved applications count
+                let approvedCounts = {};
+                try {
+                    const { data: approvedApps, error: aError } = await supabaseClient
+                        .from('applications_v2')
+                        .select('project_id, project_title')
+                        .eq('status', 'approved');
+
+                    if (!aError && approvedApps) {
+                        approvedApps.forEach(app => {
+                            const key = app.project_id || app.project_title;
+                            if (key) {
+                                approvedCounts[key] = (approvedCounts[key] || 0) + 1;
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.warn("Could not load approved applications counts:", e);
+                }
+                
+                state.projects = data.map((p, index) => {
+                    const initials = (p.faculty_name || 'Faculty').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                    const color = bgColors[index % bgColors.length];
+                    
+                    const approvedCount = approvedCounts[p.id] || approvedCounts[p.title] || 0;
+                    const maxStudents = p.students_needed || 1;
+                    const isFilled = approvedCount >= maxStudents;
+                    
+                    return {
+                        id: p.id,
+                        title: p.title,
+                        category: p.category,
+                        description: p.description,
+                        facultyName: p.faculty_name || 'Faculty',
+                        facultyDept: p.faculty_dept || 'Department',
+                        facultyInitials: initials,
+                        facultyBg: color,
+                        positionsFilled: approvedCount,
+                        positionsTotal: maxStudents,
+                        duration: p.duration,
+                        skills: p.skills || [],
+                        preferred: (p.year_preference || []).join(', '),
+                        status: isFilled ? 'Filled' : ((p.status || '').includes('Open') ? 'Open' : (p.status || 'Closed')),
+                        facultyId: p.faculty_id || null
+                    };
+                });
+                
+                renderDashboard();
+            } catch (err) {
+                console.error("Error fetching projects:", err);
+                showToast("Error", "Could not load projects", "danger");
+            }
+        }
+
+        function renderDashboard() {
+            renderStats();
+            renderProjectsList();
+            renderApplicationsDrawer();
+        }
+
+        // --- 3. DYNAMIC COUNTERS & STATS RENDERING ---
+        function renderStats() {
+            const totalApps = state.applications.length;
+            const pendingApps = state.applications.filter(a => a.status === 'pending').length;
+            const approvedApps = state.applications.filter(a => a.status === 'approved').length;
+            const openProjects = state.projects.filter(p => p.status === 'Open').length;
+
+            document.getElementById('stat-total-apps').textContent = totalApps;
+            document.getElementById('nav-app-count-badge').textContent = totalApps;
+            document.getElementById('stat-pending-apps').textContent = pendingApps;
+            document.getElementById('stat-approved-apps').textContent = approvedApps;
+            document.getElementById('stat-avail-projects').textContent = openProjects;
+        }
+
+        // --- 4. RENDER PROJECT CARDS (With Theme 2 Spacious Structure + Theme 1 Metadata) ---
+        function renderProjectsList() {
+            const grid = document.getElementById('projects-grid');
+            grid.innerHTML = '';
+
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const statusFilter = document.getElementById('status-filter').value;
+            const deptFilter = document.getElementById('dept-filter').value;
+
+            let filtered = state.projects.filter(p => {
+                const matchesSearch = p.title.toLowerCase().includes(searchTerm) || 
+                                      p.facultyName.toLowerCase().includes(searchTerm) ||
+                                      p.skills.some(skill => skill.toLowerCase().includes(searchTerm));
+                
+                const matchesStatus = statusFilter === 'all' || p.status.toLowerCase() === statusFilter.toLowerCase();
+                const matchesDept = deptFilter === 'all' || p.facultyDept === deptFilter;
+
+                return matchesSearch && matchesStatus && matchesDept;
+            });
+
+            document.getElementById('showing-count').textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="text-center py-16 bg-white border border-slate-100 rounded-3xl p-8 shadow-sm">
+                        <div class="h-16 w-16 bg-slate-50 text-slate-300 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-slate-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-sm">No Projects Match Your Filters</h4>
+                        <p class="text-xs text-slate-400 mt-1 max-w-sm mx-auto">Try adjusting your keywords, changing the department drop-down, or clearing the query.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(p => {
+                const matchingApp = state.applications.find(app => 
+                    (app.projectId && app.projectId.toString() === p.id.toString()) || 
+                    (app.projectTitle && app.projectTitle.toLowerCase().trim() === p.title.toLowerCase().trim()) ||
+                    (app.project && app.project.toLowerCase().trim() === p.title.toLowerCase().trim())
+                );
+                const hasFilled = p.status === 'Filled';
+                
+                // Button layout configuration
+                let actionBtn = '';
+                if (matchingApp) {
+                    const statusVal = matchingApp.status ? matchingApp.status.toLowerCase() : 'pending';
+                    if (statusVal === 'approved') {
+                        actionBtn = `
+                            <a href="../faculty/got_to_project.html?id=${p.id}&as=student" class="w-full text-xs font-bold py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-100 transition-all text-center inline-flex items-center justify-center space-x-1.5 transform hover:-translate-y-0.5">
+                                <span>Go to Project</span>
+                                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        `;
+                    } else if (statusVal === 'rejected') {
+                        actionBtn = `
+                            <button disabled class="w-full text-xs font-semibold py-2.5 px-4 rounded-xl bg-rose-50 text-rose-700 border border-rose-100 cursor-not-allowed inline-flex items-center justify-center space-x-1.5">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                <span>Rejected</span>
+                            </button>
+                        `;
+                    } else if (statusVal === 'meet-in-person') {
+                        actionBtn = `
+                            <button disabled class="w-full text-xs font-semibold py-2.5 px-4 rounded-xl bg-amber-50 text-amber-700 border border-amber-100 cursor-not-allowed inline-flex items-center justify-center space-x-1.5">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span>Interview Invited</span>
+                            </button>
+                        `;
+                    } else {
+                        actionBtn = `
+                            <button disabled class="w-full text-xs font-semibold py-2.5 px-4 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100 cursor-not-allowed inline-flex items-center justify-center space-x-1.5">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span>Applied</span>
+                            </button>
+                        `;
+                    }
+                } else if (hasFilled) {
+                    actionBtn = `
+                        <button disabled class="w-full text-xs font-semibold py-2.5 px-4 rounded-xl border border-slate-100 bg-slate-100 text-slate-400 cursor-not-allowed text-center">
+                            Positions Filled
+                        </button>
+                    `;
+                } else {
+                    actionBtn = `
+                        <button onclick="openApplyModal('${p.id}')" class="w-full text-xs font-bold py-2.5 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white shadow-md shadow-brand-100 transition-all transform hover:-translate-y-0.5 text-center">
+                            Apply Now
+                        </button>
+                    `;
+                }
+
+                // Building the Skill badge pills list
+                const skillsHtml = p.skills.map(skill => `
+                    <span class="px-2.5 py-1 bg-slate-50 border border-slate-200/60 rounded-lg text-[10px] font-semibold text-slate-500">
+                        ${skill}
+                    </span>
+                `).join('');
+
+                const badgeStatusClass = p.status === 'Open' ? 'bg-indigo-50 text-brand-600 border-indigo-100' : 'bg-slate-100 text-slate-500 border-slate-200';
+
+                // High fidelity responsive row card matching Screenshot 4 structure
+                grid.innerHTML += `
+                    <div class="bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200/50 transition-all duration-300 overflow-hidden">
+                        <div class="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                            
+                            <!-- Left: Detailed Content Column -->
+                            <div class="lg:col-span-8 space-y-4">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${badgeStatusClass}">
+                                        ${p.status}
+                                    </span>
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-slate-100 text-slate-600 border border-slate-200">
+                                        ${p.category}
+                                    </span>
+                                </div>
+
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight leading-snug">
+                                    ${p.title}
+                                </h2>
+
+                                <p class="text-xs text-slate-500 leading-relaxed font-normal">
+                                    ${p.description}
+                                </p>
+
+                                <!-- Faculty Row -->
+                                <div class="flex items-center space-x-3 pt-1">
+                                    <div class="h-9 w-9 rounded-xl flex items-center justify-center font-bold text-xs border ${p.facultyBg}">
+                                        ${p.facultyInitials}
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-bold text-slate-800">${p.facultyName}</h4>
+                                        <p class="text-[10px] text-slate-400">${p.facultyDept}</p>
+                                    </div>
+                                </div>
+
+                                <!-- Required Skills -->
+                                <div class="space-y-1.5 pt-2">
+                                    <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Required Skills:</span>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        ${skillsHtml}
+                                    </div>
+                                </div>
+
+                                <!-- Preferred Target Audience -->
+                                <div class="text-[10px] text-slate-400 font-medium">
+                                    Preferred: <span class="text-slate-600 font-semibold">${p.preferred}</span>
+                                </div>
+                            </div>
+
+                            <!-- Right: Side Statistics cards and action panels -->
+                            <div class="lg:col-span-4 bg-slate-50/50 border border-slate-100 rounded-2xl p-5 space-y-4 flex flex-col justify-between h-full lg:min-h-[220px]">
+                                <div class="grid grid-cols-2 gap-3 lg:grid-cols-1">
+                                    <!-- Position filled card block -->
+                                    <div class="bg-white border border-slate-100/60 rounded-xl p-3 flex items-center space-x-3 shadow-sm">
+                                        <div class="p-1.5 bg-brand-50 rounded-lg text-brand-600">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <span class="block text-[10px] text-slate-400 uppercase font-bold tracking-wider">Positions</span>
+                                            <span class="text-xs font-bold text-slate-700">${p.positionsFilled}/${p.positionsTotal} filled</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Duration card block -->
+                                    <div class="bg-white border border-slate-100/60 rounded-xl p-3 flex items-center space-x-3 shadow-sm">
+                                        <div class="p-1.5 bg-teal-50 rounded-lg text-teal-600">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <span class="block text-[10px] text-slate-400 uppercase font-bold tracking-wider">Duration</span>
+                                            <span class="text-xs font-bold text-slate-700">${p.duration}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Card Actions panel -->
+                                <div class="space-y-2 pt-2 lg:pt-0">
+                                    <button onclick="viewDetailsMock('${p.id}')" class="w-full text-xs font-semibold py-2 px-4 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors text-center">
+                                        View Details
+                                    </button>
+                                    ${actionBtn}
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- 5. RENDER "MY APPLICATIONS" SLIDE-OVER DRAWER ---
+        function renderApplicationsDrawer() {
+            const drawerList = document.getElementById('drawer-list');
+            drawerList.innerHTML = '';
+
+            state.applications.forEach(app => {
+                let badgeClass = 'bg-slate-100 text-slate-600 border-slate-200';
+                if (app.status === 'approved') {
+                    badgeClass = 'bg-emerald-50 text-emerald-700 border-emerald-100';
+                } else if (app.status === 'pending') {
+                    badgeClass = 'bg-amber-50 text-amber-700 border-amber-100';
+                }
+
+                let cvHtml = '';
+                if (app.cvName) {
+                    cvHtml = `
+                        <p class="text-[10px] text-brand-600 font-semibold flex items-center mt-1 bg-brand-50/40 p-1.5 rounded-lg border border-brand-100/50 max-w-max">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-brand-500 mr-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span>CV: ${app.cvName}</span>
+                        </p>
+                    `;
+                }
+
+                drawerList.innerHTML += `
+                    <div class="p-4 bg-slate-50/70 border border-slate-100 rounded-2xl space-y-3 shadow-sm relative group">
+                        <div class="flex items-start justify-between">
+                            <h4 class="text-xs font-bold text-slate-900 truncate pr-6 max-w-[260px]" title="${app.projectTitle}">
+                                ${app.projectTitle}
+                            </h4>
+                            <span class="text-[9px] font-bold uppercase px-2 py-0.5 rounded-full border ${badgeClass}">
+                                ${app.status}
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-400">Supervised by: <strong class="text-slate-600">${app.facultyName}</strong></p>
+                        ${app.pitch ? `<p class="text-[11px] text-slate-500 italic bg-white p-2.5 rounded-xl border border-slate-100 font-medium">"${app.pitch}"</p>` : ''}
+                        ${cvHtml}
+                        
+                        <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1">
+                            <span>Applied: ${app.appliedDate}</span>
+                            <button onclick="withdrawApplication('${app.id}')" class="text-rose-500 hover:text-rose-700 hover:underline font-semibold hidden group-hover:block transition-all">
+                                Withdraw
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- 6. TRIGGER FILTER LOGICS ---
+        function applyFilters() {
+            renderProjectsList();
+        }
+
+        // --- 7. APPLICATION FORM MODAL TRIGGERS ---
+        function openApplyModal(projId) {
+            const project = state.projects.find(p => p.id.toString() === projId.toString());
+            if (project) {
+                document.getElementById('apply-project-id').value = project.id;
+                document.getElementById('apply-project-title').textContent = `Apply for: ${project.title}`;
+                document.getElementById('apply-project-faculty').textContent = `Under Supervision of ${project.facultyName}`;
+                
+                // Gating completeness checks
+                const isIncomplete = !studentProfile || !studentProfile.dept || !studentProfile.program || !studentProfile.year;
+                
+                if (isIncomplete) {
+                    document.getElementById('profile-incomplete-block').classList.remove('hidden');
+                    document.getElementById('profile-complete-fields').classList.add('hidden');
+                } else {
+                    document.getElementById('profile-incomplete-block').classList.add('hidden');
+                    document.getElementById('profile-complete-fields').classList.remove('hidden');
+                    document.getElementById('apply-s-identity').textContent = `${studentProfile.program} • ${studentProfile.year} (${studentProfile.dept})`;
+                    
+                    // Clear any leftover texts
+                    document.getElementById('s-pitch').value = '';
+                }
+
+                document.getElementById('apply-modal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeApplyModal() {
+            document.getElementById('apply-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            document.getElementById('apply-form').reset();
+            
+            // Clear CV state
+            cvFileObj = null;
+            const uploadZone = document.getElementById('cv-upload-zone');
+            if (uploadZone) {
+                uploadZone.className = "relative border-2 border-dashed border-slate-200 rounded-xl p-4 hover:bg-slate-50/50 hover:border-brand-500 transition-colors flex flex-col items-center justify-center cursor-pointer group";
+                document.getElementById('cv-upload-label').textContent = "Drag & drop or click to upload CV";
+            }
+        }
+
+        async function uploadCVToBucket(file, studentId, studentEmail) {
+            if (typeof supabaseClient === 'undefined' || !file) return null;
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${studentEmail.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.${fileExt}`;
+            const filePath = `${studentId}/${fileName}`;
+
+            // Try 'resumes' bucket
+            try {
+                const { data, error } = await supabaseClient.storage
+                    .from('resumes')
+                    .upload(filePath, file, { cacheControl: '3600', upsert: true });
+                
+                if (!error && data) {
+                    const { data: urlData } = supabaseClient.storage
+                        .from('resumes')
+                        .getPublicUrl(filePath);
+                    return urlData.publicUrl;
+                } else {
+                    console.warn("Upload to resumes bucket failed, trying avatars bucket fallback...", error);
+                }
+            } catch (err) {
+                console.warn("Error uploading to resumes bucket:", err);
+            }
+
+            // Try 'avatars' bucket fallback
+            try {
+                const { data, error } = await supabaseClient.storage
+                    .from('avatars')
+                    .upload(filePath, file, { cacheControl: '3600', upsert: true });
+                
+                if (!error && data) {
+                    const { data: urlData } = supabaseClient.storage
+                        .from('avatars')
+                        .getPublicUrl(filePath);
+                    return urlData.publicUrl;
+                } else {
+                    console.error("Upload to avatars bucket failed:", error);
+                }
+            } catch (err) {
+                console.error("Error uploading to avatars bucket:", err);
+            }
+
+            return null;
+        }
+
+        function handleCVSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast("File Too Large", "Please upload a file smaller than 5MB.", "danger");
+                event.target.value = '';
+                return;
+            }
+
+            cvFileObj = {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                fileRaw: file
+            };
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                cvFileObj.dataUrl = e.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            const uploadZone = document.getElementById('cv-upload-zone');
+            if (uploadZone) {
+                uploadZone.className = "relative border border-solid border-emerald-200 bg-emerald-50/30 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer";
+                document.getElementById('cv-upload-label').innerHTML = `<span class="text-emerald-700 font-bold">✓ Selected: ${file.name}</span>`;
+            }
+        }
+
+        async function handleApplySubmit(event) {
+            event.preventDefault();
+
+            const projId = document.getElementById('apply-project-id').value;
+            const project = state.projects.find(p => p.id.toString() === projId.toString());
+            const pitch = document.getElementById('s-pitch').value.trim();
+
+            if (!project) {
+                showToast('Selection Error', 'Selected project is invalid or could not be found.', 'danger');
+                return;
+            }
+
+            const alreadyApplied = state.applications.some(app => 
+                (app.projectId && app.projectId.toString() === project.id.toString()) || 
+                app.projectTitle.toLowerCase().trim() === project.title.toLowerCase().trim()
+            );
+            if (alreadyApplied) {
+                showToast('Already Applied', 'You have already submitted an application for this project.', 'warning');
+                closeApplyModal();
+                return;
+            }
+
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const ogBtnHTML = submitBtn.innerHTML;
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>Submitting...</span>';
+
+            let studentId = null;
+            if (typeof supabaseClient !== 'undefined') {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session && session.user) {
+                    studentId = session.user.id;
+                }
+            }
+
+            // 1. Upload CV to Storage bucket
+            let cvUrl = null;
+            if (cvFileObj && cvFileObj.fileRaw && studentId) {
+                cvUrl = await uploadCVToBucket(cvFileObj.fileRaw, studentId, studentEmail);
+            }
+
+            // 2. Insert row into applications_v2 table
+            let insertedAppId = null;
+            if (typeof supabaseClient !== 'undefined' && studentId) {
+                try {
+                    // Check if project id is a valid UUID, otherwise we cannot save with foreign key constraints
+                    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(project.id.toString());
+                    
+                    const applicationData = {
+                        student_id: studentId,
+                        student_name: studentProfile?.full_name || "Student",
+                        student_email: studentEmail,
+                        student_year: studentProfile?.year || '3rd Year',
+                        student_degree: studentProfile?.program || 'B.Tech (CSE)',
+                        project_id: isUUID ? project.id : null, // Set to null if dummy-1 so FK doesn't violate
+                        project_title: project.title,
+                        faculty_id: project.facultyId || null,
+                        pitch: pitch,
+                        status: 'pending',
+                        cv_name: cvFileObj ? cvFileObj.name : null,
+                        cv_url: cvUrl || (cvFileObj ? cvFileObj.dataUrl : null)
+                    };
+
+                    const { data, error } = await supabaseClient
+                        .from('applications_v2')
+                        .insert([applicationData])
+                        .select();
+
+                    if (error) {
+                        console.error("Supabase insert error: ", error);
+                        alert("SUPABASE DATABASE ERROR: " + error.message + "\nDetails: " + (error.details || 'None') + "\nHint: " + (error.hint || 'None'));
+                        showToast('Database Error', 'Could not save application: ' + error.message, 'warning');
+                    } else if (data && data.length > 0) {
+                        insertedAppId = data[0].id;
+                    }
+                } catch (dbErr) {
+                    console.error("Database insert exception: ", dbErr);
+                    showToast('Database Error', 'Could not save application: ' + dbErr.message, 'warning');
+                }
+            }
+
+            // 3. Keep localStorage updated for fallback stability
+            const localApps = JSON.parse(localStorage.getItem("applications") || "[]");
+            localApps.unshift({
+                id: insertedAppId || 'dummy-' + Date.now(),
+                student: studentEmail,
+                project: project.title,
+                status: "Pending",
+                facultyName: project.facultyName,
+                appliedDate: 'Today (May 25, 2026)',
+                pitch: pitch,
+                cvName: cvFileObj ? cvFileObj.name : null,
+                cvUrl: cvUrl || (cvFileObj ? cvFileObj.dataUrl : null)
+            });
+            localStorage.setItem("applications", JSON.stringify(localApps));
+
+            // Sync state and render
+            await syncApplications();
+            renderDashboard();
+            closeApplyModal();
+
+            // Display feedback
+            showToast('Application Submitted!', `Successfully applied to "${project.title}".`, 'success');
+        }
+
+        async function withdrawApplication(appId) {
+            // Find application in current loaded state safely
+            const app = state.applications.find(a => a.id.toString() === appId.toString() || a.projectTitle === appId);
+            if (!app) return;
+
+            // Delete from Supabase if real row ID exists
+            if (typeof supabaseClient !== 'undefined' && app.id && !app.id.toString().startsWith('dummy') && isNaN(app.id) === false) {
+                const { error } = await supabaseClient
+                    .from('applications_v2')
+                    .delete()
+                    .eq('id', app.id);
+
+                if (error) {
+                    console.error("Error withdrawing from Supabase: ", error);
+                    showToast('Withdrawal Failed', 'Could not delete application from database.', 'danger');
+                    return;
+                }
+            }
+
+            // Clean local storage backup
+            const localApps = JSON.parse(localStorage.getItem("applications") || "[]");
+            const index = localApps.findIndex(a => a.student === studentEmail && (a.project === appId || a.id.toString() === appId.toString() || a.project === app.projectTitle));
+            if (index > -1) {
+                const title = localApps[index].project;
+                localApps.splice(index, 1);
+                localStorage.setItem("applications", JSON.stringify(localApps));
+                
+                await syncApplications();
+                renderDashboard();
+                showToast('Application Withdrawn', `Your request for "${title}" has been removed.`, 'warning');
+            }
+        }
+
+        // --- 8. SLIDE OVER DRAWER TOGGLE ENGINE ---
+        let isDrawerOpen = false;
+        function toggleApplicationsDrawer() {
+            const drawer = document.getElementById('apps-drawer');
+            const backdrop = document.getElementById('drawer-backdrop');
+            
+            isDrawerOpen = !isDrawerOpen;
+            if (isDrawerOpen) {
+                drawer.classList.remove('translate-x-full');
+                backdrop.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                drawer.classList.add('translate-x-full');
+                backdrop.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // --- 9. UTILITIES ---
+        function viewDetailsMock(id) {
+            window.location.href = `project-details.html?id=${id}`;
+        }
+
+        let toastTimeout;
+        function showToast(title, message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastTitle = document.getElementById('toast-title');
+            const toastMessage = document.getElementById('toast-message');
+            const iconBg = document.getElementById('toast-icon-bg');
+            const icon = document.getElementById('toast-icon');
+
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+
+            if (type === 'success') {
+                iconBg.className = "h-8 w-8 rounded-lg flex items-center justify-center text-slate-900 bg-emerald-400";
+                icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />`;
+            } else if (type === 'danger' || type === 'warning') {
+                iconBg.className = "h-8 w-8 rounded-lg flex items-center justify-center text-white bg-rose-500";
+                icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />`;
+            } else {
+                iconBg.className = "h-8 w-8 rounded-lg flex items-center justify-center text-white bg-indigo-500";
+                icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />`;
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+
+        // --- 10. REAL-TIME NOTIFICATIONS ENGINE ---
+        let studentNotifications = [];
+
+        function toggleNotificationDropdown() {
+            const dropdown = document.getElementById('notif-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('notif-dropdown');
+            const bellBtn = document.getElementById('notif-bell-btn');
+            if (dropdown && bellBtn && !dropdown.classList.contains('hidden')) {
+                if (!bellBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            }
+        });
+
+        async function fetchStudentNotifications() {
+            if (typeof supabaseClient === 'undefined') return;
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (!session || !session.user) return;
+
+                const { data, error } = await supabaseClient
+                    .from('notifications_v2')
+                    .select('*')
+                    .eq('user_id', session.user.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                studentNotifications = data || [];
+                renderNotifications();
+            } catch (err) {
+                console.error("Could not fetch student notifications:", err);
+            }
+        }
+
+        function renderNotifications() {
+            const notifList = document.getElementById('notif-list');
+            const notifBadge = document.getElementById('notif-count-badge');
+            
+            const unreadCount = studentNotifications.filter(n => !n.is_read).length;
+            
+            if (unreadCount > 0) {
+                notifBadge.textContent = unreadCount;
+                notifBadge.classList.remove('hidden');
+            } else {
+                notifBadge.classList.add('hidden');
+            }
+
+            if (studentNotifications.length === 0) {
+                notifList.innerHTML = `<p class="text-[10px] text-slate-400 text-center py-4">No notifications yet</p>`;
+                return;
+            }
+
+            notifList.innerHTML = '';
+            studentNotifications.forEach(n => {
+                let borderCol = 'border-slate-100';
+                let iconHtml = '🔔';
+                if (n.type === 'success') {
+                    borderCol = 'border-emerald-100 bg-emerald-50/20';
+                    iconHtml = '🎉';
+                } else if (n.type === 'danger') {
+                    borderCol = 'border-rose-100 bg-rose-50/20';
+                    iconHtml = '❌';
+                } else if (n.type === 'warning') {
+                    borderCol = 'border-amber-100 bg-amber-50/20';
+                    iconHtml = '📅';
+                }
+
+                const notifTime = new Date(n.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                
+                notifList.innerHTML += `
+                    <div class="p-2.5 rounded-xl border ${borderCol} flex items-start space-x-2 text-left relative transition-all ${n.is_read ? 'opacity-60' : 'font-semibold'}">
+                        <span class="text-sm mt-0.5">${iconHtml}</span>
+                        <div class="flex-grow min-w-0">
+                            <div class="flex justify-between items-start">
+                                <h5 class="text-[10px] text-slate-800 truncate pr-4">${n.title}</h5>
+                                <span class="text-[8px] text-slate-400">${notifTime}</span>
+                            </div>
+                            <p class="text-[9px] text-slate-500 mt-0.5 leading-snug">${n.message}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function markAllNotificationsRead() {
+            if (typeof supabaseClient === 'undefined' || studentNotifications.length === 0) return;
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (!session || !session.user) return;
+
+                const { error } = await supabaseClient
+                    .from('notifications_v2')
+                    .update({ is_read: true })
+                    .eq('user_id', session.user.id);
+
+                if (error) throw error;
+
+                // Update local state and render
+                studentNotifications.forEach(n => n.is_read = true);
+                renderNotifications();
+            } catch (err) {
+                console.error("Could not mark notifications as read:", err);
+            }
+        }
+
+        async function logout() {
+            if (typeof supabaseClient !== 'undefined') {
+                await supabaseClient.auth.signOut();
+            }
+            window.location.href = '../index.html';
+        }
+    </script>
+</body>
+</html>

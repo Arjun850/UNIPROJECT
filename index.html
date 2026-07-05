@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniProjects</title>
+    <link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+
+    <div class="container">
+
+        <section class="hero">
+            <div class="logo">🎓</div>
+            <div class="hero-copy">
+                <h1>UniProjects</h1>
+                <p class="subtitle">
+                    Connecting students and faculty for academic collaboration and research excellence.
+                </p>
+            </div>
+        </section>
+
+        <section class="role-panel">
+            <h2 class="role-title">Select Your Role</h2>
+            <p class="role-description">Choose the right workflow to explore projects, manage research, or collaborate across campus.</p>
+
+            <div class="card-container">
+
+                <div class="card">
+                    <div class="icon blue">🎓</div>
+                    <h3>Student</h3>
+                    <p>Browse projects, connect with faculty, and apply for research opportunities.</p>
+                    <button onclick="goTo('auth/student.html')">
+                        Continue as Student
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="icon purple">👥</div>
+                    <h3>Faculty</h3>
+                    <p>Post projects, manage student requests, and collaborate on research.</p>
+                    <button onclick="goFaculty()">Continue as Faculty</button>
+                </div>
+
+                <div class="card">
+                    <div class="icon green">⚙️</div>
+                    <h3>Admin</h3>
+                    <p>Admin dashboard coming soon for platform management and oversight.</p>
+                    <button class="disabled" disabled>Coming Soon</button>
+                </div>
+
+            </div>
+        </section>
+
+        <p class="footer">
+            Empowering academic collaboration • Simplifying project discovery • Building the future together
+        </p>
+
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

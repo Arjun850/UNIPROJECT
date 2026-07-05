@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Faculty Profile - UniProjects</title>
+
+    <link rel="stylesheet" href="../css/faculty-profile.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+
+    <script src="../js/faculty-local-data.js"></script>
+    <script src="../js/supabase.js"></script>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <header class="topbar">
+
+        <div class="nav-left">
+
+            <div class="logo-box">
+                🎓
+            </div>
+
+            <h1 class="logo-text">
+                Uni<span>Projects</span>
+            </h1>
+
+        </div>
+
+        <div class="nav-right">
+
+            <div class="faculty-chip">
+
+                <img id="facultyImage" src="https://ui-avatars.com/api/?name=Faculty" alt="Faculty">
+
+                <span id="facultyNameNav">
+                    Faculty
+                </span>
+
+            </div>
+
+            <button onclick="logout()" class="logout-btn">
+                Logout
+            </button>
+
+        </div>
+
+    </header>
+
+    <!-- HERO SECTION -->
+
+    <section class="faculty-hero">
+
+        <div class="faculty-hero-left">
+
+            <div class="faculty-avatar-wrapper">
+
+                <img id="facultyProfileImage" class="faculty-avatar" src="https://ui-avatars.com/api/?name=Faculty"
+                    alt="Faculty">
+
+                <!-- Dynamic input for profile pic could go here if implemented -->
+            </div>
+
+            <div class="faculty-hero-info">
+
+                <h1 id="facultyNameHero">
+                    Faculty Name
+                </h1>
+
+                <p id="facultyEmail">
+                    faculty@gmail.com
+                </p>
+
+                <div class="faculty-tags">
+
+                    <span id="facultyDepartment">
+                        Computer Science
+                    </span>
+
+                    <span id="facultyDesignation">
+                        Associate Professor
+                    </span>
+
+                    <span id="facultyExperience">
+                        8 Years Experience
+                    </span>
+
+                </div>
+
+                <div class="hero-buttons">
+
+                    <button class="edit-btn" onclick="window.location.href='edit-profile.html'">
+
+                        ✏ Edit Profile
+
+                    </button>
+
+                    <button class="share-btn">
+                        ↗ Share Profile
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- MAIN DASHBOARD -->
+
+    <main class="dashboard-layout">
+
+        <!-- LEFT SIDEBAR -->
+
+        <aside class="left-sidebar">
+
+            <!-- ABOUT -->
+
+            <div class="dashboard-card">
+
+                <h3>
+                    About Faculty
+                </h3>
+
+                <p id="facultyBio" class="about-text">
+
+                    Passionate researcher focused on machine learning,
+                    distributed systems and intelligent automation systems.
+
+                </p>
+
+            </div>
+
+            <!-- RESEARCH DOMAIN -->
+
+            <div class="dashboard-card">
+
+                <h3>
+                    Research Domain
+                </h3>
+
+                <div class="domain-badge" id="facultyResearch">
+
+                    Artificial Intelligence
+
+                </div>
+
+            </div>
+
+            <!-- RESEARCH EXPERTISE -->
+
+            <div class="dashboard-card">
+
+                <h3>
+                    Research Expertise
+                </h3>
+
+                <div class="skills-wrapper" id="skillsWrapper">
+
+                    <span class="skill-chip">
+                        Machine Learning
+                    </span>
+
+                    <span class="skill-chip">
+                        Deep Learning
+                    </span>
+
+                    <span class="skill-chip">
+                        Cloud Computing
+                    </span>
+
+                    <span class="skill-chip">
+                        Distributed Systems
+                    </span>
+
+                    <span class="skill-chip">
+                        Data Science
+                    </span>
+
+                    <span class="skill-chip">
+                        AI Systems
+                    </span>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+        <!-- RIGHT CONTENT -->
+
+        <section class="right-content">
+
+            <!-- STATS -->
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+
+                    <h2 id="totalProjects">
+                        0
+                    </h2>
+
+                    <p>
+                        Total Projects
+                    </p>
+
+                </div>
+
+                <div class="stat-card">
+
+                    <h2 id="totalStudents">
+                        0
+                    </h2>
+
+                    <p>
+                        Total Students
+                    </p>
+
+                </div>
+
+                <div class="stat-card">
+
+                    <h2 id="researchPapers">
+                        12
+                    </h2>
+
+                    <p>
+                        Research Papers
+                    </p>
+
+                </div>
+
+                <div class="stat-card">
+
+                    <h2>
+                        92%
+                    </h2>
+
+                    <p>
+                        Profile Complete
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- PUBLICATIONS -->
+
+            <div class="dashboard-card">
+
+                <div class="section-header">
+
+                    <h2>
+                        Recent Publications
+                    </h2>
+
+                </div>
+
+                <div class="publication-list">
+
+                    <div class="publication-card">
+
+                        <h3>
+                            Adaptive Neural Systems for Real-Time Prediction
+                        </h3>
+
+                        <p>
+                            IEEE Transactions on AI • 2025
+                        </p>
+
+                    </div>
+
+                    <div class="publication-card">
+
+                        <h3>
+                            Cloud Native AI Pipelines in Universities
+                        </h3>
+
+                        <p>
+                            Springer Research Journal • 2024
+                        </p>
+
+                    </div>
+
+                    <div class="publication-card">
+
+                        <h3>
+                            Scalable Distributed Machine Learning Frameworks
+                        </h3>
+
+                        <p>
+                            International AI Conference • 2023
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RECENT ACTIVITY -->
+
+            <div class="dashboard-card">
+
+                <div class="section-header">
+
+                    <h2>
+                        Recent Activity
+                    </h2>
+
+                </div>
+
+                <ul class="activity-list">
+
+                    <li>
+                        Published new AI research paper
+                    </li>
+
+                    <li>
+                        Approved 3 student project requests
+                    </li>
+
+                    <li>
+                        Updated faculty profile
+                    </li>
+
+                    <li>
+                        Added new publication
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="../js/faculty-profile.js?v=2"></script>
+
+</body>
+
+</html>

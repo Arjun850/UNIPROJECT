@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Auth</title>
+    <link rel="stylesheet" href="../css/auth.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+    <script src="../js/supabase.js?v=2"></script>
+</head>
+<body>
+
+<div class="auth-container">
+
+    <!-- Back -->
+    <div class="back" onclick="goHome()">← Back to role selection</div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">🎓</div>
+        <h1>Welcome, Student</h1>
+        <p>Sign in to your account or create a new one</p>
+    </div>
+
+    <!-- Toggle -->
+    <div class="toggle">
+        <div id="loginTab" onclick="showLogin()">Login</div>
+        <div id="signupTab" class="active" onclick="showSignup()">Sign Up</div>
+    </div>
+
+    <!-- SIGN UP (DEFAULT) -->
+    <div id="signupBox" class="card active">
+        <h3>Create Account</h3>
+        <p>Fill in your details to get started</p>
+
+        <!-- Google Sign-in -->
+        <button type="button" class="google-btn" onclick="loginWithGoogle()">
+            <img src="https://lh3.googleusercontent.com/COxitPIgO03sQAJtqby-AD-vQA0GjIPoD35cxOOXS1NV1RyGQESaEZO28e1E3jnsubE9" alt="Google Logo">
+            <span>Continue with Google</span>
+        </button>
+
+        <div class="divider">
+            <span>or register manually</span>
+        </div>
+
+        <input type="text" id="name" placeholder="Full Name">
+        <input type="email" id="signupEmail" placeholder="Email">
+        <input type="password" id="signupPass" placeholder="Password">
+
+        <select id="dept">
+            <option>Select department</option>
+            <option>CSE</option>
+            <option>CSAI</option>
+            <option>CSSS</option>
+            <option>CSAM</option>
+            <option>CSD</option>
+            <option>CSB</option>
+            <option>CSECON</option>
+            <option>ECE</option>
+            <option>EVE</option>
+        </select>
+
+        <select id="program">
+            <option>Select program</option>
+            <option>BTech</option>
+            <option>MTech</option>
+            <option>PhD</option>
+        </select>
+
+        <input type="text" id="year" placeholder="Enter your year (e.g., 1st, 2nd, Final)">
+
+        <button onclick="signup()">Create Student Account</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginBox" class="card">
+        <h3>Login</h3>
+        <p>Enter your credentials</p>
+
+        <!-- Google Sign-in -->
+        <button type="button" class="google-btn" onclick="loginWithGoogle()">
+            <img src="https://lh3.googleusercontent.com/COxitPIgO03sQAJtqby-AD-vQA0GjIPoD35cxOOXS1NV1RyGQESaEZO28e1E3jnsubE9" alt="Google Logo">
+            <span>Continue with Google</span>
+        </button>
+
+        <div class="divider">
+            <span>or email credentials</span>
+        </div>
+
+        <input type="email" id="loginEmail" placeholder="Email">
+        <input type="password" id="loginPass" placeholder="Password">
+
+        <button onclick="login()">Login as Student</button>
+    </div>
+
+</div>
+
+<script src="../js/auth.js?v=2"></script>
+</body>
+</html>

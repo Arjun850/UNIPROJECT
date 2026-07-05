@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faculty Auth</title>
+
+<!-- CORRECT PATH -->
+<link rel="stylesheet" href="../css/faculty-auth.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+<script src="../js/faculty-local-data.js"></script>
+<script src="../js/supabase.js"></script>
+
+</head>
+<body>
+
+<div class="auth-container">
+
+    <!-- BACK -->
+    <div class="back" onclick="goBack()">← Back to role selection</div>
+
+    <!-- LOGO -->
+    <div class="logo">🎓</div>
+
+    <h1>Welcome, Faculty</h1>
+    <p>Sign in to your account or create a new one</p>
+
+    <!-- TOGGLE -->
+    <div class="toggle">
+        <div id="loginTab" class="active" onclick="showLogin()">Login</div>
+        <div id="signupTab" onclick="showSignup()">Sign Up</div>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginBox" class="card active">
+        <h3>Login</h3>
+        <p>Enter your credentials to access your account</p>
+
+        <!-- Google Sign-in -->
+        <button type="button" class="google-btn" onclick="loginWithGoogle()">
+            <img src="https://lh3.googleusercontent.com/COxitPIgO03sQAJtqby-AD-vQA0GjIPoD35cxOOXS1NV1RyGQESaEZO28e1E3jnsubE9" alt="Google Logo">
+            <span>Continue with Google</span>
+        </button>
+
+        <div class="divider">
+            <span>or email credentials</span>
+        </div>
+
+        <input type="email" id="loginEmail" placeholder="you@university.edu">
+        <input type="password" id="loginPass" placeholder="Password">
+
+        <button onclick="login()">Login as Faculty</button>
+    </div>
+
+    <!-- SIGNUP -->
+    <div id="signupBox" class="card">
+        <h3>Create Account</h3>
+        <p>Fill in your details to get started</p>
+
+        <!-- Google Sign-in -->
+        <button type="button" class="google-btn" onclick="loginWithGoogle()">
+            <img src="https://lh3.googleusercontent.com/COxitPIgO03sQAJtqby-AD-vQA0GjIPoD35cxOOXS1NV1RyGQESaEZO28e1E3jnsubE9" alt="Google Logo">
+            <span>Continue with Google</span>
+        </button>
+
+        <div class="divider">
+            <span>or register manually</span>
+        </div>
+
+        <input type="text" id="signupName" placeholder="John Doe">
+        <input type="email" id="signupEmail" placeholder="you@university.edu">
+        <input type="password" id="signupPass" placeholder="Password">
+
+        <select id="department">
+            <option>Select department</option>
+            <option>CSE</option>
+            <option>CSAI</option>
+            <option>CSSS</option>
+            <option>CSAM</option>
+            <option>CSD</option>
+            <option>CSB</option>
+            <option>CSEcon</option>
+            <option>ECE</option>
+            <option>EVE</option>
+        </select>
+
+        <input type="text" id="expertise"
+        placeholder="Area of Expertise(e.g. Machine Learning, AI, Data Science)">
+
+        <button onclick="signup()">Create Faculty Account</button>
+    </div>
+
+</div>
+
+<script src="../js/faculty-auth.js"></script>
+</body>
+</html>

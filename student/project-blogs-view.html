@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniProjects - Project Blogs Viewer</title>
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+    <script src="../js/supabase.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            500: '#8b5cf6',
+                            600: '#4f46e5', /* Premium Royal Indigo */
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            950: '#1e1b4b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        #reading-progress-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.1s ease-out;
+        }
+        @keyframes heartPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.35); }
+            100% { transform: scale(1); }
+        }
+        .liked-active {
+            animation: heartPulse 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+        }
+
+        /* Markdown styling for blogs body */
+        .blog-content-body {
+            font-size: 0.95rem;
+            color: #334155;
+            line-height: 1.8;
+        }
+        .blog-content-body p {
+            margin-bottom: 1.25rem;
+        }
+        .blog-content-body h2 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #0F172A;
+            margin-top: 1.75rem;
+            margin-bottom: 0.75rem;
+        }
+        .blog-content-body h3 {
+            font-size: 1.2rem;
+            font-weight: 750;
+            color: #1E293B;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .blog-content-body h4 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #334155;
+            margin-top: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        .blog-content-body ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+        .blog-content-body ol {
+            list-style-type: decimal;
+            padding-left: 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+        .blog-content-body li {
+            margin-bottom: 0.25rem;
+        }
+        .blog-content-body pre {
+            background-color: #0F172A;
+            color: #F8FAFC;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border: 1px solid #1E293B;
+        }
+        .blog-content-body code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.85rem;
+            background-color: #F1F5F9;
+            color: #EF4444;
+            padding: 0.15rem 0.35rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+        }
+        .blog-content-body pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+            border-radius: 0;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col antialiased">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="window.location.href='dashboard-new.html'">
+                <div class="h-9 w-9 bg-brand-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-brand-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 14.5L5.25 14 3 15.25 12 21l9-5.75L18.75 14 12 17.5z"/>
+                    </svg>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-slate-900">Uni<span class="text-brand-600">Projects</span></span>
+            </div>
+
+            <!-- Profile Info -->
+            <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-2.5 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-100 cursor-pointer">
+                    <div id="navProfileInitial" class="h-7 w-7 rounded-full bg-gradient-to-tr from-brand-500 to-indigo-600 text-white font-bold text-xs flex items-center justify-center border border-brand-200">
+                        U
+                    </div>
+                    <span id="userNameDisplay" class="text-sm font-semibold text-slate-700 hidden sm:inline">Guest User</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN BODY CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        
+        <!-- BACK TO PROJECT DETAILS LINK -->
+        <div>
+            <a id="back-to-project-link" href="#" class="inline-flex items-center space-x-1.5 text-xs font-bold text-slate-400 hover:text-brand-600 transition-all group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5 transform group-hover:-translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                <span>Back to Project Details</span>
+            </a>
+        </div>
+
+        <!-- PROJECT DESCRIPTION HERO HEADER -->
+        <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 md:p-8 relative overflow-hidden">
+            <div class="absolute inset-0 pointer-events-none opacity-[0.02] bg-[radial-gradient(#4f46e5_1px,transparent_1px)] [background-size:16px_16px]"></div>
+            
+            <div class="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div>
+                    <span id="project-domain" class="text-[10px] bg-indigo-50 border border-indigo-100 text-brand-600 font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
+                        Domain
+                    </span>
+                    <h1 id="project-title" class="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-tight mt-3">
+                        Loading Project Blogs...
+                    </h1>
+                    <p id="project-supervisor" class="text-xs text-slate-400 font-medium mt-1">
+                        Supervised by: Loading...
+                    </p>
+                </div>
+
+                <div class="shrink-0 flex items-center space-x-2 bg-slate-50 p-1.5 rounded-2xl border border-slate-200/60 shadow-inner">
+                    <button id="view-grid-btn" onclick="setViewMode('grid')" class="p-2 rounded-xl text-brand-600 bg-white shadow-sm transition" title="Grid View">
+                        <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                        </svg>
+                    </button>
+                    <button id="view-list-btn" onclick="setViewMode('list')" class="p-2 rounded-xl text-slate-500 hover:text-slate-700 hover:bg-white/60 transition" title="List View">
+                        <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Category Filter Tabs -->
+            <div class="flex items-center space-x-2 overflow-x-auto no-scrollbar scroll-smooth pt-6 border-t border-slate-100 mt-6 max-w-full">
+                <button onclick="filterByCategory('all')" id="filter-btn-all" class="filter-tab-btn px-4 py-1.5 rounded-full text-xs font-bold transition-all shadow-sm bg-brand-600 text-white border border-brand-600 whitespace-nowrap focus:outline-none">
+                    All Posts
+                </button>
+                <button onclick="filterByCategory('Updates')" id="filter-btn-updates" class="filter-tab-btn px-4 py-1.5 rounded-full text-xs font-semibold transition-all hover:bg-slate-100 text-slate-500 border border-transparent bg-white whitespace-nowrap focus:outline-none">
+                    📢 Updates
+                </button>
+                <button onclick="filterByCategory('Technical')" id="filter-btn-technical" class="filter-tab-btn px-4 py-1.5 rounded-full text-xs font-semibold transition-all hover:bg-slate-100 text-slate-500 border border-transparent bg-white whitespace-nowrap focus:outline-none">
+                    💻 Technical
+                </button>
+                <button onclick="filterByCategory('Guidelines')" id="filter-btn-guidelines" class="filter-tab-btn px-4 py-1.5 rounded-full text-xs font-semibold transition-all hover:bg-slate-100 text-slate-500 border border-transparent bg-white whitespace-nowrap focus:outline-none">
+                    📋 Guidelines
+                </button>
+                <button onclick="filterByCategory('Milestones')" id="filter-btn-milestones" class="filter-tab-btn px-4 py-1.5 rounded-full text-xs font-semibold transition-all hover:bg-slate-100 text-slate-500 border border-transparent bg-white whitespace-nowrap focus:outline-none">
+                    🏆 Milestones
+                </button>
+            </div>
+        </div>
+
+        <!-- BLOG CARDS LIST CONTAINER -->
+        <div id="blogs-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            <!-- Dynamically populated cards go here -->
+        </div>
+
+    </main>
+
+    <!-- MODAL: READ BLOG POST & INTERACTIVE COMMENTS -->
+    <div id="read-blog-modal" class="fixed inset-0 bg-slate-900 bg-opacity-40 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden" onclick="if(event.target===this) closeBlogReader();">
+        <div class="bg-white border border-slate-100 rounded-3xl max-w-2xl w-full relative shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+            
+            <!-- Reading Progress Bar -->
+            <div class="w-full bg-slate-100 h-1 absolute top-0 left-0 z-50">
+                <div id="reading-progress-bar" class="h-full bg-gradient-to-r from-brand-500 to-brand-600"></div>
+            </div>
+
+            <!-- Close button -->
+            <button onclick="closeBlogReader()" class="absolute top-4 right-4 p-1.5 hover:bg-white/20 hover:text-white rounded-xl text-white/80 transition z-40">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <!-- Scrollable Content Body -->
+            <div id="read-blog-scrollable" class="p-8 space-y-6 overflow-y-auto flex-1 scroll-smooth">
+                <!-- Blog Hero Header Banner -->
+                <div id="read-blog-hero" class="h-36 -mx-8 -mt-8 rounded-t-3xl bg-gradient-to-tr from-brand-600 to-indigo-600 p-6 flex flex-col justify-end relative overflow-hidden shrink-0">
+                    <div class="absolute -top-12 -right-12 w-36 h-36 rounded-full bg-white/10 blur-xl"></div>
+                    <div class="absolute -bottom-8 -left-8 w-24 h-24 rounded-full bg-white/10 blur-lg"></div>
+                    
+                    <span id="read-blog-date" class="text-[10px] text-white/85 font-bold uppercase tracking-wider block mb-1">June 09, 2026</span>
+                    <h2 id="read-blog-title" class="text-xl md:text-2xl font-black text-white tracking-tight leading-tight line-clamp-2">Supabase Real-Time Broadcast Integration</h2>
+                </div>
+
+                <!-- Author details & Metadata section -->
+                <div class="flex items-center justify-between pt-2 border-b border-slate-50 pb-4">
+                    <div class="flex items-center space-x-3">
+                        <div id="read-blog-avatar" class="w-10 h-10 rounded-full bg-indigo-500 text-white font-bold flex items-center justify-center text-xs shadow-sm ring-2 ring-indigo-50">VS</div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span id="read-blog-author" class="text-xs font-bold text-slate-800">Vinit Sharma</span>
+                                <span id="read-blog-role-badge" class="text-[9px] bg-brand-50 text-brand-600 font-bold px-1.5 py-0.2 rounded border border-brand-100">Team Lead</span>
+                            </div>
+                            <span id="read-blog-author-email" class="text-[10px] text-slate-400 block mt-0.5">vinit@university.edu</span>
+                        </div>
+                    </div>
+
+                    <button id="read-blog-share-btn" class="flex items-center gap-1.5 text-xs transition border border-slate-200 hover:border-slate-300 hover:bg-slate-50 rounded-xl px-3.5 py-1.5 text-slate-500 font-bold focus:outline-none">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 10.742l4.636-2.318m0 0a3 3 0 102.267-4.043 3 3 0 00-2.267 4.043zm-4.636 4.148l4.636 2.318m-4.636-2.318a3 3 0 10-2.267-4.043 3 3 0 002.267 4.043z"></path>
+                        </svg>
+                        <span>Share</span>
+                    </button>
+                </div>
+
+                <!-- Blog Excerpt blockquote -->
+                <blockquote id="read-blog-summary" class="pl-4 border-l-4 border-slate-200 text-xs italic text-slate-500 my-4 leading-relaxed">
+                    Blog summary / excerpt goes here...
+                </blockquote>
+
+                <!-- Blog Full Content body (styled dynamically) -->
+                <div id="read-blog-content" class="blog-content-body space-y-4 pt-2">
+                    <!-- Dynamic markup elements go here -->
+                </div>
+
+                <!-- COMMENTS SECTION -->
+                <div class="border-t border-slate-100 pt-6 mt-8 space-y-4">
+                    <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                        Discussion Feed (<span id="blog-comments-count">0</span>)
+                    </h3>
+
+                    <!-- Comments List Container -->
+                    <div id="comments-list-container" class="space-y-3.5">
+                        <!-- Dynamic Comments go here -->
+                    </div>
+
+                    <!-- Post Comment Form -->
+                    <form id="comment-form" onsubmit="postComment(event)" class="pt-4 border-t border-slate-50 flex gap-3 items-start">
+                        <div id="comment-user-avatar" class="w-8 h-8 rounded-full bg-brand-500 text-white font-bold flex items-center justify-center text-xs shrink-0 ring-2 ring-brand-50 mt-1">U</div>
+                        <div class="flex-1 space-y-2">
+                            <textarea id="comment-input" rows="2" required placeholder="Write a comment, raise a question, or provide feedback..." class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/50 resize-none leading-relaxed"></textarea>
+                            <div class="flex justify-end">
+                                <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white text-[10px] font-extrabold px-4 py-2 rounded-xl transition shadow-md shadow-brand-100">Post Comment</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Sticky Modal Footer -->
+            <div class="p-6 bg-slate-50 border-t border-slate-100 flex justify-between items-center rounded-b-3xl shrink-0">
+                <button id="read-blog-like-btn" class="flex items-center gap-1.5 text-xs transition-all hover:scale-105 focus:outline-none border border-slate-200 hover:border-red-200 hover:bg-red-50/40 rounded-xl px-4 py-2 text-[#94A3B8] hover:text-red-500">
+                    <svg class="w-4 h-4 stroke-[#94A3B8] fill-none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                    <span class="font-bold text-slate-700" id="read-blog-like-count">0 Likes</span>
+                </button>
+                <button onclick="closeBlogReader()" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition shadow-sm">Close Article</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATE ENGINE & DATA HANDLERS -->
+    <script>
+        // --- 1. GLOBALS & STATE ---
+        let currentProject = null;
+        let blogs = [];
+        let comments = [];
+        let activeCategory = 'all';
+        let activeViewMode = 'grid';
+        let activeReadingBlogId = null;
+        
+        let currentUserProfile = {
+            id: 'mock-user-id',
+            name: 'Guest User',
+            role: 'Student',
+            initials: 'G',
+            color: 'bg-brand-600',
+            avatarImg: null,
+            email: 'guest.student@university.edu'
+        };
+
+        const bgColors = [
+            'bg-rose-500 text-white border-rose-600', 
+            'bg-indigo-600 text-white border-indigo-700', 
+            'bg-emerald-600 text-white border-emerald-700', 
+            'bg-purple-600 text-white border-purple-700', 
+            'bg-amber-600 text-white border-amber-700'
+        ];
+
+        // --- 2. BOOTSTRAP INITIALIZATION ---
+        window.onload = async function() {
+            // Retrieve current URL Query Parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const projectId = urlParams.get('id');
+
+            // Hydrate Nav Back Link
+            const backLink = document.getElementById('back-to-project-link');
+            if (backLink && projectId) {
+                backLink.href = `project-details.html?id=${projectId}`;
+            }
+
+            // Fetch active session / Hydrate user profile
+            let sessionUser = null;
+            if (typeof supabaseClient !== 'undefined') {
+                try {
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    if (session && session.user) {
+                        sessionUser = session.user;
+                        
+                        // Set user profile details
+                        currentUserProfile.id = sessionUser.id;
+                        currentUserProfile.email = sessionUser.email;
+                        currentUserProfile.name = sessionUser.user_metadata?.full_name || 'Academic User';
+                        currentUserProfile.initials = currentUserProfile.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+                        
+                        const initialsHash = currentUserProfile.name.charCodeAt(0) + (currentUserProfile.name.charCodeAt(currentUserProfile.name.length - 1 || 0) || 0);
+                        currentUserProfile.color = bgColors[initialsHash % bgColors.length];
+                        
+                        // Resolve role details
+                        const authRole = sessionUser.user_metadata?.role;
+                        if (authRole === 'faculty' || authRole === 'professor' || sessionUser.email.toLowerCase().includes('faculty') || sessionUser.email.toLowerCase().includes('prof')) {
+                            currentUserProfile.role = 'Professor';
+                        } else {
+                            currentUserProfile.role = 'Student';
+                        }
+                    }
+                } catch (err) {
+                    console.warn("Auth check failed, fallback to simulated guest mode: ", err);
+                }
+            }
+
+            // Display logged in profile details
+            document.getElementById('userNameDisplay').textContent = currentUserProfile.name;
+            const navAvatar = document.getElementById('navProfileInitial');
+            navAvatar.textContent = currentUserProfile.initials;
+            navAvatar.className = `h-7 w-7 rounded-full ${currentUserProfile.color} text-white font-bold text-xs flex items-center justify-center border border-brand-200`;
+
+            const commentAvatar = document.getElementById('comment-user-avatar');
+            if (commentAvatar) {
+                commentAvatar.textContent = currentUserProfile.initials;
+                commentAvatar.className = `w-8 h-8 rounded-full ${currentUserProfile.color} text-white font-bold flex items-center justify-center text-xs shrink-0 ring-2 ring-brand-50 mt-1`;
+            }
+
+            // Load project metadata & blogs
+            if (projectId) {
+                await loadProjectDetails(projectId);
+                await loadProjectBlogs(projectId);
+            }
+        };
+
+        // --- 3. FETCH PROJECT DETAILS ---
+        async function loadProjectDetails(projectId) {
+            if (typeof supabaseClient === 'undefined' || projectId === 'dummy') {
+                // simulated recovery details
+                currentProject = {
+                    id: projectId,
+                    title: 'Guidelines on BTP Architecture & Coding Conventions',
+                    facultyName: 'Dr. Rahul Sharma',
+                    domain: 'Computer Science Research'
+                };
+                hydrateProjectHeader();
+                return;
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('projects_v2')
+                    .select('*')
+                    .eq('id', projectId)
+                    .single();
+
+                if (!error && data) {
+                    currentProject = {
+                        id: data.id,
+                        title: data.title,
+                        facultyName: data.faculty_name || 'Faculty Supervisor',
+                        domain: data.domain || 'Academic Research'
+                    };
+                    hydrateProjectHeader();
+                }
+            } catch (err) {
+                console.error("Failed to load project details:", err);
+            }
+        }
+
+        function hydrateProjectHeader() {
+            if (!currentProject) return;
+            document.getElementById('project-title').textContent = currentProject.title;
+            document.getElementById('project-supervisor').textContent = `Supervised by: ${currentProject.facultyName}`;
+            document.getElementById('project-domain').textContent = currentProject.domain;
+        }
+
+        // --- 4. FETCH BLOGS & COMMENTS ---
+        async function loadProjectBlogs(projectId) {
+            if (typeof supabaseClient === 'undefined' || projectId === 'dummy') {
+                // Simulation dummy blogs
+                const dummyBlogs = [
+                    {
+                        id: 'dummy-1',
+                        project_id: projectId || 'dummy',
+                        author_name: 'Dr. Rahul Sharma',
+                        author_role: 'Professor',
+                        author_initials: 'RS',
+                        author_color: 'bg-indigo-600',
+                        author_email: 'rahul@university.edu',
+                        title: 'Guidelines on BTP Architecture & Coding Conventions',
+                        summary: '[Guidelines] An overview of clean coding structures, repository organization, and database guidelines for this project.',
+                        content: `Welcome to the project! As we start our implementation, we want to align on a few guidelines:\n\n1. Maintain proper separation of concerns. Do not mix database config directly in front-end pages.\n2. Ensure everything is typed properly and handles network errors gracefully.\n3. Make use of Row Level Security (RLS) on all database tables.\n\nGood luck!`,
+                        likes_count: 3,
+                        likes_users: ['vinit.btp@student.uni.edu', 'priyanshu.s@student.uni.edu', 'simran.k@student.uni.edu'],
+                        created_at: new Date(Date.now() - 3600000 * 24).toISOString()
+                    },
+                    {
+                        id: 'dummy-2',
+                        project_id: projectId || 'dummy',
+                        author_name: 'Vinit Sharma',
+                        author_role: 'Team Lead',
+                        author_initials: 'V',
+                        author_color: 'bg-emerald-600',
+                        author_email: 'vinit.btp@student.uni.edu',
+                        title: 'Kickstarting Project Scaffolding & Tailwind CSS Boilerplate',
+                        summary: '[Technical] We have initiated the workspace, completed dashboard integration, and configured clean routing models.',
+                        content: `Hi team! I have successfully set up the basic project structure and folders.\n\nEverything is written with vanilla HTML, Javascript, and responsive Tailwind CSS layout cards. We are using standard Google Fonts for typography. I have also verified that auth works cleanly using Supabase auth rules.\n\nNext step is database optimization and implementing location recommendation algorithms.`,
+                        likes_count: 2,
+                        likes_users: ['rahul.sharma@university.edu', 'aditi.v@student.uni.edu'],
+                        created_at: new Date(Date.now() - 3600000 * 5).toISOString()
+                    }
+                ];
+                blogs = dummyBlogs;
+                loadSimulatedComments();
+                renderBlogs();
+                return;
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('project_blogs')
+                    .select('*')
+                    .eq('project_id', projectId)
+                    .order('created_at', { ascending: false });
+
+                if (!error && data) {
+                    blogs = data;
+                    renderBlogs();
+                }
+            } catch (err) {
+                console.error("Failed to load project blogs:", err);
+            }
+        }
+
+        function loadSimulatedComments() {
+            // Retrieve local storage comments if saved previously
+            const savedComments = localStorage.getItem(`comments-sim-${currentProject?.id || 'demo'}`);
+            if (savedComments) {
+                comments = JSON.parse(savedComments);
+            } else {
+                comments = [
+                    {
+                        id: 'c1',
+                        blog_id: 'dummy-1',
+                        author_name: 'Vinit Sharma',
+                        author_role: 'Team Lead',
+                        author_initials: 'V',
+                        author_color: 'bg-emerald-600',
+                        author_email: 'vinit.btp@student.uni.edu',
+                        content: 'Thanks for the BTP coding conventions guidelines! We will structure the backend folder accordingly.',
+                        created_at: new Date(Date.now() - 3600000 * 12).toISOString()
+                    },
+                    {
+                        id: 'c2',
+                        blog_id: 'dummy-1',
+                        author_name: 'Dr. Rahul Sharma',
+                        author_role: 'Professor',
+                        author_initials: 'RS',
+                        author_color: 'bg-indigo-600',
+                        author_email: 'rahul@university.edu',
+                        content: 'Excellent, make sure you also configure JWT expiry rules carefully before the next sync review.',
+                        created_at: new Date(Date.now() - 3600000 * 8).toISOString()
+                    }
+                ];
+                saveSimulatedComments();
+            }
+        }
+
+        function saveSimulatedComments() {
+            localStorage.setItem(`comments-sim-${currentProject?.id || 'demo'}`, JSON.stringify(comments));
+        }
+
+        // --- 5. RENDER SYSTEM ---
+        function renderBlogs() {
+            const container = document.getElementById('blogs-container');
+            container.innerHTML = "";
+
+            const filteredBlogs = blogs.filter(blog => {
+                let blogCategory = "Technical";
+                let rawSummary = blog.summary || "";
+                if (rawSummary.startsWith("[")) {
+                    const closeBracketIndex = rawSummary.indexOf("]");
+                    if (closeBracketIndex !== -1) {
+                        blogCategory = rawSummary.substring(1, closeBracketIndex);
+                    }
+                } else {
+                    const lowerTitle = blog.title.toLowerCase();
+                    if (lowerTitle.includes('guidelines') || lowerTitle.includes('rule')) blogCategory = 'Guidelines';
+                    else if (lowerTitle.includes('milestone') || lowerTitle.includes('phase')) blogCategory = 'Milestones';
+                    else if (lowerTitle.includes('update') || lowerTitle.includes('news')) blogCategory = 'Updates';
+                }
+
+                if (activeCategory !== 'all' && blogCategory !== activeCategory) {
+                    return false;
+                }
+                return true;
+            });
+
+            if (filteredBlogs.length === 0) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-20 text-center bg-white border border-slate-100 rounded-3xl p-8 col-span-full w-full">
+                        <div class="w-16 h-16 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mb-4 border border-slate-100">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 4a2 2 0 00-2-2m-2-3h3m-3 3h3m-3 3h3m-6-6h-3m3 3h-3m3 3h-3"></path>
+                            </svg>
+                        </div>
+                        <h3 class="font-bold text-slate-900 text-lg">No blogs published</h3>
+                        <p class="text-sm text-slate-400 max-w-xs mt-1">There are no project updates corresponding to this category filter yet.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Adjust grid columns based on layout view mode
+            if (activeViewMode === 'grid') {
+                container.className = "grid grid-cols-1 md:grid-cols-2 gap-6 items-start";
+            } else {
+                container.className = "flex flex-col space-y-6 w-full max-w-3xl mx-auto";
+            }
+
+            filteredBlogs.forEach(blog => {
+                const card = document.createElement('div');
+                card.className = "bg-white border border-slate-100 hover:border-slate-300 hover:shadow-lg rounded-3xl p-6 transition-all duration-300 relative group flex flex-col justify-between min-h-[260px] overflow-hidden";
+
+                const dateString = formatRelativeTime(blog.created_at);
+                const hasLiked = currentUserProfile?.email ? (blog.likes_users || []).map(e => e.toLowerCase()).includes(currentUserProfile.email.toLowerCase()) : false;
+
+                let avatarHTML = '';
+                if (blog.author_color) {
+                    avatarHTML = `<div class="w-9 h-9 rounded-full ${blog.author_color} text-white font-bold flex items-center justify-center text-xs shadow-sm ring-2 ring-white">${blog.author_initials}</div>`;
+                } else {
+                    avatarHTML = `<div class="w-9 h-9 rounded-full bg-slate-500 text-white font-bold flex items-center justify-center text-xs shadow-sm ring-2 ring-white">${blog.author_initials}</div>`;
+                }
+
+                // Estimated reading time
+                const wordCount = blog.content.split(/\s+/).length;
+                const readingTime = Math.max(1, Math.round(wordCount / 200));
+
+                let gradientClass = 'from-[#6366F1] to-[#4F46E5]';
+                if (blog.author_role === 'Professor') {
+                    gradientClass = 'from-amber-400 to-orange-500';
+                } else if (blog.author_color && blog.author_color.includes('emerald')) {
+                    gradientClass = 'from-emerald-400 to-teal-600';
+                } else if (blog.author_color && blog.author_color.includes('purple')) {
+                    gradientClass = 'from-purple-400 to-indigo-600';
+                }
+
+                let blogCategory = "Technical";
+                let displaySummary = blog.summary || "No description provided.";
+                if (displaySummary.startsWith("[")) {
+                    const idx = displaySummary.indexOf("]");
+                    if (idx !== -1) {
+                        blogCategory = displaySummary.substring(1, idx);
+                        displaySummary = displaySummary.substring(idx + 1).trim();
+                    }
+                }
+
+                card.innerHTML = `
+                    <div class="h-1.5 w-full bg-gradient-to-r ${gradientClass} rounded-t-3xl absolute top-0 left-0"></div>
+                    
+                    <div class="space-y-3 pt-2 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2">
+                                <span class="flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    ${dateString}
+                                </span>
+                                <span class="flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    ${readingTime} min read
+                                </span>
+                            </div>
+                            
+                            <h3 class="text-base md:text-lg font-extrabold text-slate-900 group-hover:text-brand-600 transition-colors leading-snug cursor-pointer line-clamp-2" onclick="openBlogReader('${blog.id}')">
+                                ${blog.title}
+                            </h3>
+
+                            <div class="flex flex-wrap gap-1.5 mt-2.5">
+                                <span class="text-[9px] bg-slate-50 text-slate-500 font-bold px-2 py-0.5 rounded-full border border-slate-200/50">#${blogCategory}</span>
+                            </div>
+
+                            <p class="text-xs md:text-sm text-slate-500 leading-relaxed line-clamp-2 mt-2">
+                                ${displaySummary}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 mt-4 border-t border-slate-100 shrink-0">
+                        <div class="flex items-center space-x-2 shrink-0">
+                            ${avatarHTML}
+                            <div class="min-w-0 max-w-[120px]">
+                                <span class="text-xs font-bold text-slate-800 block truncate leading-tight">${blog.author_name}</span>
+                                <span class="text-[9px] text-slate-400 block truncate leading-tight">${blog.author_role}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-2 shrink-0">
+                            <button onclick="toggleBlogLike('${blog.id}')" class="flex items-center gap-1.5 text-xs transition-all hover:scale-110 active:scale-95 focus:outline-none border border-slate-100 hover:border-red-200 hover:bg-red-50/50 rounded-xl px-2.5 py-1.5 ${hasLiked ? 'text-red-500 bg-red-50/20 border-red-100' : 'text-[#94A3B8]'}">
+                                <svg class="w-3.5 h-3.5 ${hasLiked ? 'fill-red-500 stroke-red-500 liked-active' : 'stroke-[#94A3B8] fill-none'}" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                                <span class="font-bold text-slate-700 text-[11px]">${blog.likes_count || 0}</span>
+                            </button>
+
+                            <button onclick="openBlogReader('${blog.id}')" class="bg-brand-50 hover:bg-brand-100 text-brand-600 text-xs font-bold px-3.5 py-1.5 rounded-xl transition flex items-center space-x-0.5 shadow-xs">
+                                <span>Read</span>
+                                <svg class="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        // --- 6. READ BLOG READER & COMMENTS OPERATIONS ---
+        window.openBlogReader = async function(blogId) {
+            const blog = blogs.find(b => b.id === blogId);
+            if (!blog) return;
+
+            activeReadingBlogId = blogId;
+
+            // Details metadata hydration
+            document.getElementById('read-blog-date').innerText = formatRelativeTime(blog.created_at);
+            document.getElementById('read-blog-title').innerText = blog.title;
+            document.getElementById('read-blog-author').innerText = blog.author_name;
+            document.getElementById('read-blog-author-email').innerText = blog.author_email || 'No email shared';
+
+            // Reset scroll position and progress bar
+            const readScrollable = document.getElementById('read-blog-scrollable');
+            const progress = document.getElementById('reading-progress-bar');
+            if (readScrollable) readScrollable.scrollTop = 0;
+            if (progress) progress.style.width = '0%';
+
+            let blogCategory = "Technical";
+            let displaySummary = blog.summary || "Overview description";
+            if (displaySummary.startsWith("[")) {
+                const idx = displaySummary.indexOf("]");
+                if (idx !== -1) {
+                    blogCategory = displaySummary.substring(1, idx);
+                    displaySummary = displaySummary.substring(idx + 1).trim();
+                }
+            }
+            document.getElementById('read-blog-summary').innerText = displaySummary;
+
+            const roleBadge = document.getElementById('read-blog-role-badge');
+            if (roleBadge) {
+                roleBadge.textContent = blog.author_role;
+                if (blog.author_role === 'Professor') {
+                    roleBadge.className = "text-[9px] bg-amber-50 text-amber-700 font-bold px-1.5 py-0.2 rounded border border-amber-200";
+                } else {
+                    roleBadge.className = "text-[9px] bg-indigo-50 text-indigo-700 font-bold px-1.5 py-0.2 rounded border border-indigo-100";
+                }
+            }
+
+            const avatar = document.getElementById('read-blog-avatar');
+            if (avatar) {
+                avatar.textContent = blog.author_initials;
+                avatar.className = `w-10 h-10 rounded-full ${blog.author_color || 'bg-slate-500'} text-white font-bold flex items-center justify-center text-sm shadow-sm ring-2 ring-white`;
+            }
+
+            // Sync hero background
+            let gradientClass = 'from-[#6366F1] to-[#4F46E5]';
+            if (blog.author_role === 'Professor') gradientClass = 'from-amber-400 to-orange-500';
+            else if (blog.author_color && blog.author_color.includes('emerald')) gradientClass = 'from-emerald-400 to-teal-600';
+            
+            document.getElementById('read-blog-hero').className = `h-36 -mx-8 -mt-8 rounded-t-3xl bg-gradient-to-tr ${gradientClass} p-6 flex flex-col justify-end relative overflow-hidden shrink-0`;
+
+            // HTML Markdown parsing
+            document.getElementById('read-blog-content').innerHTML = parseMarkdown(blog.content);
+
+            // Likes sync
+            syncLikesDisplay(blog);
+
+            // Load comments
+            await fetchComments(blogId);
+
+            // Show Modal
+            document.getElementById('read-blog-modal').classList.remove('hidden');
+
+            // Add scroll listener for progress bar
+            if (readScrollable && progress) {
+                readScrollable.onscroll = () => {
+                    const scrollHeight = readScrollable.scrollHeight - readScrollable.clientHeight;
+                    const percent = scrollHeight > 0 ? (readScrollable.scrollTop / scrollHeight) * 100 : 0;
+                    progress.style.width = `${percent}%`;
+                };
+            }
+
+            // Share Action
+            document.getElementById('read-blog-share-btn').onclick = function(e) {
+                e.stopPropagation();
+                const url = window.location.href + `&blog=${blogId}`;
+                navigator.clipboard.writeText(url).then(() => {
+                    const btn = document.getElementById('read-blog-share-btn');
+                    const orig = btn.innerHTML;
+                    btn.innerHTML = `
+                        <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span class="text-emerald-600">Copied!</span>
+                    `;
+                    setTimeout(() => btn.innerHTML = orig, 2000);
+                });
+            };
+        };
+
+        window.closeBlogReader = function() {
+            document.getElementById('read-blog-modal').classList.add('hidden');
+            activeReadingBlogId = null;
+        };
+
+        function syncLikesDisplay(blog) {
+            const hasLiked = currentUserProfile?.email ? (blog.likes_users || []).map(e => e.toLowerCase()).includes(currentUserProfile.email.toLowerCase()) : false;
+            const likeBtn = document.getElementById('read-blog-like-btn');
+            likeBtn.onclick = () => toggleBlogLike(blog.id);
+            likeBtn.className = `flex items-center gap-1.5 text-xs transition-all hover:scale-105 focus:outline-none border rounded-xl px-4 py-2 ${hasLiked ? 'text-red-500 bg-red-50/20 border-red-100' : 'text-[#94A3B8] border-slate-200 hover:border-red-200 hover:bg-red-50/40'}`;
+            likeBtn.innerHTML = `
+                <svg class="w-4 h-4 ${hasLiked ? 'fill-red-500 stroke-red-500 liked-active' : 'stroke-[#94A3B8] fill-none'}" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                </svg>
+                <span class="font-bold text-slate-700">${blog.likes_count || 0} Likes</span>
+            `;
+        }
+
+        window.toggleBlogLike = async function(blogId) {
+            const blog = blogs.find(b => b.id === blogId);
+            if (!blog) return;
+
+            let likedUsers = blog.likes_users || [];
+            const email = currentUserProfile.email.toLowerCase();
+            const index = likedUsers.indexOf(email);
+            
+            if (index === -1) likedUsers.push(email);
+            else likedUsers.splice(index, 1);
+
+            const likesCount = likedUsers.length;
+
+            if (typeof supabaseClient === 'undefined' || blogId.startsWith('dummy')) {
+                // simulated like
+                blog.likes_count = likesCount;
+                blog.likes_users = likedUsers;
+                renderBlogs();
+                syncLikesDisplay(blog);
+                return;
+            }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('project_blogs')
+                    .update({ likes_count: likesCount, likes_users: likedUsers })
+                    .eq('id', blogId);
+
+                if (!error) {
+                    blog.likes_count = likesCount;
+                    blog.likes_users = likedUsers;
+                    renderBlogs();
+                    syncLikesDisplay(blog);
+                }
+            } catch (err) {
+                console.error("Failed to update like status: ", err);
+            }
+        };
+
+        // --- 7. COMMENTS RETRIEVAL & CREATION ---
+        async function fetchComments(blogId) {
+            const listContainer = document.getElementById('comments-list-container');
+            listContainer.innerHTML = "";
+
+            if (typeof supabaseClient === 'undefined' || blogId.startsWith('dummy')) {
+                // Filter comments in memory
+                loadSimulatedComments();
+                const blogComments = comments.filter(c => c.blog_id === blogId);
+                displayComments(blogComments);
+                return;
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('blog_comments')
+                    .select('*')
+                    .eq('blog_id', blogId)
+                    .order('created_at', { ascending: true });
+
+                if (!error && data) {
+                    displayComments(data);
+                } else {
+                    console.warn("Supabase comments fetch error, falling back to simulated comments:", error);
+                    loadSimulatedComments();
+                    const blogComments = comments.filter(c => c.blog_id === blogId);
+                    displayComments(blogComments);
+                }
+            } catch (err) {
+                console.error("Failed to query comments, falling back to simulated mode: ", err);
+                loadSimulatedComments();
+                const blogComments = comments.filter(c => c.blog_id === blogId);
+                displayComments(blogComments);
+            }
+        }
+
+        function displayComments(commentList) {
+            const countBadge = document.getElementById('blog-comments-count');
+            countBadge.textContent = commentList.length;
+
+            const listContainer = document.getElementById('comments-list-container');
+            if (commentList.length === 0) {
+                listContainer.innerHTML = `<p class="text-xs text-slate-400 py-3 text-center">No comments posted yet. Start the conversation!</p>`;
+                return;
+            }
+
+            commentList.forEach(comment => {
+                const dateString = formatRelativeTime(comment.created_at);
+                const roleBadgeClass = comment.author_role === 'Professor' 
+                    ? "bg-amber-50 text-amber-700 border-amber-200"
+                    : "bg-brand-50 text-brand-600 border-brand-100";
+
+                const item = document.createElement('div');
+                item.className = "p-3.5 bg-slate-50 border border-slate-100 rounded-2xl flex gap-3 items-start hover:shadow-xs transition duration-150";
+                item.innerHTML = `
+                    <div class="w-8 h-8 rounded-full ${comment.author_color || 'bg-slate-500'} text-white font-bold flex items-center justify-center text-xs shrink-0 ring-2 ring-white shadow-sm">${comment.author_initials}</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between gap-1.5 flex-wrap">
+                            <div class="flex items-center gap-1.5 min-w-0">
+                                <span class="text-xs font-bold text-slate-800 truncate">${comment.author_name}</span>
+                                <span class="text-[9px] ${roleBadgeClass} font-bold px-1.5 py-0.2 rounded border">${comment.author_role}</span>
+                            </div>
+                            <span class="text-[10px] text-slate-400 font-medium">${dateString}</span>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed mt-1.5 whitespace-pre-line">${comment.content}</p>
+                    </div>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        window.postComment = async function(e) {
+            e.preventDefault();
+            const textarea = document.getElementById('comment-input');
+            const commentVal = textarea.value.trim();
+            if (!commentVal || !activeReadingBlogId) return;
+
+            const newCommentObj = {
+                blog_id: activeReadingBlogId,
+                author_id: currentUserProfile.id,
+                author_name: currentUserProfile.name,
+                author_role: currentUserProfile.role,
+                author_initials: currentUserProfile.initials,
+                author_color: currentUserProfile.color,
+                author_email: currentUserProfile.email,
+                content: commentVal,
+                created_at: new Date().toISOString()
+            };
+
+            if (typeof supabaseClient === 'undefined' || activeReadingBlogId.startsWith('dummy')) {
+                // simulated comments add
+                newCommentObj.id = 'comment-' + Date.now();
+                loadSimulatedComments();
+                comments.push(newCommentObj);
+                saveSimulatedComments();
+                
+                textarea.value = "";
+                await fetchComments(activeReadingBlogId);
+                return;
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('blog_comments')
+                    .insert(newCommentObj)
+                    .select()
+                    .single();
+
+                if (!error && data) {
+                    textarea.value = "";
+                    await fetchComments(activeReadingBlogId);
+                } else {
+                    console.warn("Supabase insert comment failed, falling back to simulated localStorage:", error);
+                    newCommentObj.id = 'comment-' + Date.now();
+                    loadSimulatedComments();
+                    comments.push(newCommentObj);
+                    saveSimulatedComments();
+                    textarea.value = "";
+                    await fetchComments(activeReadingBlogId);
+                }
+            } catch (err) {
+                console.error("Failed to post comment, falling back to simulated mode: ", err);
+                newCommentObj.id = 'comment-' + Date.now();
+                loadSimulatedComments();
+                comments.push(newCommentObj);
+                saveSimulatedComments();
+                textarea.value = "";
+                await fetchComments(activeReadingBlogId);
+            }
+        };
+
+        // --- 8. HELPER MODULES ---
+        window.setViewMode = function(mode) {
+            activeViewMode = mode;
+            const gridBtn = document.getElementById('view-grid-btn');
+            const listBtn = document.getElementById('view-list-btn');
+
+            if (mode === 'grid') {
+                gridBtn.className = "p-2 rounded-xl text-brand-600 bg-white shadow-sm transition";
+                listBtn.className = "p-2 rounded-xl text-slate-500 hover:text-slate-700 hover:bg-white/60 transition";
+            } else {
+                listBtn.className = "p-2 rounded-xl text-brand-600 bg-white shadow-sm transition";
+                gridBtn.className = "p-2 rounded-xl text-slate-500 hover:text-slate-700 hover:bg-white/60 transition";
+            }
+            renderBlogs();
+        };
+
+        window.filterByCategory = function(category) {
+            activeCategory = category;
+
+            const pills = document.querySelectorAll('.filter-tab-btn');
+            pills.forEach(pill => {
+                pill.className = "filter-tab-btn px-4 py-1.5 rounded-full text-xs font-semibold transition-all hover:bg-slate-100 text-slate-500 border border-transparent bg-white whitespace-nowrap focus:outline-none";
+            });
+
+            const activePill = document.getElementById(`filter-btn-${category.toLowerCase()}`);
+            if (activePill) {
+                activePill.className = "filter-tab-btn px-4 py-1.5 rounded-full text-xs font-bold transition-all shadow-sm bg-brand-600 text-white border border-brand-600 whitespace-nowrap focus:outline-none";
+            }
+            renderBlogs();
+        };
+
+        function parseMarkdown(text) {
+            if (!text) return "";
+            let escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            
+            // Code blocks
+            const codeBlockRegex = /```(\w*)\n([\s\S]*?)```/g;
+            escaped = escaped.replace(codeBlockRegex, (match, lang, code) => {
+                const uniqueId = 'code-' + Math.random().toString(36).substring(2, 9);
+                return `
+                    <div class="relative my-4 group/code">
+                        <div class="flex items-center justify-between px-4 py-2 bg-[#0F172A] text-slate-400 rounded-t-xl text-[10px] font-mono border-b border-slate-800">
+                            <span>${lang || 'code'}</span>
+                            <button type="button" onclick="copyCodeSnippet('${uniqueId}')" id="btn-${uniqueId}" class="hover:text-white flex items-center gap-1 transition-colors">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                                </svg>
+                                <span>Copy</span>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code id="${uniqueId}">${code.trim()}</code></pre>
+                    </div>
+                `;
+            });
+
+            // Inline code
+            escaped = escaped.replace(/`([^`\n]+)`/g, '<code class="px-1.5 py-0.5 bg-slate-100 text-[#EF4444] rounded font-mono text-[11px] font-semibold">$1</code>');
+
+            // Headings
+            escaped = escaped.replace(/^### (.*$)/gim, '<h4 class="text-sm font-extrabold text-slate-800 mt-4 mb-2">$1</h4>');
+            escaped = escaped.replace(/^## (.*$)/gim, '<h3 class="text-base font-extrabold text-slate-800 mt-5 mb-2">$1</h3>');
+            escaped = escaped.replace(/^# (.*$)/gim, '<h2 class="text-lg font-extrabold text-slate-800 mt-6 mb-3 border-b pb-1">$1</h2>');
+
+            // Bullets
+            let inList = false;
+            let resultLines = [];
+            const lines = escaped.split('\n');
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+                if (line.trim().startsWith('- ') || line.trim().startsWith('* ')) {
+                    if (!inList) {
+                        resultLines.push('<ul class="list-disc pl-5 my-2 space-y-1">');
+                        inList = true;
+                    }
+                    resultLines.push(`<li class="text-sm text-slate-600">${line.trim().substring(2)}</li>`);
+                } else {
+                    if (inList) {
+                        resultLines.push('</ul>');
+                        inList = false;
+                    }
+                    resultLines.push(line);
+                }
+            }
+            if (inList) resultLines.push('</ul>');
+            escaped = resultLines.join('\n');
+
+            // Paragraphs
+            const paragraphs = escaped.split(/\n{2,}/);
+            return paragraphs.map(p => {
+                const trimmed = p.trim();
+                if (!trimmed) return "";
+                if (trimmed.startsWith('<ul') || trimmed.startsWith('<li') || trimmed.startsWith('<h') || trimmed.startsWith('<div') || trimmed.startsWith('<pre')) {
+                    return trimmed;
+                }
+                return `<p class="leading-relaxed text-sm text-slate-600 mb-3">${trimmed.replace(/\n/g, '<br>')}</p>`;
+            }).join('');
+        }
+
+        window.copyCodeSnippet = function(codeId) {
+            const codeEl = document.getElementById(codeId);
+            if (!codeEl) return;
+            navigator.clipboard.writeText(codeEl.innerText).then(() => {
+                const btn = document.getElementById(`btn-${codeId}`);
+                if (btn) {
+                    const orig = btn.innerHTML;
+                    btn.innerHTML = `
+                        <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span class="text-emerald-400">Copied!</span>
+                    `;
+                    setTimeout(() => btn.innerHTML = orig, 2000);
+                }
+            });
+        };
+
+        function formatRelativeTime(isoString) {
+            const date = new Date(isoString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMin = Math.floor(diffMs / 60000);
+            
+            if (diffMin < 1) return 'Just now';
+            if (diffMin < 60) return `${diffMin}m ago`;
+            
+            const diffHrs = Math.floor(diffMin / 60);
+            if (diffHrs < 24) return `${diffHrs}h ago`;
+            
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+    </script>
+</body>
+</html>

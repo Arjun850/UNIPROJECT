@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniProjects - Project Details</title>
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS for high fidelity design -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+    <script src="../js/supabase.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            500: '#8b5cf6',
+                            600: '#4f46e5', /* Premium Royal Indigo */
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            950: '#1e1b4b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc; /* Theme 2 smooth minimalist background */
+        }
+        /* Hide scrollbars but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col antialiased">
+
+    <!-- TOP NAVIGATION BAR (Theme 2 styling with premium elements) -->
+    <header class="bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="window.location.href='dashboard-new.html'">
+                <div class="h-9 w-9 bg-brand-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-brand-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 14.5L5.25 14 3 15.25 12 21l9-5.75L18.75 14 12 17.5z"/>
+                    </svg>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-slate-900">Uni<span class="text-brand-600">Projects</span></span>
+            </div>
+
+            <!-- Right-side Navigation Actions -->
+            <div class="flex items-center space-x-4">
+                <button onclick="toggleApplicationsDrawer()" class="relative inline-flex items-center space-x-1.5 px-3.5 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-semibold rounded-xl text-slate-700 transition-all">
+                    <span>My Applications</span>
+                    <span id="nav-app-count-badge" class="h-5 w-5 bg-brand-600 text-white rounded-full flex items-center justify-center text-[10px] font-bold">0</span>
+                </button>
+
+                <!-- Premium Real-time Notification Bell -->
+                <div class="relative">
+                    <button onclick="toggleNotificationDropdown()" class="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-600 relative transition-all" id="notif-bell-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 18px; height: 18px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <span id="notif-count-badge" class="absolute -top-1 -right-1 h-4 w-4 bg-rose-500 text-white rounded-full flex items-center justify-center text-[9px] font-bold hidden">0</span>
+                    </button>
+                    <!-- Dropdown Panel -->
+                    <div id="notif-dropdown" class="absolute right-0 mt-2 w-80 bg-white border border-slate-100 rounded-2xl shadow-xl py-3 px-4 hidden z-50 animate-fade-in">
+                        <div class="flex justify-between items-center pb-2 border-b border-slate-100 mb-2">
+                            <h4 class="text-xs font-bold text-slate-800">Notifications</h4>
+                            <button onclick="markAllNotificationsRead()" class="text-[10px] text-brand-600 hover:underline font-semibold">Mark all read</button>
+                        </div>
+                        <div id="notif-list" class="max-h-60 overflow-y-auto space-y-2 py-1 flex flex-col">
+                            <p class="text-[10px] text-slate-400 text-center py-4">No notifications yet</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Profile Badge (Screenshot 4 Style) -->
+                <div class="flex items-center space-x-2 border-l border-slate-100 pl-4">
+                    <div class="flex items-center space-x-2.5 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-100 hover:bg-slate-100/75 transition-colors cursor-pointer" onclick="window.location.href='applications.html'">
+                        <div class="h-7 w-7 rounded-full bg-gradient-to-tr from-brand-500 to-indigo-600 text-white font-bold text-xs flex items-center justify-center border border-brand-200" id="navProfileInitial">
+                            VN
+                        </div>
+                        <img class="h-7 w-7 rounded-full object-cover border border-brand-200 hidden" id="navProfilePic" src="" alt="Profile">
+                        <span class="text-sm font-semibold text-slate-700 hidden sm:inline" id="studentNameDisplay">Student User</span>
+                    </div>
+                    <button onclick="logout()" class="text-xs font-medium text-slate-400 hover:text-slate-600 transition-colors py-1 px-2.5 rounded-lg hover:bg-slate-50">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN BODY CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        
+        <!-- BACK TO DASHBOARD NAVIGATION LINK -->
+        <div>
+            <a href="dashboard-new.html" class="inline-flex items-center space-x-1.5 text-xs font-bold text-slate-400 hover:text-brand-600 transition-all group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5 transform group-hover:-translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                <span>Back to Projects</span>
+            </a>
+        </div>
+
+        <!-- DETAILS COLUMN / SIDEBAR GRID -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- LEFT: MAIN CONTENT AREA (lg:col-span-8) -->
+            <div class="lg:col-span-8 space-y-6">
+                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 md:p-8 space-y-6">
+                    
+                    <!-- 1. BADGES / TAGS -->
+                    <div class="flex flex-wrap items-center gap-2" id="project-badges">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-indigo-50 text-brand-600 border border-indigo-100" id="project-status">
+                            Open
+                        </span>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold uppercase bg-slate-100 text-slate-600 border border-slate-200" id="project-category">
+                            Research
+                        </span>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-50 text-slate-500 border border-slate-200/60" id="project-domain-tag">
+                            Machine Learning
+                        </span>
+                    </div>
+
+                    <!-- 2. PROJECT TITLE -->
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug" id="project-title">
+                        Loading Project Title...
+                    </h1>
+
+                    <!-- 3. ABOUT THIS PROJECT -->
+                    <div class="space-y-3">
+                        <h3 class="text-sm font-extrabold text-slate-400 uppercase tracking-wider">About This Project</h3>
+                        <p class="text-slate-600 text-sm md:text-base leading-relaxed font-normal whitespace-pre-line" id="project-description">
+                            Loading details, please wait...
+                        </p>
+                    </div>
+
+                    <!-- 4. REQUIRED SKILLS & TECHNOLOGIES -->
+                    <div class="space-y-3 pt-2">
+                        <h3 class="text-sm font-extrabold text-slate-400 uppercase tracking-wider">Required Skills & Technologies</h3>
+                        <div class="flex flex-wrap gap-2" id="project-skills">
+                            <!-- Skill badges will load here -->
+                            <span class="px-3 py-1.5 bg-slate-50 border border-slate-200/60 rounded-xl text-xs font-semibold text-slate-500 animate-pulse">Loading skills...</span>
+                        </div>
+                    </div>
+
+                    <!-- 5. DETAILS MATRIX ROW (Duration & Topic) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-b border-slate-100 py-6 my-4">
+                        <div class="flex items-center space-x-3.5">
+                            <div class="h-10 w-10 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5.5 w-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Duration</span>
+                                <span class="text-sm font-bold text-slate-700" id="project-duration">Loading...</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-3.5">
+                            <div class="h-10 w-10 bg-indigo-50 text-brand-600 rounded-xl flex items-center justify-center shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5.5 w-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Research Topic</span>
+                                <span class="text-sm font-bold text-slate-700 truncate max-w-[280px]" id="project-domain">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6. ELIGIBILITY -->
+                    <div class="space-y-4 pt-2">
+                        <h3 class="text-sm font-extrabold text-slate-400 uppercase tracking-wider">Eligibility</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3 text-sm text-slate-600">
+                                <div class="h-5 w-5 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center shadow-sm border border-emerald-100 flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <span class="font-normal">Year: <strong class="text-slate-800 font-semibold" id="eligibility-year">3rd Year, 4th Year</strong></span>
+                            </div>
+
+                            <div class="flex items-center space-x-3 text-sm text-slate-600">
+                                <div class="h-5 w-5 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center shadow-sm border border-emerald-100 flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <span class="font-normal">Program: <strong class="text-slate-800 font-semibold" id="eligibility-program">B.tech, M.tech</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 7. WARNING / ALERTS PANEL (Positions warning) -->
+                    <div class="p-4 bg-amber-50/70 border border-amber-100 rounded-2xl flex items-start space-x-3.5" id="alert-banner">
+                        <div class="p-1 bg-amber-100 text-amber-700 rounded-lg shadow-sm mt-0.5 flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-amber-800 uppercase tracking-wider">Positions Available</h4>
+                            <p class="text-xs text-amber-700 font-medium leading-relaxed mt-0.5" id="alert-banner-text">
+                                2 positions available out of 3 total. Apply now to secure your spot!
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- RIGHT: SIDEBAR PANELS (lg:col-span-4) -->
+            <div class="lg:col-span-4 space-y-6">
+                
+                <!-- 1. FACULTY SUPERVISOR CARD -->
+                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 space-y-5">
+                    <h3 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Faculty Supervisor</h3>
+                    
+                    <div class="flex items-center space-x-4">
+                        <div class="h-14 w-14 rounded-2xl flex items-center justify-center font-bold text-lg text-white border bg-gradient-to-tr from-brand-500 to-indigo-600 shadow-md flex-shrink-0" id="faculty-avatar">
+                            SJ
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm leading-snug" id="faculty-name">Dr. Sarah Johnson</h4>
+                            <p class="text-xs text-slate-400 mt-0.5" id="faculty-dept">Computer Science</p>
+                        </div>
+                    </div>
+
+                    <a id="contact-faculty-btn" href="mailto:sarah@example.com" class="w-full text-xs font-semibold py-3 px-4 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors inline-flex items-center justify-center space-x-2 shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        <span>Contact Faculty</span>
+                    </a>
+                </div>
+
+                <!-- 2. ENROLLMENT STATUS CARD -->
+                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 space-y-4">
+                    <h3 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Enrollment Status</h3>
+                    
+                    <div class="flex items-center justify-between text-xs text-slate-600 font-bold">
+                        <span>Students Enrolled</span>
+                        <span id="enrollment-ratio" class="text-slate-800 text-sm">1/3</span>
+                    </div>
+
+                    <!-- Progress bar wrapper -->
+                    <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div id="enrollment-progress-bar" class="h-full bg-brand-600 rounded-full transition-all duration-500 shadow-sm shadow-brand-100" style="width: 33%"></div>
+                    </div>
+
+                    <p class="text-xs text-slate-400 font-medium" id="spots-remaining">
+                        2 spots remaining
+                    </p>
+                </div>
+
+                <!-- 3. ACTIONS PANEL -->
+                <div class="space-y-3" id="details-actions">
+                    <button id="apply-now-cta" onclick="openApplyModal()" class="w-full text-xs font-extrabold py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white shadow-lg shadow-brand-100 transition-all hover:scale-[1.01] hover:-translate-y-0.5 text-center block">
+                        Apply for This Project
+                    </button>
+                </div>
+
+                <!-- View Project Blogs Button -->
+                <div class="pt-3">
+                    <a id="view-project-blogs-btn" href="#" class="w-full text-xs font-bold py-3.5 px-4 rounded-2xl border border-slate-200 hover:bg-slate-50 text-slate-700 shadow-sm transition-all hover:scale-[1.01] hover:-translate-y-0.5 text-center flex items-center justify-center space-x-2 bg-white">
+                        <svg class="h-4.5 w-4.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 4a2 2 0 00-2-2m-2-3h3m-3 3h3m-3 3h3m-6-6h-3m3 3h-3m3 3h-3"></path>
+                        </svg>
+                        <span>View Project Blogs & Updates</span>
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-100 py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 text-center sm:flex sm:justify-between sm:items-center text-xs text-slate-400">
+            <p>&copy; 2026 UniProjects. Designed for modern institutional workflows.</p>
+            <div class="mt-2 sm:mt-0 flex justify-center space-x-4">
+                <a href="#" class="hover:text-slate-600">Privacy Policy</a>
+                <a href="#" class="hover:text-slate-600">Terms of Use</a>
+                <a href="#" class="hover:text-slate-600">Student Guidelines</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE "APPLY NOW" MODAL (Pop-up Form) -->
+    <div id="apply-modal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background Backdrop -->
+            <div class="fixed inset-0 bg-slate-900 bg-opacity-40 backdrop-blur-sm transition-opacity" aria-hidden="true" onclick="closeApplyModal()"></div>
+
+            <!-- Modal Panel Center Marker -->
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <!-- Modal Content Card -->
+            <div class="relative inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-100">
+                
+                <!-- Modal Header -->
+                <div class="p-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-extrabold text-slate-900" id="apply-project-title">Apply for Project</h3>
+                        <p class="text-xs text-slate-400 mt-0.5" id="apply-project-faculty">Under Supervision of Dr. Sarah Johnson</p>
+                    </div>
+                    <button onclick="closeApplyModal()" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-all">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Modal Form Body -->
+                <form id="apply-form" onsubmit="handleApplySubmit(event)" class="p-6 space-y-4">
+                    <!-- Blocking Incomplete Profile State -->
+                    <div id="profile-incomplete-block" class="hidden text-center py-6 space-y-4">
+                        <div class="h-14 w-14 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto shadow-sm border border-amber-100 animate-bounce">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div class="space-y-1">
+                            <h4 class="text-sm font-bold text-slate-800">Profile Completion Required</h4>
+                            <p class="text-xs text-slate-400 max-w-xs mx-auto text-center">Please set your Academic Year, Program/Degree, and Department in your profile before applying to research projects.</p>
+                        </div>
+                        <button type="button" onclick="window.location.href='applications.html'" class="px-6 py-2.5 text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-md transition-all">
+                            Complete Profile Setup
+                        </button>
+                    </div>
+
+                    <!-- Complete Profile Form Fields -->
+                    <div id="profile-complete-fields" class="space-y-4">
+                        <!-- Readonly academic profile display -->
+                        <div class="p-3.5 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between text-xs">
+                            <div class="space-y-0.5">
+                                <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Academic Identity</span>
+                                <span class="font-bold text-slate-700" id="apply-s-identity">Loading...</span>
+                            </div>
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">Profile Verified</span>
+                        </div>
+
+                        <!-- Statement of Purpose / Pitch -->
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Why are you interested in this project?</label>
+                            <textarea id="s-pitch" rows="4" required placeholder="Describe your experience, course work, or why you want to join this research..." class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/50 resize-none"></textarea>
+                        </div>
+
+                        <!-- CV / Resume File Upload -->
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Upload Resume / CV</label>
+                            <div class="relative border-2 border-dashed border-slate-200 rounded-xl p-4 hover:bg-slate-50/50 hover:border-brand-500 transition-colors flex flex-col items-center justify-center cursor-pointer group" id="cv-upload-zone" onclick="document.getElementById('s-cv').click()">
+                                <input type="file" id="s-cv" accept=".pdf,.doc,.docx" class="hidden" onchange="handleCVSelect(event)">
+                                <div class="h-9 w-9 bg-slate-50 text-slate-400 group-hover:bg-brand-50 group-hover:text-brand-600 rounded-lg flex items-center justify-center transition-colors mb-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                    </svg>
+                                </div>
+                                <span class="text-xs font-semibold text-slate-700" id="cv-upload-label">Drag & drop or click to upload CV</span>
+                                <span class="text-[10px] text-slate-400 mt-0.5">Supports PDF, DOC, DOCX up to 5MB</span>
+                            </div>
+                        </div>
+
+                        <!-- Attachment Warning/Detail -->
+                        <div class="p-3 bg-brand-50/50 border border-brand-100 rounded-xl flex items-start space-x-2.5">
+                            <svg class="h-4 w-4 text-brand-600 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-[11px] text-brand-700 leading-relaxed">Your profile details will automatically be attached to this application.</span>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="pt-4 border-t border-slate-100 flex items-center justify-end space-x-3">
+                            <button type="button" onclick="closeApplyModal()" class="px-4 py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all">
+                                Cancel
+                            </button>
+                            <button type="submit" class="px-5 py-2.5 text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-lg shadow-brand-100 transition-all">
+                                Submit Application
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MY APPLICATIONS DRAWER (Slide over side panel) -->
+    <div id="apps-drawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white shadow-2xl border-l border-slate-100 flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out">
+        <!-- Drawer Header -->
+        <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+            <div>
+                <h3 class="font-extrabold text-slate-950 text-base">Your Applications</h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">Track real-time responses from faculties</p>
+            </div>
+            <button onclick="toggleApplicationsDrawer()" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-all">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Drawer Content (Scrollable list) -->
+        <div id="drawer-list" class="flex-grow overflow-y-auto p-6 space-y-4 no-scrollbar">
+            <!-- Dynamic applied card list will load here -->
+        </div>
+
+        <!-- Drawer Footer -->
+        <div class="p-6 border-t border-slate-100 bg-slate-50/50 text-center">
+            <p class="text-[11px] text-slate-400">Need help with an application? Reach out to <a href="#" class="text-brand-600 hover:underline">Support Portal</a>.</p>
+        </div>
+    </div>
+
+    <!-- Backdrop for Drawer -->
+    <div id="drawer-backdrop" class="fixed inset-0 z-40 bg-slate-900 bg-opacity-30 backdrop-blur-sm hidden" onclick="toggleApplicationsDrawer()"></div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 max-w-sm w-full bg-slate-900 text-white rounded-2xl shadow-xl border border-slate-800 p-4 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center space-x-3">
+        <div id="toast-icon-bg" class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-900 bg-emerald-400">
+            <svg id="toast-icon" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+        </div>
+        <div class="flex-grow">
+            <h4 class="text-xs font-bold" id="toast-title">Success</h4>
+            <p class="text-[11px] text-slate-300 mt-0.5" id="toast-message">Applied successfully!</p>
+        </div>
+    </div>
+
+    <!-- STATE, RECOVERY, AND DYNAMIC HANDLERS -->
+    <script>
+        // --- 1. GLOBALS & STATE ---
+        let currentProject = null;
+        let applications = [];
+        let cvFileObj = null;
+        let studentProfile = null;
+        let studentUser = {
+            name: "Student",
+            email: ""
+        };
+
+        const bgColors = [
+            'bg-rose-500 text-white border-rose-600', 
+            'bg-indigo-600 text-white border-indigo-700', 
+            'bg-emerald-600 text-white border-emerald-700', 
+            'bg-purple-600 text-white border-purple-700', 
+            'bg-amber-600 text-white border-amber-700'
+        ];
+
+        // --- 2. BOOTSTRAP ---
+        window.onload = async function() {
+            // Check auth
+            if (typeof supabaseClient !== 'undefined') {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session && session.user) {
+                    studentUser.name = session.user.user_metadata?.full_name || "Student";
+                    studentUser.email = session.user.email;
+                    
+                    document.getElementById('studentNameDisplay').textContent = studentUser.name;
+                    const initials = studentUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                    document.getElementById('navProfileInitial').textContent = initials;
+                    
+                    // Retrieve application database & local storage syncing
+                    await syncApplicationsFromSupabase();
+                    
+                    // Fetch student academic profile first
+                    await fetchStudentProfile(session.user.id, session.user.email);
+                    
+                    // Fetch notifications
+                    await fetchStudentNotifications();
+                    
+                    // Load project
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const projectId = urlParams.get('id');
+                    
+                    await fetchProjectDetails(projectId);
+                } else {
+                    window.location.href = '../auth/student.html';
+                }
+            }
+        };
+
+        async function fetchStudentProfile(uid, email) {
+            try {
+                // 1. Try student_profiles
+                const { data, error } = await supabaseClient
+                    .from('student_profiles')
+                    .select('*')
+                    .eq('user_id', uid)
+                    .single();
+
+                if (!error && data) {
+                    studentProfile = data;
+                    return;
+                }
+
+                // 2. Try students table fallback
+                const { data: sData, error: sError } = await supabaseClient
+                    .from('students')
+                    .select('*')
+                    .eq('user_id', uid)
+                    .single();
+
+                if (!sError && sData) {
+                    studentProfile = sData;
+                    return;
+                }
+            } catch (err) {
+                console.warn("Supabase profile fetch failed, using fallback: ", err);
+            }
+
+            // 3. Fallback to localStorage logins
+            const localUser = JSON.parse(localStorage.getItem(email) || "null");
+            if (localUser) {
+                studentProfile = {
+                    full_name: localUser.name,
+                    email: localUser.email,
+                    dept: localUser.dept || "",
+                    program: localUser.program || "",
+                    year: localUser.year || ""
+                };
+            } else {
+                // Safe Mocked Complete profile so they can preview details instantly in offline runs
+                studentProfile = {
+                    full_name: studentUser.name,
+                    email: email,
+                    dept: "Computer Science",
+                    program: "B.Tech (CSE)",
+                    year: "3rd Year"
+                };
+            }
+        }
+
+        // --- 3. FETCH PROJECT FROM SUPABASE / DUMMY RECOVERY ---
+        async function fetchProjectDetails(id) {
+            try {
+                let project = null;
+                
+                // If it is dummy, load mockup immediately
+                if (id === 'dummy-1' || !id) {
+                    project = getDummyProject();
+                } else {
+                    const { data, error } = await supabaseClient
+                        .from('projects_v2')
+                        .select('*')
+                        .eq('id', id)
+                        .single();
+
+                    if (error) {
+                        console.warn("Real record query failed, falling back to gorgeous mock details.", error);
+                        project = getDummyProject();
+                    } else {
+                        // Fetch real approved applications count
+                        let approvedCount = 0;
+                        try {
+                            const { data: approvedApps, error: aError } = await supabaseClient
+                                .from('applications_v2')
+                                .select('id')
+                                .eq('project_id', data.id)
+                                .eq('status', 'approved');
+                            if (!aError && approvedApps) {
+                                approvedCount = approvedApps.length;
+                            }
+                        } catch (e) {
+                            console.warn("Could not query approved count:", e);
+                        }
+
+                        const maxStudents = data.students_needed || 3;
+                        const isFilled = approvedCount >= maxStudents;
+
+                        const initials = (data.faculty_name || 'Faculty').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                        const initialsHash = (data.faculty_name || 'Faculty').charCodeAt(0) + (data.faculty_name || 'Faculty').charCodeAt((data.faculty_name || 'Faculty').length - 1 || 0);
+                        const facultyBg = bgColors[initialsHash % bgColors.length];
+
+                        project = {
+                            id: data.id,
+                            title: data.title,
+                            category: data.category || 'Research',
+                            description: data.description,
+                            facultyName: data.faculty_name || 'Faculty',
+                            facultyDept: data.faculty_dept || 'Department',
+                            facultyInitials: initials,
+                            facultyBg: facultyBg,
+                            positionsFilled: approvedCount, 
+                            positionsTotal: maxStudents,
+                            duration: data.duration || '6 months',
+                            skills: data.skills || [],
+                            preferredYear: (data.year_preference || []).join(', ') || '3rd Year, 4th Year',
+                            preferredProgram: (data.program_preference || []).join(', ') || 'B.tech, M.tech',
+                            domain: data.domain || 'Computer Science Research',
+                            status: isFilled ? 'Filled' : ((data.status || '').includes('Open') ? 'Open' : (data.status || 'Closed')),
+                            timeline: data.timeline || 'March 2026 - August 2026',
+                            commitment: data.commitment || '15 hours/week',
+                            facultyId: data.faculty_id || null
+                        };
+                    }
+                }
+
+                currentProject = project;
+                hydrateUI();
+            } catch (err) {
+                console.error("Critical details loading error: ", err);
+                showToast("Loading Error", "Could not render project specs.", "danger");
+            }
+        }
+
+        // --- 4. DATA BINDING TO MARKUP ---
+        function hydrateUI() {
+            if (!currentProject) return;
+
+            // Set View Blogs Button href
+            const viewBlogsBtn = document.getElementById('view-project-blogs-btn');
+            if (viewBlogsBtn) {
+                viewBlogsBtn.href = `project-blogs-view.html?id=${currentProject.id}`;
+            }
+
+            // Badges
+            const statusBadge = document.getElementById('project-status');
+            statusBadge.textContent = currentProject.status;
+            if (currentProject.status === 'Open') {
+                statusBadge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-indigo-50 text-brand-600 border border-indigo-100";
+            } else {
+                statusBadge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-slate-100 text-slate-500 border border-slate-200";
+            }
+
+            document.getElementById('project-category').textContent = currentProject.category;
+            document.getElementById('project-domain-tag').textContent = currentProject.domain;
+
+            // Title & Specs
+            document.getElementById('project-title').textContent = currentProject.title;
+            document.getElementById('project-description').textContent = currentProject.description;
+            document.getElementById('project-duration').textContent = currentProject.duration;
+            document.getElementById('project-domain').textContent = currentProject.domain;
+
+            // Skills pills
+            const skillsContainer = document.getElementById('project-skills');
+            skillsContainer.innerHTML = '';
+            if (currentProject.skills && currentProject.skills.length > 0) {
+                currentProject.skills.forEach(skill => {
+                    skillsContainer.innerHTML += `
+                        <span class="px-3 py-1.5 bg-slate-50 border border-slate-200/60 rounded-xl text-xs font-semibold text-slate-500">
+                            ${skill}
+                        </span>
+                    `;
+                });
+            } else {
+                skillsContainer.innerHTML = `<span class="text-xs text-slate-400">None specified.</span>`;
+            }
+
+            // Eligibility
+            document.getElementById('eligibility-year').textContent = currentProject.preferredYear;
+            document.getElementById('eligibility-program').textContent = currentProject.preferredProgram;
+
+            // Faculty
+            document.getElementById('faculty-name').textContent = currentProject.facultyName;
+            document.getElementById('faculty-dept').textContent = currentProject.facultyDept;
+            
+            const avatar = document.getElementById('faculty-avatar');
+            avatar.textContent = currentProject.facultyInitials;
+            avatar.className = `h-14 w-14 rounded-2xl flex items-center justify-center font-bold text-lg text-white border shadow-md flex-shrink-0 ${currentProject.facultyBg}`;
+            document.getElementById('contact-faculty-btn').href = `mailto:${currentProject.facultyName.toLowerCase().replace(/\s+/g, '')}@example.com`;
+
+            // Calculate active applied status and modify details sidebar enrollment widgets
+            updateApplicationStatus();
+        }
+
+        // --- 5. APPLICATION STATUS CHECKERS & UI MODIFIERS ---
+        function updateApplicationStatus() {
+            if (!currentProject) return;
+
+            // Find how many applications are already accepted/pending for this specific project locally
+            const projectApps = applications.filter(app => app.project === currentProject.title);
+            const totalApplicants = projectApps.length;
+            const acceptedApplicants = projectApps.filter(app => app.status?.toLowerCase() === 'accepted').length;
+
+            // Live database calculations using positionsFilled
+            const activeEnrolledCount = currentProject.positionsFilled || 0;
+            const spotsRemaining = Math.max(0, currentProject.positionsTotal - activeEnrolledCount);
+
+            // Ratio & Progress bar
+            document.getElementById('enrollment-ratio').textContent = `${activeEnrolledCount}/${currentProject.positionsTotal}`;
+            const percentage = (activeEnrolledCount / currentProject.positionsTotal) * 100;
+            document.getElementById('enrollment-progress-bar').style.width = `${percentage}%`;
+            document.getElementById('spots-remaining').textContent = `${spotsRemaining} spot${spotsRemaining !== 1 ? 's' : ''} remaining`;
+
+            // Alert banner
+            if (spotsRemaining === 0) {
+                document.getElementById('alert-banner').className = "p-4 bg-rose-50/70 border border-rose-100 rounded-2xl flex items-start space-x-3.5";
+                document.getElementById('alert-banner-text').innerHTML = `<strong>Positions Closed!</strong> All ${currentProject.positionsTotal} vacancies have been filled.`;
+            } else {
+                document.getElementById('alert-banner').className = "p-4 bg-amber-50/70 border border-amber-100 rounded-2xl flex items-start space-x-3.5";
+                document.getElementById('alert-banner-text').innerHTML = `${spotsRemaining} position${spotsRemaining !== 1 ? 's' : ''} available out of ${currentProject.positionsTotal} total. Apply now to secure your spot!`;
+            }
+
+            // Checks whether student has applied
+            const matchingApp = applications.find(app => app.student === studentUser.email && app.project === currentProject.title);
+            const actionContainer = document.getElementById('details-actions');
+            if (matchingApp) {
+                const statusVal = matchingApp.status ? matchingApp.status.toLowerCase() : 'pending';
+                if (statusVal === 'approved' || statusVal === 'accepted') {
+                    actionContainer.innerHTML = `
+                        <a href="../faculty/got_to_project.html?id=${currentProject.id}&as=student" class="w-full text-xs font-extrabold py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-100 transition-all hover:scale-[1.01] hover:-translate-y-0.5 text-center inline-flex items-center justify-center space-x-2">
+                            <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>Go to Project Workspace 🎉</span>
+                        </a>
+                    `;
+                } else if (statusVal === 'rejected') {
+                    actionContainer.innerHTML = `
+                        <button disabled class="w-full text-xs font-bold py-3.5 px-4 rounded-2xl bg-rose-50 text-rose-700 border border-rose-100 cursor-not-allowed inline-flex items-center justify-center space-x-2">
+                            <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            <span>Rejected ❌</span>
+                        </button>
+                    `;
+                } else if (statusVal === 'meet-in-person') {
+                    actionContainer.innerHTML = `
+                        <button disabled class="w-full text-xs font-bold py-3.5 px-4 rounded-2xl bg-amber-50 text-amber-700 border border-amber-100 cursor-not-allowed inline-flex items-center justify-center space-x-2">
+                            <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span>Interview Invited 📅</span>
+                        </button>
+                    `;
+                } else {
+                    actionContainer.innerHTML = `
+                        <button disabled class="w-full text-xs font-bold py-3.5 px-4 rounded-2xl bg-indigo-50 text-indigo-700 border border-indigo-100 cursor-not-allowed inline-flex items-center justify-center space-x-2">
+                            <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>Application Submitted</span>
+                        </button>
+                    `;
+                }
+            } else if (spotsRemaining === 0 || currentProject.status === 'Closed') {
+                actionContainer.innerHTML = `
+                    <button disabled class="w-full text-xs font-bold py-3.5 px-4 rounded-2xl bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed text-center">
+                        Applications Closed
+                    </button>
+                `;
+            } else {
+                actionContainer.innerHTML = `
+                    <button id="apply-now-cta" onclick="openApplyModal()" class="w-full text-xs font-extrabold py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white shadow-lg shadow-brand-100 transition-all hover:scale-[1.01] hover:-translate-y-0.5 text-center block">
+                        Apply for This Project
+                    </button>
+                `;
+            }
+        }
+
+        // --- 6. LOCAL STORAGE SYNC ENGINE ---
+        function loadApplicationsFromLocalStorage() {
+            applications = JSON.parse(localStorage.getItem("applications") || "[]");
+            document.getElementById('nav-app-count-badge').textContent = applications.filter(a => a.student === studentUser.email).length;
+            renderApplicationsDrawer();
+        }
+
+        async function syncApplicationsFromSupabase() {
+            if (typeof supabaseClient === 'undefined') {
+                loadApplicationsFromLocalStorage();
+                return;
+            }
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (!session || !session.user) {
+                    loadApplicationsFromLocalStorage();
+                    return;
+                }
+
+                const { data, error } = await supabaseClient
+                    .from('applications_v2')
+                    .select('*')
+                    .eq('student_id', session.user.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    applications = data.map(app => ({
+                        id: app.id,
+                        projectId: app.project_id || '',
+                        student: app.student_email || studentUser.email,
+                        project: app.project_title,
+                        projectTitle: app.project_title,
+                        status: app.status ? (app.status.charAt(0).toUpperCase() + app.status.slice(1)) : "Pending",
+                        facultyName: "Faculty Supervisor",
+                        appliedDate: new Date(app.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                        pitch: app.pitch,
+                        cvName: app.cv_name,
+                        cvUrl: app.cv_url
+                    }));
+                    
+                    document.getElementById('nav-app-count-badge').textContent = applications.length;
+                    renderApplicationsDrawer();
+                    updateApplicationStatus();
+                } else {
+                    loadApplicationsFromLocalStorage();
+                }
+            } catch (err) {
+                console.warn("Could not load applications from Supabase, using localStorage fallback:", err);
+                loadApplicationsFromLocalStorage();
+            }
+        }
+
+        function saveApplicationsToLocalStorage() {
+            localStorage.setItem("applications", JSON.stringify(applications));
+            document.getElementById('nav-app-count-badge').textContent = applications.filter(a => a.student === studentUser.email).length;
+            renderApplicationsDrawer();
+            updateApplicationStatus();
+        }
+
+        // --- 7. APPLICATION SUBMISSION HANDLERS ---
+        function openApplyModal() {
+            if (!currentProject) return;
+
+            document.getElementById('apply-project-title').textContent = `Apply for: ${currentProject.title}`;
+            document.getElementById('apply-project-faculty').textContent = `Under Supervision of ${currentProject.facultyName}`;
+
+            // Gating completeness checks
+            const isIncomplete = !studentProfile || !studentProfile.dept || !studentProfile.program || !studentProfile.year;
+            
+            if (isIncomplete) {
+                document.getElementById('profile-incomplete-block').classList.remove('hidden');
+                document.getElementById('profile-complete-fields').classList.add('hidden');
+            } else {
+                document.getElementById('profile-incomplete-block').classList.add('hidden');
+                document.getElementById('profile-complete-fields').classList.remove('hidden');
+                document.getElementById('apply-s-identity').textContent = `${studentProfile.program} • ${studentProfile.year} (${studentProfile.dept})`;
+                
+                // Clear any leftover texts
+                document.getElementById('s-pitch').value = '';
+            }
+
+            document.getElementById('apply-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeApplyModal() {
+            document.getElementById('apply-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            document.getElementById('apply-form').reset();
+            
+            // Clear CV state
+            cvFileObj = null;
+            const uploadZone = document.getElementById('cv-upload-zone');
+            if (uploadZone) {
+                uploadZone.className = "relative border-2 border-dashed border-slate-200 rounded-xl p-4 hover:bg-slate-50/50 hover:border-brand-500 transition-colors flex flex-col items-center justify-center cursor-pointer group";
+                document.getElementById('cv-upload-label').textContent = "Drag & drop or click to upload CV";
+            }
+        }
+
+        async function uploadCVToBucket(file, studentId, studentEmail) {
+            if (typeof supabaseClient === 'undefined' || !file) return null;
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${studentEmail.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.${fileExt}`;
+            const filePath = `${studentId}/${fileName}`;
+
+            // Try 'resumes' bucket
+            try {
+                const { data, error } = await supabaseClient.storage
+                    .from('resumes')
+                    .upload(filePath, file, { cacheControl: '3600', upsert: true });
+                
+                if (!error && data) {
+                    const { data: urlData } = supabaseClient.storage
+                        .from('resumes')
+                        .getPublicUrl(filePath);
+                    return urlData.publicUrl;
+                } else {
+                    console.warn("Upload to resumes bucket failed, trying avatars bucket fallback...", error);
+                }
+            } catch (err) {
+                console.warn("Error uploading to resumes bucket:", err);
+            }
+
+            // Try 'avatars' bucket fallback
+            try {
+                const { data, error } = await supabaseClient.storage
+                    .from('avatars')
+                    .upload(filePath, file, { cacheControl: '3600', upsert: true });
+                
+                if (!error && data) {
+                    const { data: urlData } = supabaseClient.storage
+                        .from('avatars')
+                        .getPublicUrl(filePath);
+                    return urlData.publicUrl;
+                } else {
+                    console.error("Upload to avatars bucket failed:", error);
+                }
+            } catch (err) {
+                console.error("Error uploading to avatars bucket:", err);
+            }
+
+            return null;
+        }
+
+        function handleCVSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast("File Too Large", "Please upload a file smaller than 5MB.", "danger");
+                event.target.value = '';
+                return;
+            }
+
+            cvFileObj = {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                fileRaw: file
+            };
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                cvFileObj.dataUrl = e.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            const uploadZone = document.getElementById('cv-upload-zone');
+            if (uploadZone) {
+                uploadZone.className = "relative border border-solid border-emerald-200 bg-emerald-50/30 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer";
+                document.getElementById('cv-upload-label').innerHTML = `<span class="text-emerald-700 font-bold">✓ Selected: ${file.name}</span>`;
+            }
+        }
+
+        async function handleApplySubmit(event) {
+            event.preventDefault();
+
+            const alreadyApplied = applications.some(app => 
+                (app.projectId && app.projectId.toString() === currentProject.id.toString()) || 
+                app.project.toLowerCase().trim() === currentProject.title.toLowerCase().trim()
+            );
+            if (alreadyApplied) {
+                showToast('Already Applied', 'You have already submitted an application for this project.', 'warning');
+                closeApplyModal();
+                return;
+            }
+
+            const pitch = document.getElementById('s-pitch').value.trim();
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const ogBtnHTML = submitBtn.innerHTML;
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>Submitting...</span>';
+
+            let studentId = null;
+            if (typeof supabaseClient !== 'undefined') {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session && session.user) {
+                    studentId = session.user.id;
+                }
+            }
+
+            // 1. Upload CV to Storage bucket
+            let cvUrl = null;
+            if (cvFileObj && cvFileObj.fileRaw && studentId) {
+                cvUrl = await uploadCVToBucket(cvFileObj.fileRaw, studentId, studentUser.email);
+            }
+
+            // 2. Insert row into applications_v2 table with robust try-catch handling
+            let insertedAppId = null;
+            if (typeof supabaseClient !== 'undefined' && studentId) {
+                try {
+                    // Check if project id is a valid UUID, otherwise set to null to avoid constraint violation
+                    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(currentProject.id.toString());
+
+                    const applicationData = {
+                        student_id: studentId,
+                        student_name: studentProfile?.full_name || studentUser.name,
+                        student_email: studentUser.email,
+                        student_year: studentProfile?.year || '3rd Year',
+                        student_degree: studentProfile?.program || 'B.Tech (CSE)',
+                        project_id: isUUID ? currentProject.id : null, // Set to null if dummy-1 to avoid FK violation
+                        project_title: currentProject.title,
+                        faculty_id: currentProject.facultyId || null,
+                        pitch: pitch,
+                        status: 'pending',
+                        cv_name: cvFileObj ? cvFileObj.name : null,
+                        cv_url: cvUrl || (cvFileObj ? cvFileObj.dataUrl : null)
+                    };
+
+                    const { data, error } = await supabaseClient
+                        .from('applications_v2')
+                        .insert([applicationData])
+                        .select();
+
+                    if (error) {
+                        console.error("Supabase insert error: ", error);
+                        alert("SUPABASE DATABASE ERROR: " + error.message + "\nDetails: " + (error.details || 'None') + "\nHint: " + (error.hint || 'None'));
+                        showToast('Database Error', 'Could not save application: ' + error.message, 'warning');
+                    } else if (data && data.length > 0) {
+                        insertedAppId = data[0].id;
+                    }
+                } catch (dbErr) {
+                    console.error("Database insert exception: ", dbErr);
+                    showToast('Database Error', 'Could not save application: ' + dbErr.message, 'warning');
+                }
+            }
+
+            // Generate local application model
+            const newApp = {
+                id: insertedAppId || 'dummy-' + Date.now(),
+                student: studentUser.email,
+                project: currentProject.title,
+                status: "Pending", // Spell uppercase "Pending" for profile.js parsing
+                facultyName: currentProject.facultyName,
+                appliedDate: 'Today (May 25, 2026)',
+                pitch: pitch,
+                cvName: cvFileObj ? cvFileObj.name : null,
+                cvUrl: cvUrl || (cvFileObj ? cvFileObj.dataUrl : null)
+            };
+
+            applications.unshift(newApp);
+            saveApplicationsToLocalStorage();
+            
+            closeApplyModal();
+            showToast('Application Submitted!', `You have applied to "${currentProject.title}" successfully.`, 'success');
+            
+            // Sync from Supabase to load fully updated database rows
+            if (insertedAppId) {
+                await syncApplicationsFromSupabase();
+            }
+        }
+
+        async function withdrawApplication(projectTitle) {
+            const app = applications.find(a => a.student === studentUser.email && (a.project === projectTitle || a.id.toString() === projectTitle.toString()));
+            if (!app) return;
+
+            if (typeof supabaseClient !== 'undefined' && app.id && !app.id.toString().startsWith('dummy')) {
+                const { error } = await supabaseClient
+                    .from('applications_v2')
+                    .delete()
+                    .eq('id', app.id);
+
+                if (error) {
+                    console.error("Error withdrawing from Supabase: ", error);
+                    showToast('Withdrawal Failed', 'Could not delete application from database.', 'danger');
+                    return;
+                }
+            }
+
+            const index = applications.findIndex(a => a.student === studentUser.email && (a.project === projectTitle || a.id.toString() === projectTitle.toString()));
+            if (index > -1) {
+                const title = applications[index].project;
+                applications.splice(index, 1);
+                saveApplicationsToLocalStorage();
+                showToast('Application Withdrawn', `Your request for "${title}" has been removed.`, 'warning');
+            }
+        }
+
+        // --- 8. APPLICATIONS DRAWER CONTROLS ---
+        function renderApplicationsDrawer() {
+            const drawerList = document.getElementById('drawer-list');
+            drawerList.innerHTML = '';
+
+            const userApps = applications.filter(a => a.student === studentUser.email);
+
+            if (userApps.length === 0) {
+                drawerList.innerHTML = `
+                    <div class="text-center py-12 text-slate-400 space-y-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                        </svg>
+                        <p class="text-xs font-semibold">No applications submitted yet.</p>
+                        <p class="text-[10px]">Start searching projects and pitch your profile!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            userApps.forEach(app => {
+                let badgeClass = 'bg-slate-100 text-slate-600 border-slate-200';
+                const statusLower = (app.status || 'pending').toLowerCase();
+                if (statusLower === 'accepted' || statusLower === 'approved') {
+                    badgeClass = 'bg-emerald-50 text-emerald-700 border-emerald-100';
+                } else if (statusLower === 'pending') {
+                    badgeClass = 'bg-amber-50 text-amber-700 border-amber-100';
+                } else if (statusLower === 'rejected') {
+                    badgeClass = 'bg-rose-50 text-rose-700 border-rose-100';
+                }
+
+                let cvHtml = '';
+                if (app.cvName) {
+                    cvHtml = `
+                        <p class="text-[10px] text-brand-600 font-semibold flex items-center mt-1 bg-brand-50/40 p-1.5 rounded-lg border border-brand-100/50 max-w-max">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-brand-500 mr-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span>CV: ${app.cvName}</span>
+                        </p>
+                    `;
+                }
+
+                drawerList.innerHTML += `
+                    <div class="p-4 bg-slate-50/70 border border-slate-100 rounded-2xl space-y-3 shadow-sm relative group">
+                        <div class="flex items-start justify-between">
+                            <h4 class="text-xs font-bold text-slate-900 truncate pr-6 max-w-[260px]" title="${app.project}">
+                                ${app.project}
+                            </h4>
+                            <span class="text-[9px] font-bold uppercase px-2 py-0.5 rounded-full border ${badgeClass}">
+                                ${app.status}
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-400">Supervised by: <strong class="text-slate-600">${app.facultyName || 'Faculty Supervisor'}</strong></p>
+                        ${app.pitch ? `<p class="text-[11px] text-slate-500 italic bg-white p-2.5 rounded-xl border border-slate-100 font-medium">"${app.pitch}"</p>` : ''}
+                        ${cvHtml}
+                        
+                        <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1">
+                            <span>Applied: ${app.appliedDate || 'May 25, 2026'}</span>
+                            <button onclick="withdrawApplication('${app.project}')" class="text-rose-500 hover:text-rose-700 hover:underline font-semibold hidden group-hover:block transition-all">
+                                Withdraw
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        let isDrawerOpen = false;
+        function toggleApplicationsDrawer() {
+            const drawer = document.getElementById('apps-drawer');
+            const backdrop = document.getElementById('drawer-backdrop');
+            
+            isDrawerOpen = !isDrawerOpen;
+            if (isDrawerOpen) {
+                drawer.classList.remove('translate-x-full');
+                backdrop.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                drawer.classList.add('translate-x-full');
+                backdrop.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // --- 9. SPEC RECOVERY LOGIC ---
+        function getDummyProject() {
+            return {
+                id: "dummy-1",
+                title: "Machine Learning for Medical Diagnosis",
+                category: "Research",
+                description: "Develop a deep learning model to assist in early detection of diseases from medical imaging. This project involves working with CNNs, image processing, and healthcare datasets.",
+                facultyName: "Dr. Sarah Johnson",
+                facultyDept: "Computer Science",
+                facultyInitials: "SJ",
+                facultyBg: "bg-rose-500 text-white border-rose-600",
+                positionsFilled: 1,
+                positionsTotal: 3,
+                duration: "6 months",
+                skills: ["Python", "TensorFlow", "Machine Learning", "Image Processing"],
+                preferredYear: "3rd Year, 4th Year",
+                preferredProgram: "B.tech, M.tech",
+                domain: "Computer Vision and Healthcare",
+                status: "Open"
+            };
+        }
+
+        // --- 10. TOAST AND UTILITIES ---
+        let toastTimeout;
+        function showToast(title, message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastTitle = document.getElementById('toast-title');
+            const toastMessage = document.getElementById('toast-message');
+            const iconBg = document.getElementById('toast-icon-bg');
+            const icon = document.getElementById('toast-icon');
+
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+
+            if (type === 'success') {
+                iconBg.className = "h-8 w-8 rounded-lg flex items-center justify-center text-slate-900 bg-emerald-400";
+                icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />`;
+            } else if (type === 'danger' || type === 'warning') {
+                iconBg.className = "h-8 w-8 rounded-lg flex items-center justify-center text-white bg-rose-500";
+                icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />`;
+            } else {
+                iconBg.className = "h-8 w-8 rounded-lg flex items-center justify-center text-white bg-indigo-500";
+                icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />`;
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+
+        // --- 11. REAL-TIME NOTIFICATIONS ENGINE ---
+        let studentNotifications = [];
+
+        function toggleNotificationDropdown() {
+            const dropdown = document.getElementById('notif-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('notif-dropdown');
+            const bellBtn = document.getElementById('notif-bell-btn');
+            if (dropdown && bellBtn && !dropdown.classList.contains('hidden')) {
+                if (!bellBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            }
+        });
+
+        async function fetchStudentNotifications() {
+            if (typeof supabaseClient === 'undefined') return;
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (!session || !session.user) return;
+
+                const { data, error } = await supabaseClient
+                    .from('notifications_v2')
+                    .select('*')
+                    .eq('user_id', session.user.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                studentNotifications = data || [];
+                renderNotifications();
+            } catch (err) {
+                console.error("Could not fetch student notifications:", err);
+            }
+        }
+
+        function renderNotifications() {
+            const notifList = document.getElementById('notif-list');
+            const notifBadge = document.getElementById('notif-count-badge');
+            
+            const unreadCount = studentNotifications.filter(n => !n.is_read).length;
+            
+            if (unreadCount > 0) {
+                notifBadge.textContent = unreadCount;
+                notifBadge.classList.remove('hidden');
+            } else {
+                notifBadge.classList.add('hidden');
+            }
+
+            if (studentNotifications.length === 0) {
+                notifList.innerHTML = `<p class="text-[10px] text-slate-400 text-center py-4">No notifications yet</p>`;
+                return;
+            }
+
+            notifList.innerHTML = '';
+            studentNotifications.forEach(n => {
+                let borderCol = 'border-slate-100';
+                let iconHtml = '🔔';
+                if (n.type === 'success') {
+                    borderCol = 'border-emerald-100 bg-emerald-50/20';
+                    iconHtml = '🎉';
+                } else if (n.type === 'danger') {
+                    borderCol = 'border-rose-100 bg-rose-50/20';
+                    iconHtml = '❌';
+                } else if (n.type === 'warning') {
+                    borderCol = 'border-amber-100 bg-amber-50/20';
+                    iconHtml = '📅';
+                }
+
+                const notifTime = new Date(n.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                
+                notifList.innerHTML += `
+                    <div class="p-2.5 rounded-xl border ${borderCol} flex items-start space-x-2 text-left relative transition-all ${n.is_read ? 'opacity-60' : 'font-semibold'}">
+                        <span class="text-sm mt-0.5">${iconHtml}</span>
+                        <div class="flex-grow min-w-0">
+                            <div class="flex justify-between items-start">
+                                <h5 class="text-[10px] text-slate-800 truncate pr-4">${n.title}</h5>
+                                <span class="text-[8px] text-slate-400">${notifTime}</span>
+                            </div>
+                            <p class="text-[9px] text-slate-500 mt-0.5 leading-snug">${n.message}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function markAllNotificationsRead() {
+            if (typeof supabaseClient === 'undefined' || studentNotifications.length === 0) return;
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (!session || !session.user) return;
+
+                const { error } = await supabaseClient
+                    .from('notifications_v2')
+                    .update({ is_read: true })
+                    .eq('user_id', session.user.id);
+
+                if (error) throw error;
+
+                // Update local state and render
+                studentNotifications.forEach(n => n.is_read = true);
+                renderNotifications();
+            } catch (err) {
+                console.error("Could not mark notifications as read:", err);
+            }
+        }
+
+        async function logout() {
+            if (typeof supabaseClient !== 'undefined') {
+                await supabaseClient.auth.signOut();
+            }
+            window.location.href = '../index.html';
+        }
+    </script>
+</body>
+</html>

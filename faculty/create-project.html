@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniProjects - Create Project</title>
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS for high fidelity design -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+    <script src="../js/faculty-local-data.js"></script>
+    <script src="../js/supabase.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            500: '#8b5cf6',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            950: '#1e1b4b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col antialiased">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3">
+                <div class="h-9 w-9 bg-brand-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-brand-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 14.5L5.25 14 3 15.25 12 21l9-5.75L18.75 14 12 17.5z"/>
+                    </svg>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-slate-900">Uni<span class="text-brand-600">Projects</span></span>
+            </div>
+
+            <!-- Right-side User Actions -->
+            <div class="flex items-center space-x-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-brand-50 text-brand-700 border border-brand-100">
+                    Faculty Portal
+                </span>
+                
+                <div class="flex items-center space-x-2 border-l border-slate-100 pl-4">
+                    <div class="flex items-center space-x-2.5 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-100 hover:bg-slate-100/75 transition-colors cursor-pointer">
+                        <img class="h-7 w-7 rounded-full object-cover border border-brand-200" src="https://ui-avatars.com/api/?name=Faculty&background=random" alt="Demo User">
+                        <span class="text-sm font-semibold text-slate-700 hidden sm:inline" id="facultyNameDisplay">Faculty</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN BODY CONTAINER -->
+    <main class="flex-grow max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        
+        <!-- BACK TO DASHBOARD NAVIGATION LINK -->
+        <div>
+            <a href="dashboard-new.html" class="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-400 hover:text-brand-600 transition-colors group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transform group-hover:-translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                <span>Back to Dashboard</span>
+            </a>
+        </div>
+
+        <!-- FORM CARD CONTAINER -->
+        <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+            
+            <div class="p-6 md:p-8 border-b border-slate-100 bg-white">
+                <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">Project Details</h2>
+                <p class="text-xs text-slate-400 mt-1 leading-relaxed">Provide comprehensive information to attract the right students for your research program.</p>
+            </div>
+
+            <!-- Interactive Form -->
+            <form id="create-project-form" onsubmit="handleFormSubmission(event)" class="p-6 md:p-8 space-y-6">
+                
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Project Title <span class="text-rose-500">*</span></label>
+                    <input type="text" id="p-title" required placeholder="e.g., Machine Learning for Medical Diagnosis" class="w-full text-xs px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/40">
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Description <span class="text-rose-500">*</span></label>
+                    <textarea id="p-desc" required rows="5" placeholder="Describe the project objectives, methodology, and expected outcomes..." class="w-full text-xs px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/40 resize-none"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Category <span class="text-rose-500">*</span></label>
+                        <select id="p-category" required class="w-full text-xs px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/40 text-slate-600 font-medium">
+                            <option value="">Select category</option>
+                            <option value="Research">Research Project</option>
+                            <option value="BTP">BTP (Bachelor Thesis Project)</option>
+                            <option value="MTP">MTP (Master Thesis Project)</option>
+                            <option value="Internship">Summer Research Internship</option>
+                            <option value="UR">UR (Undergraduate Research)</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Project Type <span class="text-rose-500">*</span></label>
+                        <select id="p-type" required class="w-full text-xs px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/40 text-slate-600 font-medium">
+                            <option value="">Select type</option>
+                            <option value="Lab Work">In-Lab (On Campus)</option>
+                            <option value="Sponsored">Sponsored Research</option>
+                            <option value="Consultancy">Industrial Consultancy</option>
+                            <option value="Independent">Self-Initiated Study</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Number of Students Needed</label>
+                        <input type="number" id="p-students" min="1" max="10" value="2" class="w-full text-xs px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/40 font-semibold text-slate-700">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Duration</label>
+                        <input type="text" id="p-duration" placeholder="e.g., 6 months, 1 semester" class="w-full text-xs px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/40">
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Research Topic / Domain</label>
+                    <input type="text" id="p-domain" placeholder="e.g., Computer Vision and Healthcare" class="w-full text-xs px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/40">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Project Timeline</label>
+                        <input type="text" id="p-timeline" placeholder="e.g., March 2026 - August 2026" class="w-full text-xs px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/40">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Time Commitment</label>
+                        <input type="text" id="p-commitment" placeholder="e.g., 10 hours/week, 20 hours/week" class="w-full text-xs px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/40">
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Course Requirement</label>
+                    <input type="text" id="p-course" placeholder="e.g., CS101 - Introduction to Programming (leave empty if not required)" class="w-full text-xs px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/40">
+                    <span class="block text-[11px] text-slate-400">Students must have taken this course to apply (optional)</span>
+                </div>
+
+                <div class="h-px bg-slate-100 my-6"></div>
+
+                <div class="space-y-4">
+                    <h3 class="text-sm font-extrabold text-slate-900 tracking-tight">Eligibility Criteria</h3>
+                    
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Year Preference <span class="text-rose-500">*</span></label>
+                        <div class="flex flex-wrap gap-4 items-center">
+                            <label class="inline-flex items-center space-x-2.5 cursor-pointer text-xs font-semibold text-slate-700">
+                                <input type="checkbox" name="year-preference" value="1st Year" class="rounded border-slate-300 text-brand-600 focus:ring-brand-500 h-4.5 w-4.5">
+                                <span>1st Year</span>
+                            </label>
+                            <label class="inline-flex items-center space-x-2.5 cursor-pointer text-xs font-semibold text-slate-700">
+                                <input type="checkbox" name="year-preference" value="2nd Year" class="rounded border-slate-300 text-brand-600 focus:ring-brand-500 h-4.5 w-4.5">
+                                <span>2nd Year</span>
+                            </label>
+                            <label class="inline-flex items-center space-x-2.5 cursor-pointer text-xs font-semibold text-slate-700">
+                                <input type="checkbox" name="year-preference" value="3rd Year" checked class="rounded border-slate-300 text-brand-600 focus:ring-brand-500 h-4.5 w-4.5">
+                                <span>3rd Year</span>
+                            </label>
+                            <label class="inline-flex items-center space-x-2.5 cursor-pointer text-xs font-semibold text-slate-700">
+                                <input type="checkbox" name="year-preference" value="4th Year" checked class="rounded border-slate-300 text-brand-600 focus:ring-brand-500 h-4.5 w-4.5">
+                                <span>4th Year</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 pt-2">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Program Preference <span class="text-rose-500">*</span></label>
+                        <div class="flex flex-wrap gap-4 items-center">
+                            <label class="inline-flex items-center space-x-2.5 cursor-pointer text-xs font-semibold text-slate-700">
+                                <input type="checkbox" name="program-preference" value="B.tech" checked class="rounded border-slate-300 text-brand-600 focus:ring-brand-500 h-4.5 w-4.5">
+                                <span>B.tech</span>
+                            </label>
+                            <label class="inline-flex items-center space-x-2.5 cursor-pointer text-xs font-semibold text-slate-700">
+                                <input type="checkbox" name="program-preference" value="M.tech" class="rounded border-slate-300 text-brand-600 focus:ring-brand-500 h-4.5 w-4.5">
+                                <span>M.tech</span>
+                            </label>
+                            <label class="inline-flex items-center space-x-2.5 cursor-pointer text-xs font-semibold text-slate-700">
+                                <input type="checkbox" name="program-preference" value="PHD" class="rounded border-slate-300 text-brand-600 focus:ring-brand-500 h-4.5 w-4.5">
+                                <span>PHD</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-2.5 pt-2">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Required Skills & Technologies</label>
+                    
+                    <div class="flex gap-2">
+                        <input type="text" id="skill-input" placeholder="Add a skill or technology..." class="flex-grow text-xs px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/40">
+                        <button type="button" onclick="addNewSkill()" class="px-5 py-3 bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all shadow-sm">
+                            Add
+                        </button>
+                    </div>
+
+                    <div id="skills-badge-list" class="flex flex-wrap gap-2 pt-1.5">
+                        <!-- Dynamic Skills Here -->
+                    </div>
+                </div>
+
+                <div class="space-y-1.5 pt-2">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Vacancy Status</label>
+                    <select id="p-status" class="w-full text-xs px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white text-slate-600 font-medium">
+                        <option value="Open">Open - Accepting Applications</option>
+                        <option value="Draft">Draft Mode (Save only)</option>
+                        <option value="Closed">Closed</option>
+                    </select>
+                </div>
+
+                <div class="pt-6 border-t border-slate-100 flex items-center justify-end space-x-3.5">
+                    <button type="button" onclick="handleFormCancel()" class="w-full sm:w-auto px-6 py-3 border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-bold rounded-xl transition-all text-center">
+                        Cancel
+                    </button>
+                    <button type="submit" id="submitBtn" class="w-full sm:w-auto px-8 py-3 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-brand-100 transition-all transform hover:-translate-y-0.5 text-center flex items-center justify-center space-x-2">
+                        <span>Create Project</span>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+    </main>
+
+    <!-- SUCCESS MODAL -->
+    <div id="success-modal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-slate-950 bg-opacity-40 backdrop-blur-sm transition-opacity" onclick="closeSuccessModal()"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div class="relative inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full border border-slate-100">
+                <div class="p-6 md:p-8 space-y-5">
+                    
+                    <div class="text-center space-y-2">
+                        <div class="h-14 w-14 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-extrabold text-slate-900 tracking-tight">Project Created Successfully!</h3>
+                        <p class="text-xs text-slate-400">Aapka project system me publish ho gaya hai aur students apply kar sakte hain.</p>
+                    </div>
+
+                    <div class="bg-slate-50 rounded-2xl p-5 space-y-3 border border-slate-100/50 text-xs">
+                        <div class="grid grid-cols-3 border-b border-slate-200/50 pb-2.5">
+                            <span class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Project Title</span>
+                            <span id="sum-title" class="col-span-2 text-slate-800 font-semibold truncate pl-2">---</span>
+                        </div>
+                        <div class="grid grid-cols-3 border-b border-slate-200/50 pb-2.5">
+                            <span class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Category & Type</span>
+                            <span id="sum-cat-type" class="col-span-2 text-slate-800 font-semibold pl-2">---</span>
+                        </div>
+                        <div class="grid grid-cols-3 border-b border-slate-200/50 pb-2.5">
+                            <span class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Eligibility</span>
+                            <span id="sum-eligibility" class="col-span-2 text-slate-800 font-semibold pl-2">---</span>
+                        </div>
+                        <div class="grid grid-cols-3 border-b border-slate-200/50 pb-2.5">
+                            <span class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Required Skills</span>
+                            <span id="sum-skills" class="col-span-2 text-slate-800 font-semibold pl-2">---</span>
+                        </div>
+                        <div class="grid grid-cols-3">
+                            <span class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Status</span>
+                            <span id="sum-status" class="col-span-2 pl-2"><span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200">Open</span></span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-3 pt-2">
+                        <button onclick="closeSuccessModal()" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all shadow-md">
+                            Done
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION FEEDBACK -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 max-w-sm w-full bg-slate-900 text-white rounded-2xl shadow-xl border border-slate-800 p-4 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center space-x-3">
+        <div id="toast-icon-bg" class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-900 bg-emerald-400">
+            <svg id="toast-icon" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+        </div>
+        <div class="flex-grow">
+            <h4 class="text-xs font-bold" id="toast-title">System Alert</h4>
+            <p class="text-[11px] text-slate-300 mt-0.5" id="toast-message">Operation completed!</p>
+        </div>
+    </div>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+        let currentSkills = ['Python', 'Machine Learning'];
+        let facultyId = null;
+        let facultyEmail = null;
+
+        window.onload = async function() {
+            renderSkillChips();
+
+            if (typeof supabaseClient !== 'undefined') {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session && session.user) {
+                    facultyId = session.user.id;
+                    facultyEmail = typeof resolveFacultyMasterEmail === 'function'
+                        ? await resolveFacultyMasterEmail(session.user.email)
+                        : session.user.email;
+                    const facultyProfile = typeof resolveFacultyMasterProfile === 'function'
+                        ? await resolveFacultyMasterProfile(session.user.email)
+                        : null;
+                    const fullName = facultyProfile?.name || session.user.user_metadata?.full_name || "Faculty";
+                    document.getElementById('facultyNameDisplay').textContent = fullName;
+                } else {
+                    window.location.href = '../auth/faculty-auth.html';
+                }
+            }
+        };
+
+        document.getElementById('skill-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addNewSkill();
+            }
+        });
+
+        function addNewSkill() {
+            const input = document.getElementById('skill-input');
+            const value = input.value.trim();
+            
+            if (value === '') return;
+            if (currentSkills.includes(value)) {
+                input.value = '';
+                return;
+            }
+
+            currentSkills.push(value);
+            renderSkillChips();
+            input.value = '';
+        }
+
+        window.removeSkillChip = function(buttonElement) {
+            const chip = buttonElement.parentNode;
+            const textValue = chip.querySelector('span').textContent;
+            currentSkills = currentSkills.filter(skill => skill !== textValue);
+            chip.remove();
+        }
+
+        function renderSkillChips() {
+            const container = document.getElementById('skills-badge-list');
+            container.innerHTML = ''; 
+            
+            currentSkills.forEach(skill => {
+                container.innerHTML += `
+                    <span class="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-50 text-brand-700 border border-brand-100 group">
+                        <span>${skill}</span>
+                        <button type="button" onclick="removeSkillChip(this)" class="text-brand-400 hover:text-brand-800 focus:outline-none ml-1 font-bold">✕</button>
+                    </span>
+                `;
+            });
+        }
+
+        async function handleFormSubmission(event) {
+            event.preventDefault(); 
+            
+            if (!facultyId || typeof supabaseClient === 'undefined') {
+                showToast('Authentication Error', 'You must be logged in as Faculty.', 'warning');
+                return;
+            }
+
+            const yearPreferenceChecked = Array.from(document.querySelectorAll('input[name="year-preference"]:checked')).map(el => el.value);
+            const programPreferenceChecked = Array.from(document.querySelectorAll('input[name="program-preference"]:checked')).map(el => el.value);
+
+            if (yearPreferenceChecked.length === 0 || programPreferenceChecked.length === 0) {
+                showToast('Eligibility Check Required', 'Kripya kam se kam ek Preference select karein.', 'warning');
+                return;
+            }
+
+            // Button loading state
+            const submitBtn = document.getElementById('submitBtn');
+            const ogBtnHTML = submitBtn.innerHTML;
+            submitBtn.innerHTML = `<span>Saving...</span>`;
+            submitBtn.disabled = true;
+
+            const newProjectData = {
+                faculty_id: facultyId,
+                faculty_name: document.getElementById('facultyNameDisplay').textContent,
+                faculty_dept: 'Computer Science', // Can be dynamic if we have a field for it
+                title: document.getElementById('p-title').value,
+                description: document.getElementById('p-desc').value,
+                category: document.getElementById('p-category').value,
+                project_type: document.getElementById('p-type').value,
+                students_needed: parseInt(document.getElementById('p-students').value) || 1,
+                duration: document.getElementById('p-duration').value,
+                domain: document.getElementById('p-domain').value,
+                timeline: document.getElementById('p-timeline').value,
+                commitment: document.getElementById('p-commitment').value,
+                course_requirement: document.getElementById('p-course').value,
+                year_preference: yearPreferenceChecked,
+                program_preference: programPreferenceChecked,
+                skills: currentSkills,
+                status: document.getElementById('p-status').value
+            };
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('projects_v2')
+                    .insert([newProjectData]);
+
+                if (error) throw error;
+
+                // Load modal data
+                document.getElementById('sum-title').textContent = newProjectData.title;
+                document.getElementById('sum-cat-type').textContent = `${newProjectData.category} (${newProjectData.project_type})`;
+                document.getElementById('sum-eligibility').textContent = `${yearPreferenceChecked.join(', ')} / ${programPreferenceChecked.join(', ')}`;
+                document.getElementById('sum-skills').textContent = currentSkills.length > 0 ? currentSkills.join(', ') : 'None specified';
+                
+                const badgeClass = newProjectData.status.toLowerCase().includes('open') ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-700 border border-slate-200';
+                document.getElementById('sum-status').innerHTML = `<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${badgeClass}">${newProjectData.status}</span>`;
+
+                openSuccessModal();
+            } catch (err) {
+                console.error(err);
+                showToast('Error', 'Project save nahi ho paya. SQL permissions check karein.', 'warning');
+            } finally {
+                submitBtn.innerHTML = ogBtnHTML;
+                submitBtn.disabled = false;
+            }
+        }
+
+        function handleFormCancel() {
+            const confirmed = confirm("Kya aap naya project cancellation confirm karna chahte hain?");
+            if (confirmed) {
+                document.getElementById('create-project-form').reset();
+                currentSkills = ['Python', 'Machine Learning'];
+                renderSkillChips();
+                showToast('Form Reset Successful', 'Sari details purani avastha me laut gayi hain.', 'info');
+            }
+        }
+
+        function openSuccessModal() {
+            document.getElementById('success-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('success-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            document.getElementById('create-project-form').reset();
+            currentSkills = ['Python', 'Machine Learning'];
+            renderSkillChips();
+            // Redirect to dashboard or stay
+            window.location.href = 'dashboard-new.html';
+        }
+
+        let toastTimeout;
+        function showToast(title, message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastTitle = document.getElementById('toast-title');
+            const toastMessage = document.getElementById('toast-message');
+            const iconBg = document.getElementById('toast-icon-bg');
+            const icon = document.getElementById('toast-icon');
+
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+
+            if (type === 'success') {
+                iconBg.className = "h-8 w-8 rounded-lg flex items-center justify-center text-slate-900 bg-emerald-400";
+                icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />`;
+            } else if (type === 'warning') {
+                iconBg.className = "h-8 w-8 rounded-lg flex items-center justify-center text-slate-900 bg-amber-400";
+                icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />`;
+            } else {
+                iconBg.className = "h-8 w-8 rounded-lg flex items-center justify-center text-white bg-indigo-500";
+                icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />`;
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+
+    <link rel="stylesheet" href="../css/dashboard.css">
+
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<div class="navbar">
+
+    <!-- LEFT -->
+    <div class="logo" onclick="goHome()">🎓 UniProjects</div>
+
+    <!-- CENTER (RIGHT SHIFTED) -->
+    <div class="nav-links">
+        <button class="active">🏠 Browse Projects</button>
+        <button onclick="goApplications()">📂 My Applications</button>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="nav-right">
+
+        <!-- Bell -->
+        <i class="ri-notification-3-line bell" onclick="showNotifications()"></i>
+
+        <!-- Profile -->
+        <div class="profile-wrapper" onclick="goProfile()">
+            <span id="username"></span>
+        </div>
+
+        <!-- Dropdown -->
+        <div id="profileMenu" class="profile-menu hidden">
+            <p onclick="goProfile()">👤 View Profile</p>
+            <p onclick="logout()">🚪 Logout</p>
+        </div>
+
+    </div>
+</div>
+
+<!-- ================= HEADER ================= -->
+<div class="header">
+    <h1>Browse Projects</h1>
+    <p>Discover and apply for exciting research opportunities</p>
+</div>
+
+<!-- ================= STATS ================= -->
+<div class="stats">
+    <div class="stat-card">
+        <p>Total Applications</p>
+        <h2 id="totalApp">0</h2>
+    </div>
+
+    <div class="stat-card">
+        <p>Pending</p>
+        <h2 id="pending">0</h2>
+    </div>
+
+    <div class="stat-card">
+        <p>Approved</p>
+        <h2 id="approved">0</h2>
+    </div>
+
+    <div class="stat-card">
+        <p>Available Projects</p>
+        <h2 id="totalProjects">0</h2>
+    </div>
+</div>
+
+<!-- ================= FILTER ================= -->
+<div class="filters">
+    <input type="text" id="search" placeholder="Search projects, faculty, or skills...">
+
+    <select id="statusFilter">
+        <option value="">All Status</option>
+        <option value="Open">Open</option>
+        <option value="Closed">Closed</option>
+    </select>
+
+    <select id="categoryFilter">
+        <option value="">All Categories</option>
+        <option>Research</option>
+        <option>BTP</option>
+        <option>Independent</option>
+        <option>Internship</option>
+    </select>
+</div>
+
+<!-- ================= PROJECTS ================= -->
+<div id="projectContainer" class="projects"></div>
+
+<!-- ================= NOTIFICATIONS ================= -->
+<div id="notifBox" class="notif-box hidden"></div>
+
+<script src="../js/student.js"></script>
+</body>
+</html>

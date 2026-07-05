@@ -1,0 +1,291 @@
+<!-- profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Profile</title>
+
+<link rel="stylesheet" href="../css/dashboard-new.css?v=2" />
+<link rel="stylesheet" href="../css/profile.css?v=2" />
+
+<link
+href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
+rel="stylesheet"
+/>
+
+</head>
+
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+
+<div class="topbar-left">
+<div class="logo">🎓</div>
+<h2>UniProjects</h2>
+</div>
+
+<div class="topbar-right">
+
+<button class="icon-btn">
+<i class="ri-notification-3-line"></i>
+</button>
+
+<button class="icon-btn">
+<i class="ri-settings-3-line"></i>
+</button>
+
+<div class="top-user">
+<span id="username">Student</span>
+</div>
+
+<button class="logout-btn" onclick="logout()">
+Logout
+</button>
+
+</div>
+</div>
+
+<!-- HERO -->
+<section class="hero-section">
+
+<div class="hero-overlay"></div>
+
+<div class="hero-content">
+
+<div class="profile-image-wrapper">
+
+<img id="profilePicLarge" class="profile-img hidden" />
+
+<div id="profileInitialLarge" class="profile-initial hidden"></div>
+
+<label for="uploadPic" class="camera-btn">
+<i class="ri-camera-line"></i>
+</label>
+
+<input type="file" id="uploadPic" hidden accept="image/*" />
+
+</div>
+
+<div class="hero-info">
+
+<h1 id="name">Loading...</h1>
+
+<p id="email">Loading...</p>
+
+<div class="hero-tags">
+<span id="rollNo">Loading...</span>
+<span id="dept">Loading...</span>
+<span id="program">Loading...</span>
+<span id="year">Loading...</span>
+</div>
+
+<div class="hero-buttons">
+<button class="primary-btn" onclick="window.location.href='./edit-profile.html'">
+<i class="ri-edit-line"></i>
+Edit Profile
+</button>
+
+<button class="secondary-btn">
+<i class="ri-share-forward-line"></i>
+Share Profile
+</button>
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- MAIN -->
+<div class="container">
+
+<!-- LEFT -->
+<div class="left-panel">
+
+<!-- ABOUT -->
+<div class="card">
+
+<div class="card-header">
+<h3>About Me</h3>
+<i class="ri-user-3-line"></i>
+</div>
+
+<textarea
+id="bio"
+placeholder="Write something about yourself..."
+></textarea>
+
+<button class="save-btn" onclick="saveProfile()">
+Save Bio
+</button>
+
+</div>
+
+<!-- SKILLS -->
+<div class="card">
+
+<div class="card-header">
+<h3>Skills</h3>
+<i class="ri-code-s-slash-line"></i>
+</div>
+
+<div class="skill-input">
+
+<input
+id="skillInput"
+placeholder="Add a skill..."
+/>
+
+<button onclick="addSkill()">
+<i class="ri-add-line"></i>
+</button>
+
+</div>
+
+<div id="skillsList"></div>
+
+</div>
+
+<!-- DOMAIN -->
+<div class="card">
+
+<div class="card-header">
+<h3>Domain</h3>
+<i class="ri-lightbulb-line"></i>
+</div>
+
+<select id="domain">
+<option>Machine Learning</option>
+<option>Web Development</option>
+<option>Cloud</option>
+<option>Cybersecurity</option>
+<option>Game Development</option>
+<option>AI</option>
+</select>
+
+<button class="save-btn" onclick="saveProfile()">
+Save Domain
+</button>
+
+</div>
+
+<!-- LINKS -->
+<div class="card">
+
+<div class="card-header">
+<h3>Social Links</h3>
+<i class="ri-links-line"></i>
+</div>
+
+<div class="social-inputs">
+
+<input type="text" id="githubInput" placeholder="GitHub URL" />
+<input type="text" id="linkedinInput" placeholder="LinkedIn URL" />
+<input type="text" id="portfolioInput" placeholder="Portfolio URL" />
+
+<button class="save-btn" onclick="saveSocials()">Save Links</button>
+
+</div>
+
+<div class="social-icons">
+
+<a href="#" id="githubLink" target="_blank" class="hidden">
+<i class="ri-github-fill"></i>
+</a>
+
+<a href="#" id="linkedinLink" target="_blank" class="hidden">
+<i class="ri-linkedin-box-fill"></i>
+</a>
+
+<a href="#" id="portfolioLink" target="_blank" class="hidden">
+<i class="ri-global-line"></i>
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- RIGHT -->
+<div class="right-panel">
+
+<!-- STATS -->
+<div class="stats-grid">
+
+<div class="stat-card">
+<h2 id="statApplications">0</h2>
+<p>Applications</p>
+</div>
+
+<div class="stat-card">
+<h2 id="statAccepted">0</h2>
+<p>Accepted</p>
+</div>
+
+<div class="stat-card">
+<h2 id="statSkills">0</h2>
+<p>Skills</p>
+</div>
+
+<div class="stat-card">
+<h2 id="statProfileComplete">0%</h2>
+<p>Profile Complete</p>
+</div>
+
+</div>
+
+<!-- APPLICATIONS -->
+<div class="card">
+
+<div class="card-header">
+<h3>Applications</h3>
+<i class="ri-briefcase-line"></i>
+</div>
+
+<div id="applications"></div>
+
+</div>
+
+<!-- ACTIVITY -->
+<div class="card">
+
+<div class="card-header">
+<h3>Recent Activity</h3>
+<i class="ri-time-line"></i>
+</div>
+
+<div class="activity-list">
+
+<div class="activity-item">
+<div class="dot"></div>
+<p>Applied to AI Research Project</p>
+</div>
+
+<div class="activity-item">
+<div class="dot"></div>
+<p>Updated profile skills</p>
+</div>
+
+<div class="activity-item">
+<div class="dot"></div>
+<p>Uploaded resume</p>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/profile.js"></script>
+
+</body>
+</html>

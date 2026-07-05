@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniProjects - Travel Recommendation System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+    <script src="../js/faculty-local-data.js"></script>
+    <script src="../js/supabase.js"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar styling for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+    </style>
+</head>
+<body class="bg-[#F8FAFC] text-[#1E293B] min-h-screen flex flex-col selection:bg-indigo-100 selection:text-indigo-900 relative overflow-x-hidden">
+
+    <!-- Decorative subtle grid background -->
+    <div class="absolute inset-0 pointer-events-none opacity-[0.03] bg-[radial-gradient(#4f46e5_1px,transparent_1px)] [background-size:16px_16px] z-0"></div>
+
+    <!-- Top Navbar Header -->
+    <header class="bg-white border-b border-[#E2E8F0] px-4 md:px-6 py-3.5 flex items-center justify-between sticky top-0 z-40 shadow-sm relative">
+        <!-- Left Section: Logo & Project Title -->
+        <div class="flex items-center space-x-3 md:space-x-8">
+            <!-- Mobile sidebar toggle button -->
+            <button id="mobile-sidebar-toggle" class="lg:hidden p-1.5 hover:bg-[#F1F5F9] rounded-lg transition text-[#64748B]" aria-label="Toggle Navigation Sidebar">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+
+            <!-- Brand Logo -->
+            <div id="nav-brand-logo" class="flex items-center space-x-2 font-bold text-lg md:text-xl text-[#0F172A] tracking-tight cursor-pointer">
+                <div id="brand-logo-bg" class="bg-[#4F46E5] text-white p-2 rounded-xl flex items-center justify-center shadow-md shadow-indigo-100 transform hover:scale-105 transition-transform">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                    </svg>
+                </div>
+                <span id="brand-logo-text" class="bg-gradient-to-r from-[#0F172A] to-[#4F46E5] bg-clip-text text-transparent">UniProjects</span>
+            </div>
+            
+            <!-- BTP Title (Hidden on mobile) -->
+            <div class="hidden sm:flex flex-col border-l border-[#E2E8F0] pl-4 md:pl-6">
+                <div class="flex items-center space-x-2.5">
+                    <h1 class="text-sm md:text-base font-bold text-[#0F172A] tracking-tight">Travel Recommendation System</h1>
+                    <span id="approved-status-badge" class="bg-[#EEF2F6] text-[#4F46E5] text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-[#E2E8F0] flex items-center gap-1">
+                        <svg id="approved-status-badge-icon" class="w-3 h-3 text-[#4F46E5]" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        Approved
+                    </span>
+                </div>
+                <p class="text-[11px] text-[#64748B] font-medium">BTP - Final Year &bull; Deadline: 28 June 2025</p>
+            </div>
+        </div>
+
+        <!-- Right Section: Notifications & User Profile -->
+        <div class="flex items-center space-x-3 relative z-50">
+            <!-- Notification Widget -->
+            <div class="relative">
+                <button id="notification-btn" class="relative p-2 text-[#64748B] hover:text-[#4F46E5] bg-[#F8FAFC] hover:bg-indigo-50 rounded-full transition-all focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                    </svg>
+                    <span id="notification-badge" class="absolute top-1.5 right-1.5 bg-[#4F46E5] text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full border-2 border-white animate-bounce hidden">0</span>
+                </button>
+
+                <!-- Notifications Dropdown Portal -->
+                <div id="notification-dropdown" class="absolute right-0 mt-3 w-80 bg-white border border-[#E2E8F0] rounded-2xl shadow-xl overflow-hidden hidden transform origin-top-right transition-all">
+                    <div class="px-4 py-3 bg-gradient-to-r from-indigo-50 to-white border-b border-[#E2E8F0] flex justify-between items-center">
+                        <span class="text-sm font-bold text-[#0F172A]">Project Notifications</span>
+                        <button id="clear-notifications-btn" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold">Clear All</button>
+                    </div>
+                    <div id="notifications-list-container" class="max-h-64 overflow-y-auto divide-y divide-[#F1F5F9]">
+                        <!-- Dynamic Notifications go here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Menu -->
+            <div class="flex items-center space-x-2 cursor-pointer bg-[#F8FAFC] hover:bg-indigo-50/50 p-1.5 pr-3 rounded-full transition-all group">
+                <div id="nav-profile-avatar" class="w-8 h-8 rounded-full bg-[#6366F1] text-white font-bold flex items-center justify-center text-sm shadow-sm ring-2 ring-indigo-100">V</div>
+                <span id="nav-profile-name" class="text-sm font-semibold text-[#0F172A] hidden sm:inline group-hover:text-indigo-600 transition-colors">Vinit</span>
+                <svg class="w-4 h-4 text-[#64748B] group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace Area -->
+    <div class="flex flex-1 relative z-10 overflow-hidden">
+        
+        <!-- SIDEBAR (LEFT) - Desktop persistent, Mobile overlay slide-out drawer -->
+        <aside id="sidebar-container" class="fixed inset-y-0 left-0 transform -translate-x-full lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out w-80 border-r border-[#E2E8F0] bg-white p-6 overflow-y-auto space-y-6 shrink-0 z-30 lg:z-10 flex flex-col justify-between">
+            
+            <div class="space-y-6">
+                <!-- Mobile Drawer Header -->
+                <div class="flex items-center justify-between lg:hidden pb-2 border-b border-[#F1F5F9]">
+                    <span class="font-bold text-[#0F172A]">Workspace Panels</span>
+                    <button id="mobile-sidebar-close" class="p-1 hover:bg-[#F1F5F9] rounded-lg text-[#64748B]">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Navigation Panels -->
+                <div>
+                    <h3 class="font-bold text-[#475569] text-[10px] tracking-wider uppercase mb-3">Workspace Panels</h3>
+                    <div class="space-y-1">
+                        <!-- Project Feed Link -->
+                        <a id="nav-project-feed" href="#" class="flex items-center space-x-2.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all bg-indigo-50 text-[#4F46E5]">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                            </svg>
+                            <span>Project Feed</span>
+                        </a>
+                        <!-- Project Blogs Link -->
+                        <a id="nav-project-blogs" href="#" class="flex items-center space-x-2.5 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[#64748B] hover:text-[#4F46E5] hover:bg-slate-50">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 4a2 2 0 00-2-2m-2-3h3m-3 3h3m-3 3h3m-6-6h-3m3 3h-3m3 3h-3"></path>
+                            </svg>
+                            <span>Project Blogs</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Team Members Scope -->
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-[#475569] text-xs tracking-wider uppercase">Team Members</h3>
+                        <span id="member-count-badge" class="bg-[#EEF2F6] text-[#4F46E5] text-[11px] font-bold px-2 py-0.5 rounded-full border border-[#E2E8F0]">6</span>
+                    </div>
+                    <div id="team-members-list" class="space-y-3.5">
+                        <!-- Dynamic Team List rendering -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Project Box inside sidebar -->
+            <div class="pt-6 border-t border-[#E2E8F0]">
+                <div class="bg-[#EEF2F6]/50 border border-[#E2E8F0] rounded-2xl p-4 flex flex-col justify-between hover:bg-indigo-50/30 hover:border-indigo-100 transition-all">
+                    <div>
+                        <div class="flex items-center space-x-2 text-[#4F46E5] mb-2.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <h4 class="text-[11px] font-bold uppercase tracking-wider">About Project</h4>
+                        </div>
+                        <p class="text-xs text-[#475569] leading-relaxed">
+                            A web application that suggests best travel destinations to users based on preferences, budget and reviews.
+                        </p>
+                    </div>
+                    <button id="view-project-details-btn" class="text-xs font-bold text-[#4F46E5] hover:text-[#4338CA] mt-4 inline-flex items-center space-x-1 group focus:outline-none text-left">
+                        <span>View Project Details</span>
+                        <svg class="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Mobile Background Overlay drawer dismisser -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-20 lg:hidden hidden"></div>
+
+        <!-- MAIN CONVERSATION / FEED CONTAINER -->
+        <main class="flex-1 flex flex-col justify-between bg-white overflow-hidden relative">
+            
+            <!-- Feed Sub Header -->
+            <div class="px-6 md:px-8 py-4 border-b border-[#E2E8F0] flex flex-col sm:flex-row sm:items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-20 space-y-3 sm:space-y-0">
+                <div class="flex items-center space-x-3.5">
+                    <div id="channel-header-icon" class="text-[#4F46E5] bg-indigo-50 p-2.5 rounded-xl border border-indigo-100 shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-base font-bold text-[#0F172A] flex items-center gap-2">
+                            Project Channel
+                            <span class="w-2 h-2 rounded-full bg-indigo-500 animate-ping"></span>
+                        </h2>
+                        <p class="text-xs text-[#64748B] font-medium">All project updates and discussions</p>
+                    </div>
+                </div>
+
+                <!-- Feed actions -->
+                <div class="flex items-center space-x-2 self-end sm:self-auto">
+                    <!-- Dynamic Search Engine Box -->
+                    <div id="search-wrapper" class="flex items-center transition-all duration-300 w-10 bg-transparent rounded-full px-2.5 py-1.5 border border-transparent">
+                        <button id="search-trigger" class="text-[#64748B] hover:text-[#4F46E5] focus:outline-none" title="Search Updates">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </button>
+                        <input id="search-input" type="text" placeholder="Search updates, keywords..." class="ml-2 w-0 opacity-0 bg-transparent text-xs text-[#1E293B] focus:outline-none placeholder-[#94A3B8] transition-all duration-300">
+                    </div>
+
+                    <!-- Reset search criteria -->
+                    <button id="reset-search-btn" class="text-xs text-[#4F46E5] hover:text-indigo-800 font-bold px-2 py-1 bg-indigo-50 rounded-full hidden">Reset</button>
+
+                    <!-- Settings Trigger button -->
+                    <button id="project-settings-btn" class="p-2 text-[#64748B] hover:text-[#4F46E5] hover:bg-slate-100 rounded-full transition-all" title="Project Parameters">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- CHAT / FEED ITEMS SCROLLABLE CONTAINER -->
+            <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-3 max-w-4xl w-full mx-auto flex flex-col" id="feed-items-container">
+                <!-- Posts are injected dynamically here -->
+            </div>
+
+            <!-- CHAT INPUT BAR (Sticky Bottom) -->
+            <div class="p-4 border-t border-[#E2E8F0] bg-white sticky bottom-0 z-20 shadow-lg">
+                <form id="new-post-form" class="max-w-4xl w-full mx-auto flex items-center space-x-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl px-4 py-2.5 focus-within:border-[#4F46E5] focus-within:ring-2 focus-within:ring-indigo-100 focus-within:bg-white transition-all duration-300">
+                    <!-- Attachment button simulation -->
+                    <button type="button" id="attachment-btn" class="text-[#64748B] hover:text-[#4F46E5] transition-colors p-1 hover:bg-slate-100 rounded-lg" title="Simulate adding file attachment">
+                        <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                        </svg>
+                    </button>
+
+                    <!-- Text Input -->
+                    <input id="new-post-input" type="text" placeholder="Write a project update..." class="w-full bg-transparent border-none text-sm text-[#0F172A] focus:outline-none placeholder-[#94A3B8]">
+
+                    <!-- Emoji Insertion shortcut -->
+                    <button type="button" id="emoji-btn" class="text-[#64748B] hover:text-[#4F46E5] transition-colors p-1 hover:bg-slate-100 rounded-lg hidden sm:inline" title="Add thumbs up emoji">
+                        <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </button>
+
+                    <!-- Submit action button -->
+                    <button id="post-submit-btn" type="submit" class="bg-[#4F46E5] text-white p-2.5 rounded-xl hover:bg-indigo-700 transition-all duration-150 shadow-md shadow-indigo-100 flex items-center justify-center shrink-0 active:scale-95" title="Send update">
+                        <svg class="w-4 h-4 transform rotate-90" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODAL 1: TEAM MEMBER PROFILE CARD -->
+    <div id="member-modal" class="fixed inset-0 bg-slate-900/45 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white border border-[#E2E8F0] rounded-3xl max-w-md w-full p-6 relative shadow-2xl space-y-5">
+            <!-- Close trigger -->
+            <button id="close-member-modal" class="absolute top-4 right-4 p-1.5 hover:bg-[#F1F5F9] rounded-xl text-[#64748B] transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <!-- Card profile content -->
+            <div class="flex id-card items-center space-x-4">
+                <div id="member-modal-avatar-container"></div>
+                <div>
+                    <h3 id="member-modal-name" class="text-lg font-bold text-[#0F172A]">Dr. Rahul Sharma</h3>
+                    <span id="member-modal-role" class="text-xs bg-indigo-50 text-[#4F46E5] px-2.5 py-0.5 rounded-full font-bold border border-indigo-100 mt-1 inline-block">Professor</span>
+                </div>
+            </div>
+
+            <!-- Parameters details -->
+            <div class="space-y-3.5 pt-2 border-t border-slate-100">
+                <div>
+                    <span class="text-[10px] text-slate-400 font-bold uppercase block">Email Address</span>
+                    <span id="member-modal-email" class="text-sm text-slate-700 font-medium">rahul.sharma@university.edu</span>
+                </div>
+                <div>
+                    <span class="text-[10px] text-slate-400 font-bold uppercase block">Status</span>
+                    <span id="member-modal-status" class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                        Online
+                    </span>
+                </div>
+                <div>
+                    <span class="text-[10px] text-slate-400 font-bold uppercase block">Assigned Scope / Contribution</span>
+                    <p id="member-modal-contribution" class="text-xs text-slate-600 leading-relaxed mt-0.5">Supervising project guidelines, verifying JWT auth modules and testing suites.</p>
+                </div>
+            </div>
+
+            <div class="pt-2 flex justify-end">
+                <button id="close-member-modal-btn" class="bg-[#4F46E5] hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition">Close Details</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: ABOUT PROJECT EXPANDED DETAILS -->
+    <div id="project-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white border border-[#E2E8F0] rounded-3xl max-w-lg w-full p-6 relative shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+            <!-- Close cross -->
+            <button id="close-project-modal" class="absolute top-4 right-4 p-1.5 hover:bg-[#F1F5F9] rounded-xl text-[#64748B] transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <div>
+                <div class="text-xs text-[#4F46E5] font-bold uppercase tracking-wider flex items-center gap-1.5 mb-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Project Specification
+                </div>
+                <h3 class="text-xl font-bold text-[#0F172A]">Travel Recommendation System</h3>
+                <p class="text-xs text-[#64748B] mt-0.5">Approved Milestone &bull; Expected June 28, 2025</p>
+            </div>
+
+            <div class="space-y-4 pt-3 border-t border-slate-100">
+                <!-- Description -->
+                <div class="space-y-1">
+                    <span class="text-[10px] text-slate-400 font-bold uppercase block">Core Description</span>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        An intelligent recommendation system utilizing machine learning and filtered databases to suggest optimized travel paths, budget categories, and personalized spots depending on user survey criteria and review scoring.
+                    </p>
+                </div>
+
+                <!-- Stack list -->
+                <div>
+                    <span class="text-[10px] text-slate-400 font-bold uppercase block mb-1.5">Technology Stack</span>
+                    <div class="flex flex-wrap gap-1.5">
+                        <span class="text-xs bg-slate-50 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200/50 font-medium">React.js</span>
+                        <span class="text-xs bg-slate-50 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200/50 font-medium">Tailwind CSS</span>
+                        <span class="text-xs bg-slate-50 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200/50 font-medium">Node.js</span>
+                        <span class="text-xs bg-slate-50 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200/50 font-medium">Express</span>
+                        <span class="text-xs bg-slate-50 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200/50 font-medium">JWT Auth</span>
+                        <span class="text-xs bg-slate-50 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200/50 font-medium">MongoDB</span>
+                        <span class="text-xs bg-slate-50 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200/50 font-medium">Python recommendation engine</span>
+                    </div>
+                </div>
+
+                <!-- Completion Status progress bars -->
+                <div class="space-y-3 pt-1">
+                    <span class="text-[10px] text-slate-400 font-bold uppercase block">Phase Deliverables progress</span>
+                    
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between text-xs">
+                            <span class="font-semibold text-slate-700">UI/UX & Frontend Designs</span>
+                            <span class="text-slate-500">90%</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2">
+                            <div class="bg-[#4F46E5] h-2 rounded-full" style="width: 90%"></div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between text-xs">
+                            <span class="font-semibold text-slate-700">Backend API Integration</span>
+                            <span class="text-slate-500">75%</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2">
+                            <div class="bg-indigo-500 h-2 rounded-full" style="width: 75%"></div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between text-xs">
+                            <span class="font-semibold text-slate-700">Recommendation Algorithm Tuning</span>
+                            <span class="text-slate-500">45%</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2">
+                            <div class="bg-indigo-400 h-2 rounded-full" style="width: 45%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-2 flex justify-end">
+                <button id="close-project-modal-btn" class="bg-[#4F46E5] hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-md shadow-indigo-100">Close Project Panel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VANILLA JAVASCRIPT STATE ENGINE & DOM HANDLERS -->
+    <script>
+        // --- DATA STATES ---
+        let currentUserProfile = {
+            id: 'mock-user-id',
+            name: 'Vinit Sharma',
+            role: 'Team Lead',
+            initials: 'V',
+            color: 'bg-[#6366F1]',
+            avatarImg: null,
+            email: 'vinit.btp@student.uni.edu'
+        };
+
+        let posts = [];
+        let currentProject = null;
+        let isProfessorRole = false;
+
+        function applyDynamicTheme(isProfessor) {
+            isProfessorRole = isProfessor;
+
+            // Brand Logo & Navigation Redirections
+            const navBrandLogo = document.getElementById('nav-brand-logo');
+            if (navBrandLogo) {
+                navBrandLogo.onclick = () => {
+                    if (isProfessor) {
+                        window.location.href = '../faculty/dashboard-new.html';
+                    } else {
+                        window.location.href = '../student/dashboard-new.html';
+                    }
+                };
+            }
+
+            // Adjust element styling dynamically
+            const logoBg = document.getElementById('brand-logo-bg');
+            if (logoBg) {
+                if (isProfessor) {
+                    logoBg.className = "bg-[#4F46E5] text-white p-2 rounded-xl flex items-center justify-center shadow-md shadow-indigo-100 transform hover:scale-105 transition-transform";
+                } else {
+                    logoBg.className = "bg-emerald-600 text-white p-2 rounded-xl flex items-center justify-center shadow-md shadow-emerald-100 transform hover:scale-105 transition-transform";
+                }
+            }
+
+            const logoText = document.getElementById('brand-logo-text');
+            if (logoText) {
+                if (isProfessor) {
+                    logoText.className = "bg-gradient-to-r from-[#0F172A] to-[#4F46E5] bg-clip-text text-transparent";
+                } else {
+                    logoText.className = "bg-gradient-to-r from-[#0F172A] to-emerald-600 bg-clip-text text-transparent";
+                }
+            }
+
+            const appBadge = document.getElementById('approved-status-badge');
+            if (appBadge) {
+                if (isProfessor) {
+                    appBadge.className = "bg-[#EEF2F6] text-[#4F46E5] text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-[#E2E8F0] flex items-center gap-1";
+                } else {
+                    appBadge.className = "bg-emerald-50 text-emerald-600 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1";
+                }
+            }
+
+            const appBadgeIcon = document.getElementById('approved-status-badge-icon');
+            if (appBadgeIcon) {
+                if (isProfessor) {
+                    appBadgeIcon.className = "w-3 h-3 text-[#4F46E5]";
+                } else {
+                    appBadgeIcon.className = "w-3 h-3 text-emerald-600";
+                }
+            }
+
+            const channelHeaderIcon = document.getElementById('channel-header-icon');
+            if (channelHeaderIcon) {
+                if (isProfessor) {
+                    channelHeaderIcon.className = "text-[#4F46E5] bg-indigo-50 p-2.5 rounded-xl border border-indigo-100 shadow-sm";
+                } else {
+                    channelHeaderIcon.className = "text-emerald-600 bg-emerald-50 p-2.5 rounded-xl border border-emerald-100 shadow-sm";
+                }
+            }
+
+            const channelHeaderDot = document.querySelector('h2.text-base span.bg-indigo-500');
+            if (channelHeaderDot) {
+                if (isProfessor) {
+                    channelHeaderDot.className = "w-2 h-2 rounded-full bg-indigo-500 animate-ping";
+                } else {
+                    channelHeaderDot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-ping";
+                }
+            }
+
+            const notifBadge = document.getElementById('notification-badge');
+            if (notifBadge) {
+                if (isProfessor) {
+                    notifBadge.className = "absolute top-1.5 right-1.5 bg-[#4F46E5] text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full border-2 border-white animate-bounce hidden";
+                } else {
+                    notifBadge.className = "absolute top-1.5 right-1.5 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full border-2 border-white animate-bounce hidden";
+                }
+            }
+
+            const notifText = document.querySelector('#notification-dropdown div.px-4');
+            if (notifText) {
+                if (isProfessor) {
+                    notifText.className = "px-4 py-3 bg-gradient-to-r from-indigo-50 to-white border-b border-[#E2E8F0] flex justify-between items-center";
+                } else {
+                    notifText.className = "px-4 py-3 bg-gradient-to-r from-emerald-50 to-white border-b border-[#E2E8F0] flex justify-between items-center";
+                }
+            }
+
+            const notifClear = document.getElementById('clear-notifications-btn');
+            if (notifClear) {
+                if (isProfessor) {
+                    notifClear.className = "text-xs text-indigo-600 hover:text-indigo-800 font-semibold";
+                } else {
+                    notifClear.className = "text-xs text-emerald-600 hover:text-emerald-800 font-semibold";
+                }
+            }
+
+            const sidebarAboutBoxBtn = document.getElementById('view-project-details-btn');
+            if (sidebarAboutBoxBtn) {
+                if (isProfessor) {
+                    sidebarAboutBoxBtn.className = "text-xs font-bold text-[#4F46E5] hover:text-[#4338CA] mt-4 inline-flex items-center space-x-1 group focus:outline-none text-left";
+                } else {
+                    sidebarAboutBoxBtn.className = "text-xs font-bold text-emerald-600 hover:text-emerald-800 mt-4 inline-flex items-center space-x-1 group focus:outline-none text-left";
+                }
+            }
+
+            const postForm = document.getElementById('new-post-form');
+            if (postForm) {
+                if (isProfessor) {
+                    postForm.className = "max-w-4xl w-full mx-auto flex items-center space-x-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl px-4 py-2.5 focus-within:border-[#4F46E5] focus-within:ring-2 focus-within:ring-indigo-100 focus-within:bg-white transition-all duration-300";
+                } else {
+                    postForm.className = "max-w-4xl w-full mx-auto flex items-center space-x-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl px-4 py-2.5 focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-100 focus-within:bg-white transition-all duration-300";
+                }
+            }
+
+            const postSubmitBtn = document.getElementById('post-submit-btn');
+            if (postSubmitBtn) {
+                if (isProfessor) {
+                    postSubmitBtn.className = "bg-[#4F46E5] text-white p-2.5 rounded-xl hover:bg-indigo-700 transition-all duration-150 shadow-md shadow-indigo-100 flex items-center justify-center shrink-0 active:scale-95";
+                } else {
+                    postSubmitBtn.className = "bg-emerald-600 text-white p-2.5 rounded-xl hover:bg-emerald-700 transition-all duration-150 shadow-md shadow-emerald-100 flex items-center justify-center shrink-0 active:scale-95";
+                }
+            }
+
+            const projectModalTitle = document.querySelector('#project-modal div.text-xs');
+            if (projectModalTitle) {
+                if (isProfessor) {
+                    projectModalTitle.className = "text-xs text-[#4F46E5] font-bold uppercase tracking-wider flex items-center gap-1.5 mb-1";
+                } else {
+                    projectModalTitle.className = "text-xs text-emerald-600 font-bold uppercase tracking-wider flex items-center gap-1.5 mb-1";
+                }
+            }
+
+            const projectModalCloseBtn = document.getElementById('close-project-modal-btn');
+            if (projectModalCloseBtn) {
+                if (isProfessor) {
+                    projectModalCloseBtn.className = "bg-[#4F46E5] hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-md shadow-indigo-100";
+                } else {
+                    projectModalCloseBtn.className = "bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-md shadow-emerald-100";
+                }
+            }
+
+            const memberModalRole = document.getElementById('member-modal-role');
+            if (memberModalRole) {
+                if (isProfessor) {
+                    memberModalRole.className = "text-xs bg-indigo-50 text-[#4F46E5] px-2.5 py-0.5 rounded-full font-bold border border-indigo-100 mt-1 inline-block";
+                } else {
+                    memberModalRole.className = "text-xs bg-emerald-50 text-emerald-600 px-2.5 py-0.5 rounded-full font-bold border border-emerald-100 mt-1 inline-block";
+                }
+            }
+
+            const memberModalCloseBtn = document.getElementById('close-member-modal-btn');
+            if (memberModalCloseBtn) {
+                if (isProfessor) {
+                    memberModalCloseBtn.className = "bg-[#4F46E5] hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition";
+                } else {
+                    memberModalCloseBtn.className = "bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition";
+                }
+            }
+
+            const searchTriggerBtn = document.getElementById('search-trigger');
+            if (searchTriggerBtn) {
+                if (isProfessor) {
+                    searchTriggerBtn.className = "text-[#64748B] hover:text-[#4F46E5] focus:outline-none";
+                } else {
+                    searchTriggerBtn.className = "text-[#64748B] hover:text-emerald-600 focus:outline-none";
+                }
+            }
+
+            // Configure Workspace Panels Links dynamically
+            const urlParams = new URLSearchParams(window.location.search);
+            const projectId = urlParams.get('id');
+            const navFeed = document.getElementById('nav-project-feed');
+            const navBlogs = document.getElementById('nav-project-blogs');
+            const activeRole = isProfessor ? 'faculty' : 'student';
+
+            if (navFeed && projectId) {
+                navFeed.href = `got_to_project.html?id=${projectId}&as=${activeRole}`;
+                if (isProfessor) {
+                    navFeed.className = "flex items-center space-x-2.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all bg-indigo-50 text-[#4F46E5]";
+                } else {
+                    navFeed.className = "flex items-center space-x-2.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all bg-emerald-50 text-emerald-600";
+                }
+            }
+            if (navBlogs && projectId) {
+                navBlogs.href = `project_blogs.html?id=${projectId}&as=${activeRole}`;
+                if (isProfessor) {
+                    navBlogs.className = "flex items-center space-x-2.5 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[#64748B] hover:text-[#4F46E5] hover:bg-indigo-50/30";
+                } else {
+                    navBlogs.className = "flex items-center space-x-2.5 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[#64748B] hover:text-emerald-600 hover:bg-emerald-50/30";
+                }
+            }
+        }
+
+        let teamMembers = [
+            {
+                name: 'Dr. Rahul Sharma',
+                role: 'Professor',
+                email: 'rahul.sharma@university.edu',
+                status: 'Online',
+                avatarImg: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80',
+                initials: 'RS',
+                color: null,
+                contribution: 'Supervising project guidelines, verifying JWT auth modules and testing suites.'
+            },
+            {
+                name: 'Vinit Sharma',
+                role: 'Team Lead',
+                email: 'vinit.btp@student.uni.edu',
+                status: 'Online',
+                avatarImg: null,
+                initials: 'V',
+                color: 'bg-[#6366F1]',
+                contribution: 'Creating project scaffolding, core Auth APIs, routing, and task distribution.'
+            },
+            {
+                name: 'Priyanshu Singh',
+                role: 'Backend Developer',
+                email: 'priyanshu.s@student.uni.edu',
+                status: 'Online',
+                avatarImg: null,
+                initials: 'P',
+                color: 'bg-[#8B5CF6]',
+                contribution: 'Implementing destination algorithms, databases schemas, filtering & recommendation API.'
+            },
+            {
+                name: 'Aditi Verma',
+                role: 'Frontend Developer',
+                email: 'aditi.v@student.uni.edu',
+                status: 'Online',
+                avatarImg: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+                initials: 'A',
+                color: 'bg-[#06B6D4]',
+                contribution: 'Creating interactive responsive layouts, state integrations, animations, and map components.'
+            },
+            {
+                name: 'Karan Patel',
+                role: 'UI/UX Designer',
+                email: 'karan.patel@student.uni.edu',
+                status: 'Offline',
+                avatarImg: null,
+                initials: 'K',
+                color: 'bg-[#F59E0B]',
+                contribution: 'Figma mockups, interactive prototypes, design system design tokens, asset preparation.'
+            },
+            {
+                name: 'Simran Kaur',
+                role: 'Database Developer',
+                email: 'simran.k@student.uni.edu',
+                status: 'Offline',
+                avatarImg: null,
+                initials: 'S',
+                color: 'bg-[#EC4899]',
+                contribution: 'MongoDB queries profiling, index setups, scaling plans, location data indexing.'
+            }
+        ];
+
+        let notifications = [
+            { id: 1, text: "Dr. Rahul Sharma liked your auth module update", read: false, time: "20m ago" },
+            { id: 2, text: "Priyanshu added 2 new comments in Project Channel", read: false, time: "1h ago" },
+            { id: 3, text: "System: Milestone BTP Final Year set to 'Approved'", read: true, time: "2h ago" }
+        ];
+
+        let searchQuery = "";
+        let searchOpen = false;
+
+        // --- DOM ELEMENT REFERENCES ---
+        const feedContainer = document.getElementById('feed-items-container');
+        const teamContainer = document.getElementById('team-members-list');
+        const newPostForm = document.getElementById('new-post-form');
+        const newPostInput = document.getElementById('new-post-input');
+        const searchWrapper = document.getElementById('search-wrapper');
+        const searchTrigger = document.getElementById('search-trigger');
+        const searchInput = document.getElementById('search-input');
+        const resetSearchBtn = document.getElementById('reset-search-btn');
+        const notificationBtn = document.getElementById('notification-btn');
+        const notificationDropdown = document.getElementById('notification-dropdown');
+        const notificationBadge = document.getElementById('notification-badge');
+        const notificationsListContainer = document.getElementById('notifications-list-container');
+        const clearNotificationsBtn = document.getElementById('clear-notifications-btn');
+
+        // Modals
+        const memberModal = document.getElementById('member-modal');
+        const projectModal = document.getElementById('project-modal');
+
+        // Sidebar mobile
+        const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
+        const mobileSidebarClose = document.getElementById('mobile-sidebar-close');
+        const sidebarContainer = document.getElementById('sidebar-container');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        // --- RENDER FUNCTIONS ---
+
+        // Render Posts Feed
+        function renderPosts() {
+            feedContainer.innerHTML = "";
+
+            const filteredPosts = posts.filter(post => {
+                const query = searchQuery.toLowerCase();
+                const authorMatches = post.author.name.toLowerCase().includes(query);
+                const contentMatches = post.content.some(paragraph => paragraph.toLowerCase().includes(query));
+                return authorMatches || contentMatches;
+            });
+
+            // If there's search filter active, show a badge at top of feed
+            if (searchQuery) {
+                const searchBadge = document.createElement('div');
+                if (isProfessorRole) {
+                    searchBadge.className = "bg-indigo-50 border border-indigo-100 text-indigo-700 rounded-xl px-4 py-3 text-xs flex items-center justify-between";
+                } else {
+                    searchBadge.className = "bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-xl px-4 py-3 text-xs flex items-center justify-between";
+                }
+                searchBadge.innerHTML = `
+                    <span>Showing updates matching <strong>"${searchQuery}"</strong> (${filteredPosts.length} found)</span>
+                    <button id="clear-search-badge-btn" class="underline font-semibold hover:text-indigo-900">Clear Search</button>
+                `;
+                feedContainer.appendChild(searchBadge);
+                document.getElementById('clear-search-badge-btn').onclick = () => {
+                    searchQuery = "";
+                    searchInput.value = "";
+                    renderPosts();
+                    toggleSearchInputState();
+                };
+            }
+
+            if (filteredPosts.length === 0) {
+                const iconColorClass = isProfessorRole ? "bg-indigo-50 text-[#4F46E5]" : "bg-emerald-50 text-emerald-600";
+                feedContainer.innerHTML += `
+                    <div class="flex flex-col items-center justify-center py-20 text-center">
+                        <div class="w-16 h-16 ${iconColorClass} rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="font-bold text-[#0F172A] text-lg">No matching updates</h3>
+                        <p class="text-sm text-[#64748B] max-w-xs mt-1">We couldn't find any announcements matching your query. Try something else!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // --- Unique name colors for each member (stable by name hash) ---
+            const memberNameColors = [
+                { name: 'text-indigo-700', accent: '#4F46E5', border: 'border-l-indigo-500', bg: 'bg-indigo-50/60' },
+                { name: 'text-violet-700', accent: '#7C3AED', border: 'border-l-violet-500', bg: 'bg-violet-50/60' },
+                { name: 'text-cyan-700', accent: '#0891B2', border: 'border-l-cyan-500', bg: 'bg-cyan-50/60' },
+                { name: 'text-amber-700', accent: '#D97706', border: 'border-l-amber-500', bg: 'bg-amber-50/60' },
+                { name: 'text-pink-700', accent: '#DB2777', border: 'border-l-pink-500', bg: 'bg-pink-50/60' },
+                { name: 'text-emerald-700', accent: '#059669', border: 'border-l-emerald-500', bg: 'bg-emerald-50/60' },
+                { name: 'text-rose-700', accent: '#E11D48', border: 'border-l-rose-500', bg: 'bg-rose-50/60' },
+                { name: 'text-teal-700', accent: '#0D9488', border: 'border-l-teal-500', bg: 'bg-teal-50/60' },
+            ];
+            const memberColorCache = {};
+            let memberColorIndex = 0;
+            function getMemberColor(authorName) {
+                if (!authorName) return memberNameColors[0];
+                if (memberColorCache[authorName]) return memberColorCache[authorName];
+                const color = memberNameColors[memberColorIndex % memberNameColors.length];
+                memberColorCache[authorName] = color;
+                memberColorIndex++;
+                return color;
+            }
+
+            filteredPosts.forEach(post => {
+                const isSelf = currentUserProfile?.id && post.author?.id
+                    ? String(post.author.id) === String(currentUserProfile.id)
+                    : false;
+
+                const mColor = getMemberColor(post.author.name);
+
+                // --- Outer row ---
+                const rowWrapper = document.createElement('div');
+                rowWrapper.className = `flex items-start gap-3 w-full ${isSelf ? 'flex-row-reverse' : 'flex-row'}`;
+
+                // --- Avatar ---
+                let avatarHTML = '';
+                if (post.author.avatarImg) {
+                    avatarHTML = `<img class="w-9 h-9 rounded-full object-cover shadow-sm shrink-0 mt-1" src="${post.author.avatarImg}" alt="${post.author.name}">`;
+                } else {
+                    avatarHTML = `<div class="w-9 h-9 rounded-full ${post.author.color || 'bg-slate-500'} text-white font-bold flex items-center justify-center text-xs shadow-sm shrink-0 mt-1">${post.author.initials}</div>`;
+                }
+
+                // --- Content ---
+                const contentHTML = post.content.map(p =>
+                    `<p class="text-[13px] leading-relaxed text-[#334155]">${p}</p>`
+                ).join('');
+
+                let cardClasses;
+                if (isSelf) {
+                    const selfAccent = isProfessorRole ? 'border-r-indigo-500' : 'border-r-emerald-500';
+                    const selfBg = isProfessorRole ? 'bg-indigo-50/70' : 'bg-emerald-50/70';
+                    cardClasses = `bg-white border border-[#E8ECF0] ${selfBg} ${selfAccent} border-r-[3px] rounded-2xl rounded-tr-sm`;
+                } else {
+                    cardClasses = `bg-white border border-[#E8ECF0] ${mColor.bg} ${mColor.border} border-l-[3px] rounded-2xl rounded-tl-sm`;
+                }
+
+                const nameColor = isSelf
+                    ? (isProfessorRole ? 'text-indigo-700' : 'text-emerald-700')
+                    : mColor.name;
+
+                const roleBadge = post.author.role === 'Professor'
+                    ? `<span class="text-[9px] font-semibold px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200">Professor</span>`
+                    : `<span class="text-[9px] font-medium text-[#64748B]">• ${post.author.role}</span>`;
+
+                // --- Comment drawer ---
+                let commentDrawerHTML = '';
+                if (post.commentsExpanded) {
+                    const commentsListHTML = post.comments.map(c => {
+                        const isCSelf = currentUserProfile?.id && c.author_id
+                            ? String(c.author_id) === String(currentUserProfile.id)
+                            : false;
+                        const cColor = getMemberColor(c.author);
+                        const cNameColor = isCSelf ? (isProfessorRole ? 'text-indigo-600' : 'text-emerald-600') : cColor.name;
+
+                        let cAvatar = c.avatarImg 
+                            ? `<img class="w-6 h-6 rounded-full object-cover shrink-0" src="${c.avatarImg}" alt="${c.author}">`
+                            : `<div class="w-6 h-6 rounded-full ${c.color || 'bg-slate-400'} text-white font-bold flex items-center justify-center text-[9px] shrink-0">${c.initials}</div>`;
+
+                        return `
+                            <div class="flex items-start gap-2 ${isCSelf ? 'flex-row-reverse' : ''}">
+                                ${cAvatar}
+                                <div class="flex-1 bg-[#F8FAFC] border border-[#EEF2F6] rounded-xl px-3 py-2">
+                                    <div class="flex items-center gap-2 mb-0.5">
+                                        <span class="font-semibold text-[10px] ${cNameColor}">${c.author}</span>
+                                        <span class="text-[9px] text-[#94A3B8]">${c.time}</span>
+                                    </div>
+                                    <p class="text-xs text-[#475569] leading-relaxed">${c.text}</p>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                    const replyBtnClass = isProfessorRole 
+                        ? 'bg-[#4F46E5] hover:bg-indigo-700' 
+                        : 'bg-emerald-600 hover:bg-emerald-700';
+
+                    commentDrawerHTML = `
+                        <div class="mt-3 pt-3 border-t border-[#F1F5F9] space-y-2.5">
+                            <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                                ${commentsListHTML}
+                            </div>
+                            <form onsubmit="event.preventDefault(); handleAddCommentSubmit('${post.id}')" class="flex items-center gap-2 mt-2">
+                                <input id="comment-input-${post.id}" type="text" placeholder="Write a reply..." class="flex-grow bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-100 placeholder-[#94A3B8] text-[#1E293B]">
+                                <button type="submit" class="text-white text-[11px] font-semibold px-3.5 py-1.5 rounded-xl transition shadow-sm shrink-0 ${replyBtnClass}">Reply</button>
+                            </form>
+                        </div>
+                    `;
+                }
+
+                // --- Build Card ---
+                const cardHTML = `
+                    <div class="${cardClasses} px-4 py-3.5 shadow-xs hover:shadow-sm transition-shadow max-w-[82%] space-y-2">
+                        <!-- Header: Name + Role + Time -->
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[12.5px] font-bold ${nameColor} cursor-pointer hover:underline" onclick="openMemberModalByName('${post.author.name}')">${post.author.name}${isSelf ? ' (You)' : ''}</span>
+                                ${roleBadge}
+                            </div>
+                            <span class="text-[10px] text-[#94A3B8] font-medium shrink-0">${post.time}</span>
+                        </div>
+
+                        <!-- Message Body -->
+                        <div class="space-y-1 pl-0.5">
+                            ${contentHTML}
+                        </div>
+
+                        <!-- Action Bar -->
+                        <div class="flex items-center gap-4 pt-2">
+                            <button onclick="toggleLike('${post.id}')" class="flex items-center gap-1 text-xs transition-all hover:scale-105 focus:outline-none ${post.hasLiked ? 'text-red-500' : 'text-[#94A3B8] hover:text-red-400'}">
+                                <span class="text-sm">${post.hasLiked ? '❤️' : '🤍'}</span>
+                                <span class="font-semibold">${post.likes}</span>
+                            </button>
+                            <button onclick="toggleComments('${post.id}')" class="flex items-center gap-1 text-xs transition-all hover:scale-105 focus:outline-none text-[#94A3B8] hover:text-[#64748B]">
+                                <span class="text-sm">💬</span>
+                                <span class="font-semibold">${post.comments.length}</span>
+                            </button>
+                        </div>
+
+                        <!-- Comments -->
+                        ${commentDrawerHTML}
+                    </div>
+                `;
+
+                rowWrapper.innerHTML = `
+                    <div class="shrink-0">${avatarHTML}</div>
+                    ${cardHTML}
+                `;
+
+                feedContainer.appendChild(rowWrapper);
+            });
+        }
+
+        // Render Sidebar Team Members list
+        function renderTeamMembers() {
+            teamContainer.innerHTML = "";
+            teamMembers.forEach((member, index) => {
+                const memberCard = document.createElement('div');
+                memberCard.className = "flex items-center space-x-3 p-2 rounded-xl hover:bg-indigo-50/50 cursor-pointer transition-all duration-200 border border-transparent hover:border-indigo-100/50 group";
+                memberCard.onclick = () => showMemberModal(index);
+
+                let avatarHTML = "";
+                if (member.avatarImg) {
+                    avatarHTML = `<img class="w-10 h-10 rounded-full object-cover ring-2 ring-slate-100 group-hover:ring-indigo-200 transition-all" src="${member.avatarImg}" alt="${member.name}">`;
+                } else {
+                    avatarHTML = `<div class="w-10 h-10 rounded-full ${member.color} text-white font-bold flex items-center justify-center text-sm shadow-sm ring-2 ring-slate-100 group-hover:ring-indigo-200 transition-all">${member.initials}</div>`;
+                }
+
+                memberCard.innerHTML = `
+                    <div class="relative">
+                        ${avatarHTML}
+                        <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white ${member.status === 'Online' ? 'bg-[#10B981]' : 'bg-[#94A3B8]'}"></span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-sm font-semibold text-[#0F172A] truncate group-hover:text-[#4F46E5] transition-colors">${member.name}</h4>
+                        <div class="flex items-center gap-1.5 mt-0.5">
+                            ${member.role === 'Professor' ? '<span class="text-[10px] bg-amber-50 text-amber-700 font-bold px-1.5 py-0.2 rounded border border-amber-200/50">Professor</span>' : `<span class="text-[10px] text-[#64748B] font-medium">${member.role}</span>`}
+                            ${member.status === 'Online' ? '<span class="text-[10px] text-[#10B981] font-semibold hidden sm:inline">&bull; Online</span>' : ''}
+                        </div>
+                    </div>
+                `;
+
+                teamContainer.appendChild(memberCard);
+            });
+        }
+
+        // Render Notifications Dropdown Panel
+        function renderNotifications() {
+            notificationsListContainer.innerHTML = "";
+            const unreadCount = notifications.filter(n => !n.read).length;
+
+            if (unreadCount > 0) {
+                notificationBadge.innerText = unreadCount;
+                notificationBadge.classList.remove('hidden');
+            } else {
+                notificationBadge.classList.add('hidden');
+            }
+
+            if (notifications.length === 0) {
+                notificationsListContainer.innerHTML = `
+                    <div class="p-6 text-center text-sm text-[#94A3B8]">
+                        No new updates at this time.
+                    </div>
+                `;
+                return;
+            }
+
+            notifications.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = `p-3.5 hover:bg-[#F8FAFC] transition-colors ${!item.read ? 'bg-indigo-50/40' : ''}`;
+                itemDiv.innerHTML = `
+                    <p class="text-xs text-[#334155] leading-relaxed">${item.text}</p>
+                    <span class="text-[10px] text-[#94A3B8] block mt-1">${item.time}</span>
+                `;
+                notificationsListContainer.appendChild(itemDiv);
+            });
+        }
+
+        // --- INTERACTIVE METHODS & EVENT HANDLERS ---
+
+        // Toggle Like State
+        window.toggleLike = async function(postId) {
+            if (typeof supabaseClient === 'undefined' || !currentUserProfile || !currentUserProfile.email) {
+                posts = posts.map(post => {
+                    if (post.id === postId) {
+                        const hasLiked = !post.hasLiked;
+                        return {
+                            ...post,
+                            hasLiked: hasLiked,
+                            likes: hasLiked ? post.likes + 1 : post.likes - 1
+                        };
+                    }
+                    return post;
+                });
+                renderPosts();
+                return;
+            }
+
+            try {
+                const { data: up, error: fError } = await supabaseClient
+                    .from('project_updates')
+                    .select('*')
+                    .eq('id', postId)
+                    .single();
+
+                if (!fError && up) {
+                    let likedList = Array.isArray(up.likes_users) ? up.likes_users : [];
+                    const email = currentUserProfile.email.toLowerCase();
+                    const index = likedList.indexOf(email);
+                    
+                    if (index === -1) {
+                        likedList.push(email);
+                    } else {
+                        likedList.splice(index, 1);
+                    }
+
+                    const likesCount = likedList.length;
+
+                    const { data: updatedPost, error: uError } = await supabaseClient
+                        .from('project_updates')
+                        .update({
+                            likes_count: likesCount,
+                            likes_users: likedList
+                        })
+                        .eq('id', postId)
+                        .select()
+                        .single();
+
+                    if (!uError && updatedPost) {
+                        const userEmail = currentUserProfile ? currentUserProfile.email : '';
+                        const hasLiked = userEmail ? likedList.map(e => e.toLowerCase()).includes(userEmail.toLowerCase()) : false;
+                        
+                        posts = posts.map(p => {
+                            if (p.id === postId) {
+                                return {
+                                    ...p,
+                                    likes: likesCount,
+                                    hasLiked: hasLiked
+                                };
+                            }
+                            return p;
+                        });
+                        renderPosts();
+
+                        // Broadcast like update to other clients
+                        if (chatChannel) {
+                            chatChannel.send({
+                                type: 'broadcast',
+                                event: 'like_update',
+                                payload: { postId, likes: likesCount, likedList }
+                            });
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to toggle like:", err);
+            }
+        };
+
+        // Toggle Comments drawer expand collapse
+        window.toggleComments = function(postId) {
+            posts = posts.map(post => {
+                if (post.id === postId) {
+                    return { ...post, commentsExpanded: !post.commentsExpanded };
+                }
+                return post;
+            });
+            renderPosts();
+        };
+
+        // Submitting comments
+        window.handleAddCommentSubmit = async function(postId) {
+            const inputEl = document.getElementById(`comment-input-${postId}`);
+            const commentText = inputEl.value.trim();
+            if (!commentText) return;
+
+            if (typeof supabaseClient === 'undefined' || !currentUserProfile) {
+                const newComment = {
+                    id: Date.now().toString(),
+                    author: currentUserProfile.name + ' (You)',
+                    role: currentUserProfile.role,
+                    initials: currentUserProfile.initials,
+                    color: currentUserProfile.color,
+                    avatarImg: currentUserProfile.avatarImg || null,
+                    text: commentText,
+                    time: 'Just now',
+                    email: ''
+                };
+
+                posts = posts.map(post => {
+                    if (post.id === postId) {
+                        return {
+                            ...post,
+                            commentsExpanded: true,
+                            comments: [...post.comments, newComment]
+                        };
+                    }
+                    return post;
+                });
+                renderPosts();
+                return;
+            }
+
+            try {
+                const authorId = currentUserProfile ? currentUserProfile.id : null;
+
+                const { data: newComment, error } = await supabaseClient
+                    .from('project_comments')
+                    .insert({
+                        update_id: postId,
+                        author_id: authorId,
+                        author_name: currentUserProfile.name,
+                        author_role: currentUserProfile.role,
+                        author_initials: currentUserProfile.initials,
+                        author_color: currentUserProfile.color,
+                        author_email: currentUserProfile.email,
+                        text: commentText
+                    })
+                    .select()
+                    .single();
+
+                if (!error && newComment) {
+                    inputEl.value = "";
+                    const commentObj = {
+                        id: newComment.id,
+                        author_id: newComment.author_id,
+                        author: newComment.author_name,
+                        role: newComment.author_role,
+                        initials: newComment.author_initials,
+                        color: newComment.author_color,
+                        avatarImg: null,
+                        text: newComment.text,
+                        time: formatRelativeTime(newComment.created_at),
+                        email: newComment.author_email || ''
+                    };
+
+                    posts = posts.map(p => {
+                        if (p.id === postId) {
+                            // Avoid duplicate comments
+                            if (!p.comments.some(c => c.id === commentObj.id)) {
+                                return {
+                                    ...p,
+                                    commentsExpanded: true,
+                                    comments: [...p.comments, commentObj]
+                                };
+                            }
+                        }
+                        return p;
+                    });
+                    renderPosts();
+                    scrollToBottom();
+
+                    // Broadcast the new comment
+                    if (chatChannel) {
+                        chatChannel.send({
+                            type: 'broadcast',
+                            event: 'new_comment',
+                            payload: { postId, comment: commentObj }
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to submit comment:", err);
+            }
+        };
+
+        // Submitting updates post
+        newPostForm.onsubmit = async function(e) {
+            e.preventDefault();
+            const text = newPostInput.value.trim();
+            if (!text) return;
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const projectId = urlParams.get('id');
+
+            if (typeof supabaseClient === 'undefined' || !currentUserProfile || !projectId) {
+                const contentParagraphs = text.split('\n').filter(p => p.trim() !== '');
+                const newPostObj = {
+                    id: Date.now().toString(),
+                    author: {
+                        name: currentUserProfile.name,
+                        role: currentUserProfile.role,
+                        initials: currentUserProfile.initials,
+                        color: currentUserProfile.color,
+                        avatarImg: currentUserProfile.avatarImg || null,
+                        email: currentUserProfile.email || ''
+                    },
+                    time: 'Just now',
+                    content: contentParagraphs,
+                    likes: 0,
+                    hasLiked: false,
+                    views: 1,
+                    commentsExpanded: false,
+                    comments: []
+                };
+
+                posts = [newPostObj, ...posts];
+                newPostInput.value = "";
+                renderPosts();
+                return;
+            }
+
+            try {
+                const authorId = currentUserProfile ? currentUserProfile.id : null;
+
+                const { data: newUpdate, error } = await supabaseClient
+                    .from('project_updates')
+                    .insert({
+                        project_id: projectId,
+                        author_id: authorId,
+                        author_name: currentUserProfile.name,
+                        author_role: currentUserProfile.role,
+                        author_initials: currentUserProfile.initials,
+                        author_color: currentUserProfile.color,
+                        author_email: currentUserProfile.email,
+                        content: text
+                    })
+                    .select()
+                    .single();
+
+                if (!error && newUpdate) {
+                    newPostInput.value = "";
+                    
+                    const newPostObj = {
+                        id: newUpdate.id,
+                        author: {
+                            id: currentUserProfile.id,
+                            name: currentUserProfile.name,
+                            role: currentUserProfile.role,
+                            initials: currentUserProfile.initials,
+                            color: currentUserProfile.color,
+                            avatarImg: currentUserProfile.avatarImg || null,
+                            email: currentUserProfile.email || ''
+                        },
+                        time: formatRelativeTime(newUpdate.created_at),
+                        content: [newUpdate.content],
+                        likes: newUpdate.likes_count || 0,
+                        hasLiked: false,
+                        views: 5,
+                        commentsExpanded: false,
+                        comments: []
+                    };
+
+                    posts.push(newPostObj);
+                    renderPosts();
+                    scrollToBottom();
+
+                    // Broadcast the new post
+                    if (chatChannel) {
+                        chatChannel.send({
+                            type: 'broadcast',
+                            event: 'new_post',
+                            payload: newPostObj
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to submit update post:", err);
+            }
+        };
+
+        // Toggle Search state configuration
+        function toggleSearchInputState() {
+            if (searchOpen) {
+                searchWrapper.className = "flex items-center transition-all duration-300 w-48 md:w-64 bg-slate-50 border border-indigo-200 rounded-full px-2.5 py-1.5";
+                searchInput.classList.remove('opacity-0', 'w-0');
+                searchInput.classList.add('w-full', 'opacity-100');
+                searchInput.focus();
+                if (searchQuery) {
+                    resetSearchBtn.classList.remove('hidden');
+                }
+            } else {
+                searchWrapper.className = "flex items-center transition-all duration-300 w-10 bg-transparent rounded-full px-2.5 py-1.5 border border-transparent";
+                searchInput.classList.remove('w-full', 'opacity-100');
+                searchInput.classList.add('opacity-0', 'w-0');
+                resetSearchBtn.classList.add('hidden');
+            }
+        }
+
+        // Search Trigger listener
+        searchTrigger.onclick = function() {
+            searchOpen = !searchOpen;
+            toggleSearchInputState();
+        };
+
+        // Live input search event
+        searchInput.oninput = function(e) {
+            searchQuery = e.target.value;
+            if (searchQuery) {
+                resetSearchBtn.classList.remove('hidden');
+            } else {
+                resetSearchBtn.classList.add('hidden');
+            }
+            renderPosts();
+        };
+
+        // Reset search triggers
+        resetSearchBtn.onclick = function() {
+            searchQuery = "";
+            searchInput.value = "";
+            resetSearchBtn.classList.add('hidden');
+            renderPosts();
+        };
+
+        // Simulate attachment click action
+        document.getElementById('attachment-btn').onclick = function() {
+            newPostInput.value += " 📂 [Shared-Artifact: BTP_Flowchart.vsdx] ";
+            newPostInput.focus();
+        };
+
+        // Emoji click simulation
+        document.getElementById('emoji-btn').onclick = function() {
+            newPostInput.value += " 👍 ";
+            newPostInput.focus();
+        };
+
+        // --- NOTIFICATION MANAGEMENT ---
+        notificationBtn.onclick = function(e) {
+            e.stopPropagation();
+            const isHidden = notificationDropdown.classList.contains('hidden');
+            if (isHidden) {
+                notificationDropdown.classList.remove('hidden');
+                // Mark notifications as read
+                notifications = notifications.map(n => ({ ...n, read: true }));
+                renderNotifications();
+            } else {
+                notificationDropdown.classList.add('hidden');
+            }
+        };
+
+        clearNotificationsBtn.onclick = function(e) {
+            e.stopPropagation();
+            notifications = [];
+            renderNotifications();
+        };
+
+        // Hide notification dropdown if clicked outside
+        document.addEventListener('click', function(e) {
+            if (!notificationBtn.contains(e.target) && !notificationDropdown.contains(e.target)) {
+                notificationDropdown.classList.add('hidden');
+            }
+        });
+
+        // --- MODAL TRIGGERS ---
+
+        // Show Teammate detail profile
+        function showMemberModal(index) {
+            const member = teamMembers[index];
+            const avatarContainer = document.getElementById('member-modal-avatar-container');
+
+            if (member.avatarImg) {
+                avatarContainer.innerHTML = `<img class="w-16 h-16 rounded-full object-cover ring-4 ring-indigo-50" src="${member.avatarImg}" alt="${member.name}">`;
+            } else {
+                avatarContainer.innerHTML = `<div class="w-16 h-16 rounded-full ${member.color} text-white font-bold flex items-center justify-center text-xl shadow-md ring-4 ring-indigo-50">${member.initials}</div>`;
+            }
+
+            document.getElementById('member-modal-name').innerText = member.name;
+            document.getElementById('member-modal-role').innerText = member.role;
+            document.getElementById('member-modal-email').innerText = member.email;
+            
+            const statusEl = document.getElementById('member-modal-status');
+            statusEl.className = `inline-flex items-center gap-1.5 text-xs font-bold ${member.status === 'Online' ? 'text-emerald-600' : 'text-slate-500'}`;
+            statusEl.innerHTML = `
+                <span class="w-2.5 h-2.5 rounded-full ${member.status === 'Online' ? 'bg-emerald-500' : 'bg-slate-400'}"></span>
+                ${member.status}
+            `;
+
+            document.getElementById('member-modal-contribution').innerText = member.contribution;
+            memberModal.classList.remove('hidden');
+        }
+
+        // Shortcut to trigger member modal by clicking name in feed
+        window.openMemberModalByName = function(name) {
+            const index = teamMembers.findIndex(m => m.name.toLowerCase() === name.toLowerCase());
+            if (index !== -1) {
+                showMemberModal(index);
+            }
+        };
+
+        // Close member modal triggers
+        function closeMemberModal() {
+            memberModal.classList.add('hidden');
+        }
+        document.getElementById('close-member-modal').onclick = closeMemberModal;
+        document.getElementById('close-member-modal-btn').onclick = closeMemberModal;
+
+        // Close modal when clicked on background overlay
+        memberModal.onclick = function(e) {
+            if (e.target === memberModal) closeMemberModal();
+        };
+
+        // Project spec modal handlers
+        function showProjectModal() {
+            projectModal.classList.remove('hidden');
+        }
+        function closeProjectModal() {
+            projectModal.classList.add('hidden');
+        }
+        document.getElementById('view-project-details-btn').onclick = showProjectModal;
+        document.getElementById('project-settings-btn').onclick = showProjectModal;
+        document.getElementById('close-project-modal').onclick = closeProjectModal;
+        document.getElementById('close-project-modal-btn').onclick = closeProjectModal;
+
+        projectModal.onclick = function(e) {
+            if (e.target === projectModal) closeProjectModal();
+        };
+
+        // --- MOBILE DRAWER NAVIGATION HANDLERS ---
+        function openMobileSidebar() {
+            sidebarContainer.classList.remove('-translate-x-full');
+            sidebarOverlay.classList.remove('hidden');
+        }
+        function closeMobileSidebar() {
+            sidebarContainer.classList.add('-translate-x-full');
+            sidebarOverlay.classList.add('hidden');
+        }
+
+        mobileSidebarToggle.onclick = openMobileSidebar;
+        mobileSidebarClose.onclick = closeMobileSidebar;
+        sidebarOverlay.onclick = closeMobileSidebar;
+
+        // --- CHAT PERSISTENCE HELPERS ---
+        let chatChannel = null;
+
+        function scrollToBottom() {
+            const feedContainer = document.getElementById('feed-items-container');
+            if (feedContainer) {
+                setTimeout(() => {
+                    feedContainer.scrollTop = feedContainer.scrollHeight;
+                }, 100);
+            }
+        }
+
+        function setupRealtimeChat(projectId) {
+            if (typeof supabaseClient === 'undefined' || !projectId) return;
+
+            if (chatChannel) {
+                supabaseClient.removeChannel(chatChannel);
+            }
+
+            chatChannel = supabaseClient.channel(`project-chat-${projectId}`);
+
+            chatChannel
+                .on('broadcast', { event: 'new_post' }, (response) => {
+                    const { payload } = response;
+                    if (!posts.some(p => p.id === payload.id)) {
+                        posts.push(payload);
+                        renderPosts();
+                        scrollToBottom();
+                    }
+                })
+                .on('broadcast', { event: 'new_comment' }, (response) => {
+                    const { payload } = response;
+                    const { postId, comment } = payload;
+                    posts = posts.map(p => {
+                        if (p.id === postId) {
+                            if (!p.comments.some(c => c.id === comment.id)) {
+                                return {
+                                    ...p,
+                                    commentsExpanded: true,
+                                    comments: [...p.comments, comment]
+                                };
+                            }
+                        }
+                        return p;
+                    });
+                    renderPosts();
+                    scrollToBottom();
+                })
+                .on('broadcast', { event: 'like_update' }, (response) => {
+                    const { payload } = response;
+                    const { postId, likes, likedList } = payload;
+                    posts = posts.map(p => {
+                        if (p.id === postId) {
+                            const userEmail = currentUserProfile ? currentUserProfile.email : '';
+                            const hasLiked = userEmail ? likedList.map(e => e.toLowerCase()).includes(userEmail.toLowerCase()) : false;
+                            return {
+                                ...p,
+                                likes: likes,
+                                hasLiked: hasLiked
+                            };
+                        }
+                        return p;
+                    });
+                    renderPosts();
+                })
+                .subscribe((status) => {
+                    if (status === 'SUBSCRIBED') {
+                        console.log(`Subscribed to realtime broadcast channel project-chat-${projectId}`);
+                    }
+                });
+        }
+
+        function formatRelativeTime(isoString) {
+            const date = new Date(isoString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMin = Math.floor(diffMs / 60000);
+            
+            if (diffMin < 1) return 'Just now';
+            if (diffMin < 60) return `${diffMin}m ago`;
+            
+            const diffHrs = Math.floor(diffMin / 60);
+            if (diffHrs < 24) return `${diffHrs}h ago`;
+            
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
+        async function loadChatMessages() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const projectId = urlParams.get('id');
+            if (!projectId || typeof supabaseClient === 'undefined') return;
+
+            try {
+                const { data: updates, error: uError } = await supabaseClient
+                    .from('project_updates')
+                    .select('*')
+                    .eq('project_id', projectId)
+                    .order('created_at', { ascending: true });
+
+                if (!uError && updates) {
+                    const { data: comments, error: cError } = await supabaseClient
+                        .from('project_comments')
+                        .select('*')
+                        .order('created_at', { ascending: true });
+
+                    const activeComments = comments || [];
+
+                    posts = updates.map(up => {
+                        const likedList = Array.isArray(up.likes_users) ? up.likes_users : [];
+                        const userEmail = currentUserProfile ? currentUserProfile.email : '';
+                        const hasLiked = userEmail ? likedList.map(e => e.toLowerCase()).includes(userEmail.toLowerCase()) : false;
+
+                        const postComments = activeComments
+                            .filter(c => c.update_id === up.id)
+                            .map(c => {
+                                return {
+                                    id: c.id,
+                                    author_id: c.author_id,
+                                    author: c.author_name,
+                                    role: c.author_role,
+                                    initials: c.author_initials,
+                                    color: c.author_color,
+                                    avatarImg: null,
+                                    text: c.text,
+                                    time: formatRelativeTime(c.created_at),
+                                    email: c.author_email || ''
+                                };
+                            });
+
+                        const existingPost = posts.find(p => p.id === up.id);
+                        const commentsExpanded = existingPost ? existingPost.commentsExpanded : false;
+
+                        return {
+                            id: up.id,
+                            author: {
+                                id: up.author_id,
+                                name: up.author_name,
+                                role: up.author_role,
+                                initials: up.author_initials,
+                                color: up.author_color,
+                                avatarImg: null,
+                                email: up.author_email || ''
+                            },
+                            time: formatRelativeTime(up.created_at),
+                            content: [up.content],
+                            likes: up.likes_count || 0,
+                            hasLiked: hasLiked,
+                            views: up.likes_count * 2 + 5,
+                            commentsExpanded: commentsExpanded,
+                            comments: postComments
+                        };
+                    });
+
+                    renderPosts();
+                }
+            } catch (err) {
+                console.error("Failed to load chat messages:", err);
+            }
+        }
+
+        // --- INITIAL BOOT & DYNAMIC SUPABASE INTEGRATION ---
+        window.onload = async function() {
+            // 1. First render default/mock states so page renders instantly
+            renderPosts();
+            renderTeamMembers();
+            renderNotifications();
+
+            // 2. Parse query parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const projectId = urlParams.get('id');
+            const forceRole = urlParams.get('as'); // 'student' or 'faculty' / 'professor'
+
+            let sessionUser = null;
+            let activeEmail = '';
+
+            // 3. Fetch active session first (to have user details available for healing & roster generation)
+            if (typeof supabaseClient !== 'undefined') {
+                try {
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    if (session && session.user) {
+                        sessionUser = session.user;
+                        activeEmail = sessionUser.email;
+                    }
+                } catch (e) {
+                    console.warn("Could not retrieve active session on load:", e);
+                }
+            }
+
+            // 4. Fetch workspace project & team roster
+            if (projectId && typeof supabaseClient !== 'undefined') {
+                try {
+                    // Fetch real project details by ID
+                    const { data: project, error: pError } = await supabaseClient
+                        .from('projects_v2')
+                        .select('*')
+                        .eq('id', projectId)
+                        .single();
+
+                    if (!pError && project) {
+                        currentProject = project; // Assign globally
+                        
+                        // Heal missing faculty_name in database on the fly if active user is creator
+                        if (sessionUser && project.faculty_id === sessionUser.id) {
+                            if (!project.faculty_name) {
+                                const facultyProfile = typeof resolveFacultyMasterProfile === 'function'
+                                    ? await resolveFacultyMasterProfile(sessionUser.email)
+                                    : null;
+                                const metaName = facultyProfile?.name || sessionUser.user_metadata?.full_name || "Faculty Supervisor";
+                                project.faculty_name = metaName;
+                                currentProject.faculty_name = metaName;
+                                supabaseClient
+                                    .from('projects_v2')
+                                    .update({ faculty_name: metaName })
+                                    .eq('id', project.id)
+                                    .then(({error}) => {
+                                        if (error) console.warn("Failed to heal project metadata:", error);
+                                    });
+                            }
+                        }
+
+                        // Dynamically update page title
+                        document.title = `UniProjects - ${project.title}`;
+                        
+                        // Locate and update project title in the UI
+                        const mainTitle = document.querySelector('h1.text-sm');
+                        const aboutTitle = document.querySelector('.bg-\\[\\#EEF2F6\\]\\/50 p');
+                        const btpTitle = document.querySelector('header h1');
+                        
+                        if (mainTitle) mainTitle.textContent = project.title;
+                        if (btpTitle) btpTitle.textContent = project.title;
+                        if (aboutTitle) aboutTitle.textContent = project.description || "Project collaboration space.";
+                        
+                        // Update the specification details inside Project Modal
+                        const projectModalTitle = document.querySelector('#project-modal h3');
+                        const projectModalDesc = document.querySelector('#project-modal p.text-slate-600');
+                        if (projectModalTitle) projectModalTitle.textContent = project.title;
+                        if (projectModalDesc) projectModalDesc.textContent = project.description || "Project collaboration space.";
+
+                        // Setup supervisor details (prioritize relational query and fallback to session context)
+                        let supervisorName = project.faculty_name || "Faculty Supervisor";
+                        let supervisorEmail = "faculty@university.edu";
+
+                        // Try to query real faculty details from the relational faculty table
+                        try {
+                            const { data: facProfile, error: facError } = await supabaseClient
+                                .from('faculty')
+                                .select('email, full_name')
+                                .eq('user_id', project.faculty_id)
+                                .single();
+                            if (!facError && facProfile) {
+                                supervisorEmail = facProfile.email || supervisorEmail;
+                                supervisorName = facProfile.full_name || supervisorName;
+                            }
+                        } catch (err) {
+                            console.warn("Could not query faculty details:", err);
+                        }
+
+                        // Fallback/override if active user is creator
+                        if (sessionUser && project.faculty_id === sessionUser.id) {
+                            const facultyProfile = typeof resolveFacultyMasterProfile === 'function'
+                                ? await resolveFacultyMasterProfile(sessionUser.email)
+                                : null;
+                            if (facultyProfile?.email) supervisorEmail = facultyProfile.email;
+                            if (facultyProfile?.name) supervisorName = facultyProfile.name;
+                            else if (sessionUser.email) supervisorEmail = sessionUser.email;
+                            else if (sessionUser.user_metadata?.full_name) supervisorName = sessionUser.user_metadata.full_name;
+                        }
+
+                        const facultyInitials = supervisorName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+
+                        // Setup a clean team roster starting with the Faculty Supervisor
+                        let dynamicTeam = [
+                            {
+                                name: supervisorName,
+                                role: 'Professor',
+                                email: supervisorEmail,
+                                status: 'Online',
+                                avatarImg: null,
+                                initials: facultyInitials,
+                                color: 'bg-[#6366F1]',
+                                contribution: 'Supervising project guidelines, verifying JWT auth modules and testing suites.'
+                            }
+                        ];
+
+                        // Fetch all approved/accepted students for this project
+                        const { data: apps, error: aError } = await supabaseClient
+                            .from('applications_v2')
+                            .select('*')
+                            .eq('project_id', projectId)
+                            .in('status', ['approved', 'accepted']);
+
+                        if (!aError && apps) {
+                            apps.forEach(app => {
+                                const initials = (app.student_name || 'Student').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                                const colors = ['bg-emerald-600', 'bg-[#8B5CF6]', 'bg-[#06B6D4]', 'bg-[#F59E0B]', 'bg-[#EC4899]'];
+                                const colorIndex = (app.student_name.charCodeAt(0) + (app.student_name.charCodeAt(1) || 0)) % colors.length;
+                                
+                                dynamicTeam.push({
+                                    name: app.student_name || 'Enrolled Student',
+                                    role: 'Student / Team Member',
+                                    email: app.student_email || 'student@university.edu',
+                                    status: 'Online',
+                                    avatarImg: null,
+                                    initials: initials,
+                                    color: colors[colorIndex],
+                                    contribution: app.pitch || 'Active project developer.'
+                                });
+                            });
+                        }
+
+                        // Apply dynamic roster to global array and update counts
+                        teamMembers.length = 0;
+                        teamMembers.push(...dynamicTeam);
+                        
+                        const memberCountBadge = document.getElementById('member-count-badge');
+                        if (memberCountBadge) memberCountBadge.textContent = teamMembers.length;
+
+                        renderTeamMembers();
+                    }
+                } catch (e) {
+                    console.warn("Supabase fetch workspace metadata failed, falling back to local simulation.", e);
+                }
+            }
+
+            // 5. Hydrate current logged-in user profile
+            if (sessionUser) {
+                try {
+                    let isProfessor = false;
+
+                    // First, check if there's a cached profile in sessionStorage (unique to this tab!)
+                    const cachedProfileStr = sessionStorage.getItem('current_user_profile');
+
+                    if (cachedProfileStr && !forceRole) {
+                        currentUserProfile = JSON.parse(cachedProfileStr);
+                        isProfessor = (currentUserProfile.role === "Professor");
+                        console.log('[Chat Debug] Hydrated profile from sessionStorage:', currentUserProfile);
+                    } else {
+                        // Role identification logic
+                        const authRole = sessionUser.user_metadata?.role;
+                        if (forceRole === 'student') {
+                            isProfessor = false;
+                        } else if (forceRole === 'faculty' || forceRole === 'professor') {
+                            isProfessor = true;
+                        } else {
+                            // Dynamic detection based on project creator OR user auth role metadata
+                            if (currentProject && currentProject.faculty_id === sessionUser.id) {
+                                isProfessor = true;
+                            } else if (authRole === 'faculty' || authRole === 'professor' || activeEmail.toLowerCase().includes('faculty') || activeEmail.toLowerCase().includes('prof')) {
+                                isProfessor = true;
+                            }
+                        }
+
+                        let fullName = sessionUser.user_metadata?.full_name || (isProfessor ? "Faculty Supervisor" : "Student Member");
+                        let role = isProfessor ? "Professor" : "Student";
+                        let userColor = isProfessor ? 'bg-[#4F46E5]' : 'bg-emerald-600'; 
+                        let initials = fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+
+                        if (isProfessor) {
+                            const facultyProfile = typeof resolveFacultyMasterProfile === 'function'
+                                ? await resolveFacultyMasterProfile(sessionUser.email)
+                                : null;
+                            if (facultyProfile?.name) {
+                                fullName = facultyProfile.name;
+                                initials = fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                            }
+                            if (currentProject && currentProject.faculty_name) {
+                                fullName = currentProject.faculty_name;
+                                initials = fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                            }
+                        } else {
+                            // Student: try matching profile in team roster by case-insensitive email match
+                            const teamMatch = teamMembers.find(m => m.email.toLowerCase().trim() === activeEmail.toLowerCase().trim());
+                            if (teamMatch) {
+                                role = teamMatch.role;
+                                userColor = teamMatch.color || 'bg-emerald-600';
+                                fullName = teamMatch.name;
+                                initials = teamMatch.initials;
+                            }
+                        }
+
+                        currentUserProfile = {
+                            id: sessionUser.id,
+                            name: fullName,
+                            role: role,
+                            initials: initials,
+                            color: userColor,
+                            avatarImg: null,
+                            email: activeEmail
+                        };
+
+                        // Save to sessionStorage so this tab remembers its identity even if localStorage updates in another tab
+                        sessionStorage.setItem('current_user_profile', JSON.stringify(currentUserProfile));
+                        console.log('[Chat Debug] Hydrated profile from Supabase & cached:', currentUserProfile);
+                    }
+
+                    if (currentUserProfile) {
+                        // Apply dynamic visual theme
+                        applyDynamicTheme(currentUserProfile.role === "Professor");
+
+                        // Hydrate Navigation bar profile tags
+                        const avatarEl = document.getElementById('nav-profile-avatar');
+                        const nameEl = document.getElementById('nav-profile-name');
+                        if (avatarEl) {
+                            avatarEl.textContent = currentUserProfile.initials;
+                            avatarEl.className = `w-8 h-8 rounded-full ${currentUserProfile.color} text-white font-bold flex items-center justify-center text-sm shadow-sm ring-2 ${currentUserProfile.role === 'Professor' ? 'ring-indigo-100' : 'ring-emerald-100'}`;
+                        }
+                        if (nameEl) {
+                            nameEl.textContent = currentUserProfile.name;
+                        }
+
+                        renderPosts();
+                    }
+                } catch (err) {
+                    console.warn("User session hydration failed:", err);
+                }
+            }
+
+            // 6. Load live persistent chat updates from database and scroll to bottom
+            if (typeof supabaseClient !== 'undefined' && projectId) {
+                await loadChatMessages();
+                setupRealtimeChat(projectId);
+                
+                const feedContainer = document.getElementById('feed-items-container');
+                if (feedContainer) {
+                    setTimeout(() => {
+                        feedContainer.scrollTop = feedContainer.scrollHeight;
+                    }, 300);
+                }
+            }
+        };
+    </script>
+</body>
+</html>
